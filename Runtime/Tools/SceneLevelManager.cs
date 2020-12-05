@@ -6,11 +6,11 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
-namespace Hex
+namespace GamePack
 {
     public class SceneLevelManager: MonoBehaviour
     {
-        private const string LevelKey = "com.hex.ringhop.levelindex01";
+        private const string LevelKey = "com.alpdoganurut.levelindex";
         
         #region Development
 #if UNITY_EDITOR

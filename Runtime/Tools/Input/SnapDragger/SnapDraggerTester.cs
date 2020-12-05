@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace WoodToyShop.Common.SnapDrag
+namespace GamePack.SnapDrag
 {
     public class SnapDraggerTester:MonoBehaviour
     {

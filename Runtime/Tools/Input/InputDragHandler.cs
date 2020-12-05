@@ -3,7 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-namespace WoodToyShop.Common
+namespace GamePack
 {
     public class InputDragHandler: MonoBehaviour
     { 

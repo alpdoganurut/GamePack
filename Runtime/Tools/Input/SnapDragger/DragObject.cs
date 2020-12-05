@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 // ReSharper disable MemberCanBePrivate.Global
 
-namespace WoodToyShop.Common.SnapDrag
+namespace GamePack.SnapDrag
 {
     [RequireComponent(typeof(Collider))]
     public class DragObject: MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler

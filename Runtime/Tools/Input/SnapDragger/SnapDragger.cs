@@ -2,7 +2,7 @@ using System;
 using TapticPlugin;
 using UnityEngine;
 
-namespace WoodToyShop.Common.SnapDrag
+namespace GamePack.SnapDrag
 {
     public class SnapDragger
     {
