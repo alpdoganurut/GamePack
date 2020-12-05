@@ -5,54 +5,40 @@ namespace GamePack.TweenAlphaSetActive
 {
     public abstract class TweenAlphaSetActiveHandler : MonoBehaviour
     {
-        [SerializeField] protected float Duration = .3f;
-        [SerializeField] protected LeanTweenType Easing = LeanTweenType.easeInOutSine;
+        [SerializeField] protected float _Duration = .3f;
+        [SerializeField] protected LeanTweenType _Easing = LeanTweenType.easeInOutSine;
         [SerializeField] private bool _DisableOnStart;
-        [ShowInInspector, ReadOnly] private bool _isActive;
-        [ShowInInspector, ReadOnly] protected bool IsTransitioning;
+        [ShowInInspector, ReadOnly] protected bool IsTransitioning => CurrentTweenId > 0;
     
         protected int CurrentTweenId = -1;
 
-        protected Color DisabledColor
-        {
-            get
-            {
-                return new Color(CurrentColor.r, CurrentColor.g, CurrentColor.b, 0);
-            }
-        }
+        protected Color DisabledColor => new Color(CurrentColor.r, CurrentColor.g, CurrentColor.b, 0);
 
-        protected Color ActiveColor
-        {
-            get
-            {
-                return new Color(CurrentColor.r, CurrentColor.g, CurrentColor.b, 1);
-            }
-        }
+        protected Color ActiveColor => new Color(CurrentColor.r, CurrentColor.g, CurrentColor.b, 1);
 
         protected abstract Color CurrentColor { get; }
 
-        public bool IsActive
-        {
-            get { return _isActive; }
-        }
+        [field: ShowInInspector]
+        [field: ReadOnly]
+        public bool IsActive { get; private set; }
 
-        public float ThisDuration
+        public float Duration
         {
-            get => Duration;
-            set => Duration = value;
+            get => _Duration;
+            set => _Duration = value;
         }
 
         // Setting initial _isActive value on enable
         private void OnEnable()
         {
-            _isActive = true;
+            IsActive = true;
         }
 
         private void Awake()
         {
             if (_DisableOnStart)
             {
-                _isActive = false;
+                IsActive = false;
                 gameObject.SetActive(false);
                 SetIsActive(false);
             }
@@ -60,7 +46,7 @@ namespace GamePack.TweenAlphaSetActive
 
         private void OnDisable()
         {
-            _isActive = false;
+            IsActive = false;
         }
 
         public void SetIsActive(bool isActive)
@@ -75,7 +61,7 @@ namespace GamePack.TweenAlphaSetActive
         
             if (IsActive == isActive)
                 return;
-            _isActive = isActive;
+            IsActive = isActive;
         
             // Cancel current tween
             if (CurrentTweenId > 0)

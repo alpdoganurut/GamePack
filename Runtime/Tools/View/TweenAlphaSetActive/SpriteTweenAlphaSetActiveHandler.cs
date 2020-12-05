@@ -29,7 +29,7 @@ namespace GamePack.TweenAlphaSetActive
         protected override void DoTween(bool isActive)
         {
         
-            CurrentTweenId = LeanTween.color(gameObject, isActive ? ActiveColor : DisabledColor, Duration).setEase(Easing)
+            CurrentTweenId = LeanTween.color(gameObject, isActive ? ActiveColor : DisabledColor, _Duration).setEase(_Easing)
                 .setOnComplete(() => { CurrentTweenId = -1; }).uniqueId;
         }
     }

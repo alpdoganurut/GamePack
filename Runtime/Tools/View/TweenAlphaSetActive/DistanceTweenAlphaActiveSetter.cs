@@ -9,11 +9,8 @@ namespace GamePack.TweenAlphaSetActive
         [DisableInPlayMode, SerializeField] private float _distanceThreshold = 200;
 
         private T _component;
-        private T Component
-        {
-            get { return _component ? _component : (_component = GetComponent<T>()); }
-        }
-    
+        private T Component => _component ? _component : (_component = GetComponent<T>());
+
         private float _minDistanceToShowSqr = -1f;
 
         private float MinDistanceToShowSqr

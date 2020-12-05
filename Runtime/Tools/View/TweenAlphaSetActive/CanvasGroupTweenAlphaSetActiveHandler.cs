@@ -11,7 +11,7 @@ namespace GamePack.TweenAlphaSetActive
         {
             get
             {
-                if (_canvasGroup == null)
+                if (!_canvasGroup)
                     _canvasGroup = GetComponent<CanvasGroup>();
                 return _canvasGroup;
             }
@@ -27,15 +27,13 @@ namespace GamePack.TweenAlphaSetActive
             {
                 CanvasGroup.alpha = isActive ? 0 : 1;
             }
-
-            IsTransitioning = true;
-            CurrentTweenId = LeanTween.alphaCanvas( CanvasGroup, isActive ? 1 : 0, ThisDuration)
-                .setEase(Easing)
+            
+            CurrentTweenId = LeanTween.alphaCanvas( CanvasGroup, isActive ? 1 : 0, Duration)
+                .setEase(_Easing)
                 .setOnComplete(() =>
                 {
                     CurrentTweenId = -1;
                     if(!isActive) gameObject.SetActive(false);
-                    IsTransitioning = false;
                 })
                 .uniqueId;
         }
