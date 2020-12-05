@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GamePack.UnityUtilities.Common
+namespace GamePack.UnityUtilities
 {
     public class RotateWithCamera: MonoBehaviour
     {

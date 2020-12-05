@@ -10,7 +10,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
-namespace GamePack.UnityUtilities.Base
+namespace GamePack.UnityUtilities
 {
     [CreateAssetMenu(fileName = "Base Editor Utilities", menuName = "GamePack/Editor Utilities", order = 0)]
     public class EditorUtilities : ScriptableObject

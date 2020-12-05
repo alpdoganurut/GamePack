@@ -6,7 +6,7 @@ using UnityEngine;
 #if UNITY_EDITOR
 #endif
 
-namespace GamePack.UnityUtilities.Base
+namespace GamePack.UnityUtilities
 {
     /// <summary>
     /// TR: Unity'nin kendi 'Object.FindObjectOfType' methodunun 'disabled GameObjects' dahil olarak çalışan versiyonunu içerir..

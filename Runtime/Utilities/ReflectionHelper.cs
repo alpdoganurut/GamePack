@@ -1,7 +1,7 @@
 using System.Reflection;
 using UnityEngine.Assertions;
 
-namespace GamePack.UnityUtilities.Common
+namespace GamePack.UnityUtilities
 {
     public static class ReflectionHelper
     {

@@ -2,9 +2,9 @@
 using System.Linq;
 using UnityEngine;
 
-namespace GamePack.UnityUtilities.Common
+namespace GamePack.UnityUtilities
 {
-    public static class GameObjectExtensions
+    public static class InterfaceExtensions
     {
         /// <summary>
         /// Returns all monobehaviours in scene (casted to T)
