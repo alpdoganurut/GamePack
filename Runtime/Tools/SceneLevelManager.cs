@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -10,7 +11,8 @@ namespace GamePack
 {
     public class SceneLevelManager: MonoBehaviour
     {
-        private const string LevelKey = "com.alpdoganurut.levelindex";
+        [SerializeField, InfoBox("Change this to a unique string!")]
+        private string _LevelKey = "com.alpdoganurut.levelindex";
         
         #region Development
 #if UNITY_EDITOR
@@ -19,6 +21,35 @@ namespace GamePack
         private void OnValidate()
         {
             _LevelSceneNames = _SceneAssets.Select(asset => asset.name).ToArray();
+
+            foreach (var sceneAsset in _SceneAssets)
+            {
+                if(EditorBuildSettings.scenes.FirstOrDefault(scene => scene.path == AssetDatabase.GetAssetPath(sceneAsset)) == null)
+                {
+                    Debug.LogError($"{sceneAsset.name} is missing from build settings!");
+                }
+                    
+            }
+        }
+        
+        [SerializeField, InfoBox("Set this to test a specific level. Unset to return to normal.")] private SceneAsset _TestLevel;
+
+        [Button]
+        private void AddLevelsToBuildSettings()
+        {
+            var allScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
+            foreach (var sceneAsset in _SceneAssets)
+            {
+                var assetPath = AssetDatabase.GetAssetPath(sceneAsset);
+                
+                if(EditorBuildSettings.scenes.FirstOrDefault(scene => scene.path == assetPath) == null)
+                {
+                    allScenes.Add(new EditorBuildSettingsScene(assetPath, true)); 
+                }
+                    
+            }
+
+            EditorBuildSettings.scenes = allScenes.ToArray();
         }
 #endif
         #endregion
@@ -33,7 +64,7 @@ namespace GamePack
         {
             get
             {
-                var currentLevelIndex = PlayerPrefs.GetInt(LevelKey, 0);
+                var currentLevelIndex = PlayerPrefs.GetInt(_LevelKey, 0);
                 // currentLevelIndex = Mathf.Clamp(currentLevelIndex, 0, _LevelSceneNames.Length - 1);
                 
                 return currentLevelIndex;
@@ -41,7 +72,7 @@ namespace GamePack
              set
             {
                 // if (value > _LevelSceneNames.Length - 1) value = _LevelSceneNames.Length - 1;
-                PlayerPrefs.SetInt(LevelKey, value);
+                PlayerPrefs.SetInt(_LevelKey, value);
             }
         }
 
@@ -68,6 +99,13 @@ namespace GamePack
             Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
             
             var levelSceneName = _LevelSceneNames[ClampedLevelIndex];
+            
+            #region Development - Test Level
+#if UNITY_EDITOR
+            if (_TestLevel)
+                levelSceneName = _TestLevel.name; 
+#endif
+            #endregion
 
             if (_loadedScene.HasValue)
             {

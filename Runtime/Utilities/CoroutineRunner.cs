@@ -12,7 +12,7 @@ namespace GamePack.UnityUtilities
         {
             get
             {
-                if(!_runner) _runner = new GameObject($"{typeof(CoroutineRunner)} - Runner Instance").AddComponent<CoroutineRunner>();
+                if(!_runner) _runner = new GameObject($"{typeof(CoroutineRunner)} - Instance").AddComponent<CoroutineRunner>();
                 return _runner;
             }
         }

@@ -19,9 +19,7 @@ namespace GamePack
 
         public void SetObjectToFollow(GameObject toFollow, Vector3? offset = null)
         {
-            if (offset.HasValue) _Offset = offset.Value;
-            else _Offset = Vector3.zero;
-            
+            _Offset = offset ?? Vector3.zero;
             _ObjectToFollow = toFollow;
         }
         
