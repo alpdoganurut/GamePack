@@ -17,9 +17,9 @@ namespace GamePack.UnityUtilities
             }
         }
 
-        public static void Run(IEnumerator coroutine)
+        public static Coroutine Run(IEnumerator coroutine)
         {
-            Runner.StartCoroutine(coroutine);
+            return Runner.StartCoroutine(coroutine);
         }
 
         public static void RunMultiple(Action callback, params IEnumerator[] coroutines)

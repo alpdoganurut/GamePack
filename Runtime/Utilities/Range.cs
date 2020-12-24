@@ -6,6 +6,8 @@ namespace GamePack.UnityUtilities
 {
     /// <summary>The Range class.</summary>
     /// <typeparam name="T">Generic parameter.</typeparam>
+    ///
+    [Serializable]
     public struct Range<T> where T : IComparable<T>
     {
         /// <summary>Minimum value of the range.</summary>

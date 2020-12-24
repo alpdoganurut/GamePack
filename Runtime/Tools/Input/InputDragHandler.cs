@@ -31,7 +31,7 @@ namespace GamePack
 
         private void Update()
         {
-            if(EventSystem.current.currentSelectedGameObject) return;
+            if(EventSystem.current && EventSystem.current.currentSelectedGameObject) return;
             
             if (IsInput)
             {
