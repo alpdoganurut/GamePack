@@ -1,5 +1,4 @@
 using System;
-using TapticPlugin;
 using UnityEngine;
 
 namespace GamePack.SnapDrag
@@ -74,7 +73,9 @@ namespace GamePack.SnapDrag
             {
                 if (!_wasSnapping)
                 {
-                    TapticManager.Impact(ImpactFeedback.Medium);
+#if UNITY_IOS
+                    TapticPlugin.TapticManager.Impact(TapticPlugin.ImpactFeedback.Medium);
+#endif
                 }
                 
                 var fullSnapForce = _dropPoint.transform.position - currentPosition;
