@@ -12,6 +12,21 @@ using Random = System.Random;
 [CreateAssetMenu(fileName = "Editor Utilities", menuName = "Level Design", order = 0)]
 public class LevelDesignUtilities : ScriptableObject
 {
+    /* Not working properly for rotated objects
+     [MenuItem("Lvl Design/Center Mesh Renderer")]
+    private static void CenterInParentMeshRenderer()
+    {
+        var gameObject = Selection.gameObjects[0];
+        
+        Undo.RecordObject(gameObject, "Lvl Design/Center Mesh Renderer");
+        
+        var meshRenderer = gameObject.GetComponent<MeshRenderer>();
+        var bounds = meshRenderer.bounds;
+        var center = bounds.center;
+        var localCenter = gameObject.transform.InverseTransformPoint(center);
+        meshRenderer.transform.localPosition = -localCenter;
+    }*/
+    
     [MenuItem("Lvl Design/Create Wrapper")]
     private static void CreateWrapper()
     {
