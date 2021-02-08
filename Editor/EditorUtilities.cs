@@ -17,6 +17,17 @@ namespace GamePack.UnityUtilities
     {
         #region Menu Items
 
+        [MenuItem("Utilities/SlowTimeDown %&T")]
+        private static void SlowTimeDown()
+        {
+            Time.timeScale /= 2;
+        }
+        [MenuItem("Utilities/ResetSlowTimeDown %&R")]
+        private static void ResetSlowTimeDown()
+        {
+            Time.timeScale = 1;
+        }
+
         [MenuItem("Utilities/Random Vertical Rotation")]
         private static void RandomRotation()
         {

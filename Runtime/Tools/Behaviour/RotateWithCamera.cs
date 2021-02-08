@@ -1,11 +1,13 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GamePack.UnityUtilities
 {
     public class RotateWithCamera: MonoBehaviour
     {
         [SerializeField] private Camera _Camera;
-        
+        [SerializeField] private int _Angle = 180;
+
         private Camera Camera
         {
             get
@@ -17,7 +19,8 @@ namespace GamePack.UnityUtilities
 
         private void LateUpdate()
         {
-            transform.rotation = Camera.transform.rotation * Quaternion.AngleAxis(180, Vector3.up);
+            transform.rotation = Camera.transform.rotation * Quaternion.AngleAxis(_Angle, Vector3.up);
         }
+
     }
 }
