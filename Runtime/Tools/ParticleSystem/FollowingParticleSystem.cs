@@ -12,7 +12,7 @@ namespace GamePack
         {
             get
             {
-                if (_particleSystem == null) _particleSystem = GetComponent<ParticleSystem>();
+                if (!_particleSystem) _particleSystem = GetComponent<ParticleSystem>();
                 return _particleSystem;
             }
         }

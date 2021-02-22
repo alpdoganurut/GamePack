@@ -1,3 +1,5 @@
+#region Development
+#if UNITY_EDITOR
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -14,4 +16,6 @@ namespace GamePack
             var _ = new ChangeDetection(() => _IsDetect, isDetect => Debug.Log(isDetect), () => _IsActive, () => _Delay);
         }
     }
-}
+} 
+#endif
+#endregion

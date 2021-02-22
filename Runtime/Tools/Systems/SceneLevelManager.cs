@@ -98,14 +98,11 @@ namespace GamePack
         {
             Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
             
-            var levelSceneName = _LevelSceneNames[ClampedLevelIndex];
-            
-            #region Development - Test Level
 #if UNITY_EDITOR
-            if (_TestLevel)
-                levelSceneName = _TestLevel.name; 
+            var levelSceneName = _TestLevel ? _TestLevel.name : _LevelSceneNames[ClampedLevelIndex];
+#else
+            var levelSceneName = _LevelSceneNames[ClampedLevelIndex];
 #endif
-            #endregion
 
             if (_loadedScene.HasValue)
             {

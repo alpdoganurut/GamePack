@@ -62,10 +62,5 @@ namespace GamePack
             }
             // ReSharper disable once IteratorNeverReturns
         }
-
-        ~ChangeDetection()
-        {
-            CoroutineRunner.Runner.StopCoroutine(_coroutine);
-        }
     }
 }
