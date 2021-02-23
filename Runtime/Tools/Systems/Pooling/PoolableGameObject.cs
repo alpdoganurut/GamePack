@@ -11,10 +11,5 @@ namespace GamePack.Poolable
         {
             gameObject.SetActive(false);
         }
-
-        private void OnDisable()
-        {
-            EndLife();
-        }
     }
 }

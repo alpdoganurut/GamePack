@@ -31,7 +31,7 @@ namespace BabyCatcher.GamePack
             Parent = transform.parent;
         }
 
-        public void SetLocal(Transform transform)
+        public void ApplyLocal(Transform transform)
         {
             transform.SetParent(Parent, false);
             transform.localPosition = LocalPosition;
