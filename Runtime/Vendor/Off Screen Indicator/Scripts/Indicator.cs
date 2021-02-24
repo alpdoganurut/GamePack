@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
@@ -7,8 +8,8 @@ using UnityEngine.UI;
 public class Indicator : MonoBehaviour
 {
     [SerializeField] private IndicatorType indicatorType;
-    private Image indicatorImage;
-    private Text distanceText;
+    [SerializeField] private Image indicatorImage;
+    [SerializeField] private TextMeshProUGUI distanceText;
 
     /// <summary>
     /// Gets if the game object is active in hierarchy.
@@ -32,10 +33,10 @@ public class Indicator : MonoBehaviour
         }
     }
 
-    void Awake()
+    private void Awake()
     {
-        indicatorImage = transform.GetComponent<Image>();
-        distanceText = transform.GetComponentInChildren<Text>();
+        if(!indicatorImage) indicatorImage = transform.GetComponent<Image>();
+        if(!distanceText) distanceText = transform.GetComponentInChildren<TextMeshProUGUI>();
     }
 
     /// <summary>
@@ -53,7 +54,8 @@ public class Indicator : MonoBehaviour
     /// <param name="value"></param>
     public void SetDistanceText(float value)
     {
-        distanceText.text = value >= 0 ? Mathf.Floor(value) + " m" : "";
+        if(distanceText)
+            distanceText.text = value >= 0 ? Mathf.Floor(value) + " m" : "";
     }
 
     /// <summary>
@@ -62,7 +64,8 @@ public class Indicator : MonoBehaviour
     /// <param name="rotation"></param>
     public void SetTextRotation(Quaternion rotation)
     {
-        distanceText.rectTransform.rotation = rotation;
+        if(distanceText)
+            distanceText.rectTransform.rotation = rotation;
     }
 
     /// <summary>
