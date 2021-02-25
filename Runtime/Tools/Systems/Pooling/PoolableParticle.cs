@@ -3,7 +3,7 @@ using UnityEngine;
 namespace GamePack.Poolable
 {
     [RequireComponent(typeof(ParticleSystem))] 
-    class PoolableParticle : PoolableBase
+    public class PoolableParticle : PoolableBase
     {
         private ParticleSystem _particleSystem;
 
