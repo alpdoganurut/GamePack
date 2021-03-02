@@ -11,7 +11,7 @@ namespace GamePack.Minimap
         #region Static
 
         private static readonly Dictionary<int, MinimapBase> Minimaps = new Dictionary<int, MinimapBase>();
-        public static MinimapBase GetById(int id){ return Minimaps[id]; }
+        public static MinimapBase GetById(int id){return Minimaps.ContainsKey(id) ? Minimaps[id] : null; }
         
         #endregion
         

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -43,5 +44,12 @@ namespace GamePack.Poolable
             _activeList.Remove(obj);
         }
 
+        private void OnDestroy()
+        {
+            foreach (var poolableBase in ActiveList)
+            {
+                poolableBase.LifeDidEnd -= PoolObj;
+            }
+        }
     }
 }
