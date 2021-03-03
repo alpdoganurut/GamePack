@@ -37,8 +37,18 @@ namespace GamePack.Minimap
             Assert.IsFalse(Minimaps.ContainsKey(_ID));
             
             Minimaps.Add(_ID, this);
-            
+
+            InitializeSceneMinimapObjects();
             // _MapArea.GetWorldCorners(_mapAreaCorners);
+        }
+
+        private void InitializeSceneMinimapObjects()
+        {
+            var sceneMinimapObjects = FindObjectsOfType<MinimapObject>();
+            foreach (var sceneMinimapObject in sceneMinimapObjects)
+            {
+                sceneMinimapObject.OnEnable();
+            }
         }
 
         private void Update()
