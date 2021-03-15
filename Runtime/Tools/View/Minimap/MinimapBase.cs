@@ -19,7 +19,7 @@ namespace GamePack.Minimap
         /// Used to support multiple minimaps if necessary, mostly for the sake of good structure.
         /// </summary>
         [SerializeField, Required] private int _ID;
-        [SerializeField, Required] private float _MapScale = .1f;
+        [SerializeField, Required] private float _MapScale = 5f;
         
         [FormerlySerializedAs("_PlayerBoat")] 
         [SerializeField, Required] private Transform _CentralObject;
@@ -38,7 +38,7 @@ namespace GamePack.Minimap
             
             Minimaps.Add(_ID, this);
 
-            InitializeSceneMinimapObjects();
+            // InitializeSceneMinimapObjects();
             // _MapArea.GetWorldCorners(_mapAreaCorners);
         }
 
@@ -84,10 +84,10 @@ namespace GamePack.Minimap
                 var mapObjectTransform = mapObject.transform;
                 
                 var offset = _CentralObject.InverseTransformPoint(mapObjectTransform.position) * _MapScale;
-                var rotation = mapObjectTransform.rotation * Quaternion.Inverse(_CentralObject.rotation); 
+                var rotation = mapObjectTransform.localRotation * Quaternion.Inverse(_CentralObject.rotation); 
                 
                 indicator.RectTransform.anchoredPosition = new Vector3(offset.x, offset.z);
-                indicator.transform.rotation = Quaternion.Euler(0, 0, -rotation.eulerAngles.y);
+                indicator.transform.localRotation = Quaternion.Euler(0, 0, -rotation.eulerAngles.y);
             }
         }
 
