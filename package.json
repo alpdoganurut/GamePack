@@ -2,7 +2,7 @@
   "name": "com.alpdoganurut.gamepack",
   "version": "0.0.1",
   "displayName": "GamePack",
-  "description": "This is an example package",
+  "description": "This is the collection of reusable modules to be used in game development.",
   "unity": "2019.1",
   "unityRelease": "0b5",
   "dependencies": {
@@ -14,5 +14,5 @@
     "email": "alpdoganurut@gmail.com",
     "url": ""
   },
-  "type": "tool"
+  "type": "library"
 }

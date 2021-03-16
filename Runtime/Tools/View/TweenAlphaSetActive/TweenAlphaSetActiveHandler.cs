@@ -38,9 +38,7 @@ namespace GamePack.TweenAlphaSetActive
         {
             if (_DisableOnStart)
             {
-                IsActive = false;
                 gameObject.SetActive(false);
-                SetIsActive(false);
             }
         }
 
@@ -49,18 +47,17 @@ namespace GamePack.TweenAlphaSetActive
             IsActive = false;
         }
 
-        public void SetIsActive(bool isActive)
+        public void SetIsActive(bool isActive, bool isAnimated = true)
         {
-            /*
-            if (!isAnimated)
-            {
-                _isActive = isActive;
-                gameObject.SetActive(false);
-            }
-            */
-        
             if (IsActive == isActive)
                 return;
+            
+            if (!isAnimated)
+            {
+                IsActive = isActive;
+                gameObject.SetActive(false);
+            }
+        
             IsActive = isActive;
         
             // Cancel current tween
@@ -74,8 +71,6 @@ namespace GamePack.TweenAlphaSetActive
 
         public void Toggle()
         {
-//        if(IsTransitioning) return;
-        
             SetIsActive(!IsActive);
         }
     }

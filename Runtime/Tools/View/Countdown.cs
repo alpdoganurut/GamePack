@@ -9,7 +9,7 @@ namespace GamePack
 {
     public class Countdown: MonoBehaviour
     {
-        [SerializeField, Required] private CanvasGroupTweenAlphaSetActiveHandler _TextPanel;
+        [SerializeField, Required] private UIFader _TextPanel;
         [SerializeField, Required] private TextMeshProUGUI _Text;
         
         private int _seconds;

@@ -26,16 +26,10 @@ namespace GamePack
             _BarParts = new List<RectTransform>{_BarParts[0]};
 
             // Reset
-            // _Container.pivot = Vector2.zero;
-            // _Container.anchorMax = Vector2.zero;
-            // _Container.anchorMin = Vector2.zero;
-            
             KeyBarPart.pivot = Vector2.zero;
             KeyBarPart.anchorMax = Vector2.zero;
             KeyBarPart.anchorMin = Vector2.zero;
             
-            // var containerWidth = _Container.sizeDelta.x;
-            // var containerHeight = _Container.sizeDelta.y;
             var containerSize = GetRtSize(_Container, _Canvas);
             var containerWidth = containerSize.x;
             var containerHeight = containerSize.y;
@@ -57,15 +51,13 @@ namespace GamePack
                 part.sizeDelta = new Vector2(partWidth, partHeight);
                 part.anchoredPosition = new Vector2(_Margin, yPosition);
             }
-
-
         }
         
         
         public Vector2 GetRtSize(RectTransform trans, Canvas canvas)
         {
-            var v = new Vector3[4];
-            trans.GetWorldCorners(v);
+            // var v = new Vector3[4];
+            // trans.GetWorldCorners(v);
             //method one
             //return new Vector2(v[3].x - v[0].x, v[1].y - v[0].y);
 

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace GamePack.Animation
 {
-    public class AnchoToPoint: MonoBehaviour
+    public class AnchorToPoint: MonoBehaviour
     {
         [SerializeField] private Transform _Stabilizer;
         [SerializeField] private Transform _Anchor;

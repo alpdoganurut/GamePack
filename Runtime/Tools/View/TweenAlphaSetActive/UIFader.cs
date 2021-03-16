@@ -3,7 +3,7 @@ using UnityEngine;
 namespace GamePack.TweenAlphaSetActive
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public class CanvasGroupTweenAlphaSetActiveHandler : TweenAlphaSetActiveHandler
+    public class UIFader : TweenAlphaSetActiveHandler
     {
         private CanvasGroup _canvasGroup;
 
