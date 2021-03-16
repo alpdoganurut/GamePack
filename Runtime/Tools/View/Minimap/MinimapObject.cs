@@ -7,6 +7,7 @@ namespace GamePack.Minimap
     public class MinimapObject: MonoBehaviour
     {
         [SerializeField, Required] private int _MinimapId;
+        // [SerializeField] public int _LayerIndex;
         private bool _isQuitting;
 
         public void OnEnable()

@@ -1,4 +1,5 @@
 using GamePack.Poolable;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace GamePack.Minimap
@@ -6,7 +7,6 @@ namespace GamePack.Minimap
     [RequireComponent(typeof(RectTransform))] 
     public class PoolableIndicator: PoolableGameObject
     {
-        
         private RectTransform _rectTransform;
 
         public RectTransform RectTransform
@@ -17,6 +17,10 @@ namespace GamePack.Minimap
                 return _rectTransform;
             }
         }
+
+        public int SortingIndex => _SortingIndex;
+
+        [SerializeField, Required] private int _SortingIndex;
 
     }
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -62,6 +63,13 @@ namespace GamePack.Minimap
 
             newIndicator.transform.SetParent(_MapIndicatorWrapper, false);
             _indicatorsDictionary.Add(minimapObject, newIndicator);
+
+            var sortedIndicators = _indicatorsDictionary.Values.OrderBy(indicator => indicator.SortingIndex);
+            var i = 0;
+            foreach (var indicator in sortedIndicators)
+            {
+                indicator.transform.SetSiblingIndex(i++);
+            }
         }
 
         private void UpdateGraphics()
@@ -84,7 +92,7 @@ namespace GamePack.Minimap
                 var mapObjectTransform = mapObject.transform;
                 
                 var offset = _CentralObject.InverseTransformPoint(mapObjectTransform.position) * _MapScale;
-                var rotation = mapObjectTransform.localRotation * Quaternion.Inverse(_CentralObject.rotation); 
+                var rotation = mapObjectTransform.rotation * Quaternion.Inverse(_CentralObject.rotation); 
                 
                 indicator.RectTransform.anchoredPosition = new Vector3(offset.x, offset.z);
                 indicator.transform.localRotation = Quaternion.Euler(0, 0, -rotation.eulerAngles.y);
