@@ -93,6 +93,8 @@ namespace GamePack.Minimap
 
         public void RemoveMapObject(MinimapObject mapObject)
         {
+            if(!_indicatorsDictionary.ContainsKey(mapObject)) return;
+            
             var indicator = _indicatorsDictionary[mapObject];
             _indicatorsDictionary.Remove(mapObject);
             indicator.EndLife();
