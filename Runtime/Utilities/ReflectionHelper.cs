@@ -43,6 +43,14 @@ namespace GamePack.UnityUtilities
                 return;
             }
 
+            var baseType = obj.GetType().BaseType;
+            if (baseType is { }) fieldInfo = baseType.GetField(field, BindingFlags);
+            if (fieldInfo != null)
+            {
+                fieldInfo.SetValue(obj, value);
+                return;
+            }
+
             var propInfo = obj.GetType().GetProperty(field, BindingFlags);
             if (propInfo != null)
             {
@@ -53,6 +61,13 @@ namespace GamePack.UnityUtilities
         public static object GetPropOrField(object obj, string field)
         {
             var fieldInfo = obj.GetType().GetField(field, BindingFlags);
+            if (fieldInfo != null)
+            {
+                return fieldInfo.GetValue(obj);
+            }
+            
+            var baseType = obj.GetType().BaseType;
+            if (baseType is { }) fieldInfo = baseType.GetField(field, BindingFlags);
             if (fieldInfo != null)
             {
                 return fieldInfo.GetValue(obj);

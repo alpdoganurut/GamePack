@@ -27,6 +27,11 @@ namespace GamePack.UnityUtilities
             Runner.StartCoroutine(RunMultipleRoutine(callback, coroutines));
         }
 
+        public static void Stop(Coroutine coroutine)
+        {
+            _runner.StopCoroutine(coroutine);
+        }
+        
         private static IEnumerator RunMultipleRoutine(Action callback, params IEnumerator[] coroutines)
         {
             foreach (var enumerator in coroutines)
@@ -36,5 +41,6 @@ namespace GamePack.UnityUtilities
             
             callback?.Invoke();
         }
+        
     }
 }
