@@ -45,21 +45,23 @@ namespace HexGames
     
     [ShowInInspector, ReadOnly] private bool _isPlaying;
     
-    [SerializeField, HideInInlineEditors] private Button _StartGameButton;
+    [SerializeField, HideInInlineEditors, Required] private Button _StartGameButton;
 
-    protected void Awake()
+    protected virtual void Awake()
     {
         #if ENABLE_ANALYTICS
         GameAnalytics.Initialize();
         #endif
         
         _staticConfig = _Config;
-        _StartGameButton.onClick.AddListener(StartGame);
+        if(_StartGameButton) _StartGameButton.onClick.AddListener(StartGame);
     }
 
     #region Public API
 
     public override bool IsPlaying => _isPlaying;
+
+    protected TLevelHelper LevelHelper => _levelHelper;
 
     public override void StartGame()
     {
@@ -79,14 +81,15 @@ namespace HexGames
         WillStartGame();
         _SceneLevelManager.LoadCurrentLevelScene(() =>
         {
-            _GameEvents.Trigger(true);
+            if(_GameEvents)
+                _GameEvents.Trigger(true);
             _levelHelper = FindObjectOfType<TLevelHelper>();
-            if (!_levelHelper)
+            if (!LevelHelper)
             {
                 Debug.Log("No LevelHelper found in the scene.");
             }
 
-            DidStartGame(_levelHelper);
+            DidStartGame(LevelHelper);
         });
     }
 
@@ -113,13 +116,13 @@ namespace HexGames
         
         _isPlaying = false;
 
-        WillStopGame(_levelHelper);
-        _GameEvents.Trigger(false, isSuccess);
+        WillStopGame(LevelHelper, isSuccess);
+        if(_GameEvents) _GameEvents.Trigger(false, isSuccess);
         if (_UnloadSceneAfterStop)
         {
             _SceneLevelManager.UnloadCurrentLevel(() =>
             {
-                DidStopGame();
+                DidStopGame(isSuccess);
             });
         }
     }
@@ -130,13 +133,11 @@ namespace HexGames
 
     public abstract void WillStartGame();
 
-    public virtual void DidStartGame(TLevelHelper levelHelper)
-    {
-    }
+    public abstract void DidStartGame(TLevelHelper levelHelper);
 
-    public abstract void WillStopGame(TLevelHelper levelHelper);
+    public abstract void WillStopGame(TLevelHelper levelHelper, bool isSuccess);
 
-    public abstract void DidStopGame();
+    public abstract void DidStopGame(bool isSuccess);
 
     #endregion
 

@@ -20,7 +20,20 @@ namespace HexGames
     {
         // ReSharper disable once UnusedMember.Local
         private string Title => IsValidGameScene ? ("Scene: " + _scene.name + (EditorApplication.isCompiling ? " | Compiling..." : "")) : "Not Valid";
-
+        
+        [PropertyOrderAttribute(-1)]
+        [ShowInInspector, HideInPlayMode]
+        private string GameName
+        {
+            get => PlayerSettings.productName;
+            set
+            {
+                PlayerSettings.productName = value;
+                PlayerSettings.applicationIdentifier = "com.hex." + value.ToLower().Replace(" ", string.Empty);
+                EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
+            }
+        }
+        
         #region Initilization
 
         private static GameWindow _instance;
@@ -136,18 +149,7 @@ namespace HexGames
         #region Game
 
         // [FoldoutGroup("Main", order:1)]
-        [PropertyOrderAttribute(-1)]
-        [ShowInInspector, HideInPlayMode]
-        private string GameName
-        {
-            get => PlayerSettings.productName;
-            set
-            {
-                PlayerSettings.productName = value;
-                PlayerSettings.applicationIdentifier = "com.hex." + value.ToLower().Replace(" ", string.Empty);
-                EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
-            }
-        }
+        
         
         [FoldoutGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]

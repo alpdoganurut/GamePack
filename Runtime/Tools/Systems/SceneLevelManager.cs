@@ -13,7 +13,7 @@ namespace GamePack
 {
     public class SceneLevelManager: MonoBehaviour
     {
-        [SerializeField, Required, FoldoutGroup("Setup")]
+        [SerializeField, ReadOnly, FoldoutGroup("Setup")]
         private string _LevelKey;
         
         [SerializeField, FoldoutGroup("Setup")]
@@ -150,6 +150,8 @@ namespace GamePack
             }
             // Convert scenes to names
             _LevelSceneNames = SceneAssets.Select(asset => asset.name).ToArray();
+            // LevelKey
+            _LevelKey = PlayerSettings.applicationIdentifier + ".levelindex";
         }
 
         [Button(ButtonSizes.Large)]
@@ -174,5 +176,7 @@ namespace GamePack
         public SceneAsset _TestLevel;
 #endif
         #endregion
+        
+        
     }
 }
