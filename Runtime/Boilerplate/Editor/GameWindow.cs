@@ -18,6 +18,7 @@ namespace HexGames
     // [TypeInfoBox("@IsValidGameScene ? (\"Scene: \" + _scene.name) : \"Not a valid scene\"")]
     public class GameWindow: OdinEditorWindow
     {
+        // ReSharper disable once UnusedMember.Local
         private string Title => IsValidGameScene ? ("Scene: " + _scene.name + (EditorApplication.isCompiling ? " | Compiling..." : "")) : "Not Valid";
 
         #region Initilization
@@ -131,22 +132,36 @@ namespace HexGames
         }
         
         #endregion
-        
+
         #region Game
 
+        // [FoldoutGroup("Main", order:1)]
+        [PropertyOrderAttribute(-1)]
+        [ShowInInspector, HideInPlayMode]
+        private string GameName
+        {
+            get => PlayerSettings.productName;
+            set
+            {
+                PlayerSettings.productName = value;
+                PlayerSettings.applicationIdentifier = "com.hex." + value.ToLower().Replace(" ", string.Empty);
+                EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
+            }
+        }
+        
         [FoldoutGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private GameBase _game;
 
         #endregion
 
-        #region Game Events & UI
+        #region Events & UI
 
-        [FoldoutGroup("Game Events & UI")]
+        [FoldoutGroup("Game/Events & UI")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("@IsValidGameScene && _gameEvents")]
         private GameEvents _gameEvents;
 
-        [FoldoutGroup("Game Events & UI")]
+        [FoldoutGroup("Game/Events & UI", order: -1)]
         [ShowInInspector, ShowIf("@IsValidGameScene")]
         private Button StartGameButton
         {
@@ -329,7 +344,7 @@ namespace HexGames
             {
                 _game.StartGame();
                 EnterPlayCallback -= Callback;
-                ;            }
+            }
 
             EnterPlayCallback += Callback;
 

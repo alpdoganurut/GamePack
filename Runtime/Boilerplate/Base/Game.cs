@@ -119,7 +119,7 @@ namespace HexGames
         {
             _SceneLevelManager.UnloadCurrentLevel(() =>
             {
-                DidStopGame(_levelHelper);
+                DidStopGame();
             });
         }
     }
@@ -136,7 +136,7 @@ namespace HexGames
 
     public abstract void WillStopGame(TLevelHelper levelHelper);
 
-    public abstract void DidStopGame(TLevelHelper levelHelper);
+    public abstract void DidStopGame();
 
     #endregion
 
