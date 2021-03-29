@@ -1,8 +1,10 @@
+#if UNITY_EDITOR
+using UnityEditor; 
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -11,11 +13,14 @@ namespace GamePack
 {
     public class SceneLevelManager: MonoBehaviour
     {
-        [SerializeField, InfoBox("Change this to a unique string!"), FoldoutGroup("Setup")]
-        private string _LevelKey = "com.alpdoganurut.levelindex";
+        [SerializeField, Required, FoldoutGroup("Setup")]
+        private string _LevelKey;
         
-        [SerializeField, Required, InfoBox("Set -1 to disable looping."), FoldoutGroup("Setup")]
-        private int _LoopIndex = -1;
+        [SerializeField, FoldoutGroup("Setup")]
+        private bool _IsLoop = true;
+        
+        [SerializeField, FoldoutGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@_LevelSceneNames.Length - 1")]
+        private int _LoopIndex;
         
         [SerializeField, ReadOnly, FoldoutGroup("Info")]
         private string[] _LevelSceneNames;
@@ -37,15 +42,20 @@ namespace GamePack
         {
             get
             {
-                if (_LoopIndex < 0) return Mathf.Clamp(CurrentLevelIndex, 0, _LevelSceneNames.Length - 1);
+                if (_LevelSceneNames.Length - _LoopIndex <= 0)
+                {
+                    Debug.LogError("_LoopIndex should be smaller than scene count.");
+                    return 0;
+                }
+
+                if (!_IsLoop) return Mathf.Clamp(CurrentLevelIndex, 0, _LevelSceneNames.Length - 1);
 
                 if (_LevelSceneNames.Length == 0) return 0;
-                
+
                 return _LoopIndex +
                        ((CurrentLevelIndex - _LoopIndex) % (_LevelSceneNames.Length - _LoopIndex));
             }
         }
-
 
         /// Async. Unloads currently loaded level first and calls callback.
         public void LoadCurrentLevelScene(Action callback)
@@ -61,8 +71,6 @@ namespace GamePack
             if (_loadedScene.HasValue)
             {
                 UnloadCurrentLevel(UnLoadComplete);
-                // _asyncOperation = SceneManager.UnloadSceneAsync(_loadedScene.Value);
-                // _asyncOperation.completed += LoadScene;
             }
             else
             {
@@ -75,8 +83,6 @@ namespace GamePack
                 Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
                 _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
                 _asyncOperation.completed += LoadOnComplete;
-                /*_loadedScene = SceneManager.GetSceneByName(levelSceneName);
-                callback?.Invoke();*/
             }
             
             void LoadOnComplete(AsyncOperation obj)
@@ -120,23 +126,34 @@ namespace GamePack
         
         private void OnValidate()
         {
-            _LevelSceneNames = SceneAssets.Select(asset => asset.name).ToArray();
-
-            var addAll = false;
+            // Refresh build setting scenes
+            var refreshBuildSettingScenes = false;
             foreach (var sceneAsset in SceneAssets)
             {
                 if(EditorBuildSettings.scenes.FirstOrDefault(scene => scene.path == AssetDatabase.GetAssetPath(sceneAsset)) == null)
                 {
-                    addAll = true;
+                    refreshBuildSettingScenes = true;
                     Debug.Log($"{sceneAsset.name} is missing from build settings, adding it automatically!");
                 }
             }
-            
-            if(addAll)  AddLevelsToBuildSettings();
+            if(refreshBuildSettingScenes)  RefreshBuildSettings();
+            // Add test level
+            if (EditorBuildSettings.scenes.FirstOrDefault(scene =>
+                scene.path == AssetDatabase.GetAssetPath(_TestLevel)) == null)
+            {
+                Debug.Log("Adding Test Level to build settings.");
+                var allScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes)
+                {
+                    new EditorBuildSettingsScene(AssetDatabase.GetAssetPath(_TestLevel), true)
+                };
+                EditorBuildSettings.scenes = allScenes.ToArray();
+            }
+            // Convert scenes to names
+            _LevelSceneNames = SceneAssets.Select(asset => asset.name).ToArray();
         }
 
         [Button(ButtonSizes.Large)]
-        private void AddLevelsToBuildSettings()
+        public void RefreshBuildSettings()
         {
             var allScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes);
             foreach (var sceneAsset in SceneAssets)
@@ -153,8 +170,8 @@ namespace GamePack
             EditorBuildSettings.scenes = allScenes.ToArray();
         }
         
-        [SerializeField, InfoBox("Set this to test a specific level. Unset to return to normal.")] 
-        private SceneAsset _TestLevel;
+        [SerializeField,  InlineButton("@_TestLevel = null", "Clear")] 
+        public SceneAsset _TestLevel;
 #endif
         #endregion
     }
