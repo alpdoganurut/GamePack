@@ -100,7 +100,7 @@ namespace HexGames
         }
 
         [InitializeOnEnterPlayMode]
-        private static void OnEnterPlaymodeInEditor(EnterPlayModeOptions options)
+        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
             Log($"OnEnterPlaymodeInEditor: {options}");
 

@@ -6,6 +6,7 @@ using System.Linq;
 using GamePack;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -20,7 +21,19 @@ namespace HexGames
     {
         get
         {
+            // Try to find Game in editor mode
             if (!_staticConfig && !Application.isPlaying) return _staticConfig = FindObjectOfType<Game<TConfig, TLevelHelper>>()._Config;
+            #region Development - Find config in editor
+#if UNITY_EDITOR
+            // Try to find first Config for test purposes
+            if (!_staticConfig)
+            {
+                _staticConfig = FindAllObjects.InEditor<TConfig>().FirstOrDefault();
+                if(_staticConfig) Debug.Log($"No Game present. Found a config file in {AssetDatabase.GetAssetPath(_staticConfig)}.");
+                else Debug.Log("No config file found.");
+            } 
+#endif
+            #endregion
             return _staticConfig;
         }
     } // Access config when not in play mode
@@ -47,6 +60,15 @@ namespace HexGames
     
     [SerializeField, HideInInlineEditors, Required] private Button _StartGameButton;
 
+    [InitializeOnEnterPlayMode]
+    private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
+    {
+        if (options == EnterPlayModeOptions.DisableDomainReload)
+        {
+            _staticConfig = null;
+        }
+    }
+    
     protected virtual void Awake()
     {
         #if ENABLE_ANALYTICS
