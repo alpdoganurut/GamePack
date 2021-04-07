@@ -60,6 +60,8 @@ namespace HexGames
     
     [SerializeField, HideInInlineEditors, Required] private Button _StartGameButton;
 
+    #region Development - InitializeOnEnterPlayMode
+#if UNITY_EDITOR
     [InitializeOnEnterPlayMode]
     private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
     {
@@ -67,7 +69,9 @@ namespace HexGames
         {
             _staticConfig = null;
         }
-    }
+    } 
+#endif
+    #endregion
     
     protected virtual void Awake()
     {
