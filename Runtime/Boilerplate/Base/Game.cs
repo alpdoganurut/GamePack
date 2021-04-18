@@ -1,3 +1,7 @@
+#if UNITY_EDITOR
+using UnityEditor; 
+#endif
+
 #if ENABLE_ANALYTICS
 using ElephantSDK;
 using GameAnalyticsSDK;
@@ -6,7 +10,6 @@ using System.Linq;
 using GamePack;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
@@ -81,6 +84,8 @@ namespace HexGames
         
         _staticConfig = _Config;
         if(_StartGameButton) _StartGameButton.onClick.AddListener(StartGame);
+
+        Application.targetFrameRate = 60;
     }
 
     #region Public API
@@ -98,8 +103,8 @@ namespace HexGames
         }
     
 #if ENABLE_ANALYTICS
-        Elephant.LevelStarted(_LevelManager.CurrentLevelIndex);
-        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, _LevelManager.CurrentLevelIndex.ToString());
+        Elephant.LevelStarted(_SceneLevelManager.CurrentLevelIndex);
+        GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, _SceneLevelManager.CurrentLevelIndex.ToString());
 #endif
         
         _isPlaying = true;
@@ -130,15 +135,17 @@ namespace HexGames
 #if ENABLE_ANALYTICS
         if(isSuccess)
         {
-            Elephant.LevelCompleted(_LevelManager.CurrentLevelIndex);
-            GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, _LevelManager.CurrentLevelIndex.ToString());
+            Elephant.LevelCompleted(_SceneLevelManager.CurrentLevelIndex);
+            GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, _SceneLevelManager.CurrentLevelIndex.ToString());
         }
         else
         {
-            Elephant.LevelFailed(_LevelManager.CurrentLevelIndex);
-            GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, _LevelManager.CurrentLevelIndex.ToString());
+            Elephant.LevelFailed(_SceneLevelManager.CurrentLevelIndex);
+            GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, _SceneLevelManager.CurrentLevelIndex.ToString());
         }
 #endif
+        
+        if(isSuccess) _SceneLevelManager.IterateLevel();
         
         _isPlaying = false;
 

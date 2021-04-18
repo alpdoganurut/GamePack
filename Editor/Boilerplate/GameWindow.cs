@@ -19,16 +19,30 @@ namespace HexGames
     public class GameWindow: OdinEditorWindow
     {
         // ReSharper disable once UnusedMember.Local
-        private string Title => IsValidGameScene ? ("Scene: " + _scene.name + (EditorApplication.isCompiling ? " | Compiling..." : "")) : "Not Valid";
-        
-        [PropertyOrderAttribute(-1)]
-        [ShowInInspector, HideInPlayMode]
-        private string GameName
+        private string Title
         {
-            get => PlayerSettings.productName;
+            get
+            {
+                if (_levelHelper != null)
+                    return $"{_scene.name}";
+                
+                return IsValidGameScene
+                    ? _scene.name + (EditorApplication.isCompiling ? " | Compiling..." : "")
+                    : "Not Valid";
+            }
+        }
+
+        [InfoBox("@\"Product Name: \" + PlayerSettings.productName", InfoMessageType.None)]
+        [PropertyOrderAttribute(-1)]
+        [ShowInInspector, HideInPlayMode, ShowIf("@_config != null")]
+        private string GameIdentifier
+        {
+            get => _config.WorkingTitle;
             set
             {
-                PlayerSettings.productName = value;
+                _config.WorkingTitle = value;
+                if(string.IsNullOrWhiteSpace(PlayerSettings.productName))
+                    PlayerSettings.productName = value;
                 PlayerSettings.applicationIdentifier = "com.hex." + value.ToLower().Replace(" ", string.Empty);
                 EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
             }
