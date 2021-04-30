@@ -11,7 +11,8 @@ using UnityEngine.SceneManagement;
 
 namespace GamePack
 {
-    public class SceneLevelManager: MonoBehaviour
+    [CreateAssetMenu(fileName = "Level Manager", menuName = "Hex/Scene Level Manager", order = 0)]
+    public class SceneLevelManager: ScriptableObject
     {
         [SerializeField, ReadOnly, FoldoutGroup("Setup")]
         private string _LevelKey;
@@ -42,13 +43,14 @@ namespace GamePack
         {
             get
             {
+                if (!_IsLoop) return Mathf.Clamp(CurrentLevelIndex, 0, _LevelSceneNames.Length - 1);
+                
                 if (_LevelSceneNames.Length - _LoopIndex <= 0)
                 {
                     Debug.LogError("_LoopIndex should be smaller than scene count.");
                     return 0;
                 }
 
-                if (!_IsLoop) return Mathf.Clamp(CurrentLevelIndex, 0, _LevelSceneNames.Length - 1);
 
                 if (_LevelSceneNames.Length == 0) return 0;
 

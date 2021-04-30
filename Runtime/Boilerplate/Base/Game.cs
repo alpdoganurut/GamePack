@@ -162,15 +162,15 @@ namespace HexGames
 
     #endregion
 
-    #region Abstract Game State Callbacks
+    #region Virtual Game State Callbacks
 
-    public abstract void WillStartGame();
+    protected virtual void WillStartGame(){}
 
-    public abstract void DidStartGame(TLevelHelper levelHelper);
+    protected  virtual void DidStartGame(TLevelHelper levelHelper){}
 
-    public abstract void WillStopGame(TLevelHelper levelHelper, bool isSuccess);
+    protected  virtual void WillStopGame(TLevelHelper levelHelper, bool isSuccess){}
 
-    public abstract void DidStopGame(bool isSuccess);
+    protected  virtual void DidStopGame(bool isSuccess){}
 
     #endregion
 
@@ -181,20 +181,29 @@ namespace HexGames
     {
         if (!_Config)
         {
-            Debug.Log("Config is empty. Trying to find it in the editor.");
+            Debug.Log("Config is empty. Trying to find it in Assets.");
             _Config = FindAllObjects.InEditor<TConfig>().FirstOrDefault();
 
             Debug.Log(!_Config
                 ? "Can't find Config for game. Please create one."
                 : $"Found a Config at {UnityEditor.AssetDatabase.GetAssetPath(_Config)}");
         }
-
         if (!_SceneLevelManager)
+        {
+            Debug.Log("SceneLevelManager is empty. Trying to find it in Assets.");
+            _SceneLevelManager = FindAllObjects.InEditor<SceneLevelManager>().FirstOrDefault();
+
+            Debug.Log(!_SceneLevelManager
+                ? "Can't find SceneLevelManager for game. Please create one."
+                : $"Found a SceneLevelManager at {UnityEditor.AssetDatabase.GetAssetPath(_SceneLevelManager)}");
+        }
+
+        /*if (!_SceneLevelManager)
         {
             Debug.Log("Missing LevelManager, creating one.");
             _SceneLevelManager = new GameObject("LevelManager").AddComponent<SceneLevelManager>();
             _SceneLevelManager.transform.SetParent(transform);
-        }
+        }*/
     }
 
     // [ResponsiveButtonGroup]
