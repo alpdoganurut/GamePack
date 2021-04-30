@@ -27,7 +27,7 @@ namespace GamePack
         private string[] _LevelSceneNames;
         
         [ShowInInspector, ReadOnly, FoldoutGroup("Info")]
-        private Scene? _loadedScene;
+        private static Scene? _loadedScene;
         
         private AsyncOperation _asyncOperation;
         
@@ -59,6 +59,12 @@ namespace GamePack
             }
         }
 
+        [InitializeOnEnterPlayMode]
+        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
+        {
+            _loadedScene = null;
+        }
+        
         /// Async. Unloads currently loaded level first and calls callback.
         public void LoadCurrentLevelScene(Action callback)
         {
