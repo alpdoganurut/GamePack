@@ -25,7 +25,12 @@ namespace HexGames
         get
         {
             // Try to find Game in editor mode
-            if (!_staticConfig && !Application.isPlaying) return _staticConfig = FindObjectOfType<Game<TConfig, TLevelHelper>>()._Config;
+            if (!_staticConfig && !Application.isPlaying)
+            {
+                var sceneGame = FindObjectOfType<Game<TConfig, TLevelHelper>>();
+                
+                if(_staticConfig) return _staticConfig = sceneGame._Config;
+            }
             #region Development - Find config in editor
 #if UNITY_EDITOR
             // Try to find first Config for test purposes
