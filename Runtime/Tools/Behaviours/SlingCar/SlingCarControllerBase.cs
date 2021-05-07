@@ -14,7 +14,7 @@ namespace GamePack
         [SerializeField, ReadOnly] private float _CarLength;
         [SerializeField] private Collider _Collider;
 
-        [ShowInInspector] protected virtual float TargetSpeed
+        protected virtual float TargetSpeed
         {
             get => _SlingCar.TargetSpeed;
             set => _SlingCar.TargetSpeed = value;
@@ -23,24 +23,24 @@ namespace GamePack
         private float FindFrontCarDistance => SlingCar.Speed * _FindFrontCarTime;
         public SlingCar SlingCar => _SlingCar;
         private Collider Collider => _Collider;
-        public Vector3 Center => Collider.bounds.center;
+        private Vector3 Center => Collider ? _Collider.bounds.center : transform.position;
 
-        private void OnValidate()
+        private void OnValidate()   
         {
-            SlingCar.Controller = this;
-            _Collider = GetComponentInChildren<Collider>();
-            if(Collider)
-                _CarLength = Collider.bounds.size.z;
+            // SlingCar.Controller = this;
+            // _Collider = GetComponentInChildren<Collider>();
+            // if(Collider)
+                // _CarLength = Collider.bounds.size.z;
         }
 
         private void FixedUpdate()
         {
-            Debug.DrawRay(Collider.bounds.center, Vector3.forward * (FindFrontCarDistance + (_CarLength / 2)), Color.magenta);
+            Debug.DrawRay(Center, Vector3.forward * (FindFrontCarDistance + (_CarLength / 2)), Color.magenta);
             // if (Mathf.Abs(SlingCar.SideSpeed) > _DetectionSideSpeedLimit)
             // {
                 // SlingCar.TargetSpeed = TargetSpeed;
             // }
-            if (Physics.Raycast(Collider.bounds.center, Vector3.forward,
+            if (Physics.Raycast(Center, Vector3.forward,
                 out var hitInfo,
                 FindFrontCarDistance + (_CarLength / 2),
                 _LayerMask))

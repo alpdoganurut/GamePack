@@ -18,11 +18,11 @@ namespace GamePack
         public float _SpeedToRotationLerpMultiplier = 1;
         public float _MinSpeedToRotation = 1;
 
-        [Space]
+        [Space] 
         public float _HardBreakMultiplier = 7;
         public float _SoftBreakMultiplier = 4;
         public float _BreakForecastTime = .15f;
-        [Space]
+        [Space] 
         [Obsolete, ReadOnly] public float _ImpulseForceMultiplier = 1;
         public float _ImpulseSleepDuration = 1f;
         public float _ControlSleepDuration = .4f;
@@ -30,6 +30,7 @@ namespace GamePack
         [InfoBox("This is the main curve to calculate acceleration.")] public AnimationCurve _AccelerationSpeedCurve;
 
 
+        [Button]
         public float GetAccelerationForSpeed(float speed)
         {
             return _AccelerationSpeedCurve.Evaluate(speed);

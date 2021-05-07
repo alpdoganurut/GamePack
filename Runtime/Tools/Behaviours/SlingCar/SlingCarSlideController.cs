@@ -8,7 +8,7 @@ namespace GamePack
     {
         [SerializeField, Required] private InputDragHandler _InputDragHandler;
         [SerializeField] private float _InputMultiplier = 1;
-
+        
         private Range<float> _posRange;
         private float _currentPos;
         private float _lastInputDirection;
@@ -18,8 +18,8 @@ namespace GamePack
         {
             _InputDragHandler.DragNormalized += InputDragHandlerOnDrag;
             
-            _posRange = new Range<float>{Minimum = _Road.GetPosForLane(1), Maximum = _Road.GetPosForLane(0)};
-            _currentPos = _posRange.Minimum;
+            _posRange = new Range<float>{Minimum = _Road.GetPosForLane(0), Maximum = _Road.GetPosForLane(1)};
+            _currentPos = _SlingCar.TargetSidePos;
         }
 
         private void InputDragHandlerOnDrag(Vector3 deltaPointerNorm)
@@ -30,6 +30,11 @@ namespace GamePack
             _SlingCar.TargetSidePos = _currentPos;
 
             _lastInputDirection = Mathf.Sign(deltaPointerNorm.x);
+        }
+
+        public void SetSidePos(float val)
+        {
+            _SlingCar.TargetSidePos = val;
         }
     }
 }

@@ -30,7 +30,7 @@ namespace GamePack
         #region Config
         [SerializeField, Required] private SlingCarConfig _Config;
 
-        [ShowInInspector, ReadOnly] private float Acceleration => _Config.GetAccelerationForSpeed(_speed);
+        private float Acceleration => _Config.GetAccelerationForSpeed(_speed);
         private float RotationLerpSpeed => _Config._RotationLerpSpeed;
         private float SpeedToRotationLerpMultiplier => _Config._SpeedToRotationLerpMultiplier;
         private float SideMaxAcceleration => _Config._SideMaxAcceleration;
@@ -63,9 +63,9 @@ namespace GamePack
 
 
         [Title("Computed")]
-        [ShowInInspector] private float SidePosition => _Rigidbody.position.x;
+        private float SidePosition => _Rigidbody.position.x;
 
-        [ShowInInspector] private float ForwardPosition
+        private float ForwardPosition
         {
             get => _Rigidbody.position.z;
             set
@@ -77,7 +77,7 @@ namespace GamePack
             }
         }
         
-        [ShowInInspector] private Quaternion Rotation
+        private Quaternion Rotation
         {
             get => _Rigidbody.rotation;
             set => _Rigidbody.MoveRotation(value);
@@ -115,11 +115,11 @@ namespace GamePack
             set => _targetSidePos = value;
         }
 
-        public SlingCarControllerBase Controller
+        /*public SlingCarControllerBase Controller
         {
             get => _Controller;
             set => _Controller = value;
-        }
+        }*/
 
         public float SideSpeed
         {
@@ -174,6 +174,8 @@ namespace GamePack
 
         private void PositionUpdate()
         {
+            if(TargetSpeed == 0 && Mathf.Abs(_speed - _TargetSpeed) <= .1f) return;
+            
             if (_controlSleep.IsSleep) return;
             
             var deltaTime = Time.fixedDeltaTime;
@@ -186,7 +188,7 @@ namespace GamePack
                 _speed = maxSpeed;*/
 
             // Accelerate forward
-            if (Mathf.Abs(_TargetSpeed - _speed) > 0.001)
+            if (Mathf.Abs(_TargetSpeed - _speed) > 0.05f)
             {
                 var acceleration = Mathf.Abs(TargetSpeed) > Mathf.Abs(_speed) ? Acceleration : _Config.Deceleration;
                 _speed += Mathf.Sign(_TargetSpeed - _speed) * acceleration * deltaTime;
@@ -221,20 +223,38 @@ namespace GamePack
             Debug.DrawRay(worldPos, Rotation * Vector3.forward * 3, Color.blue);
             
             // Affect rigidbody
-            _Rigidbody.velocity = _velocity;
+            if (_Rigidbody.isKinematic)
+            {
+                _Rigidbody.position += _velocity * deltaTime;
+            }
+            else
+            {
+                _Rigidbody.velocity = _velocity;
+                // _Rigidbody.MovePosition(_Rigidbody.position + _velocity * Time.fixedDeltaTime);
+            }
             
             // RotateUpdate();
         }
 
         private void RotateUpdate()
         {
+            if(_speed <= .5f) return;
+            
             // Update rotation 
             var targetRotation = Quaternion.LookRotation(new Vector3(SideSpeed, 0, _speed), Vector3.up);
             Rotation = Quaternion.Slerp(Rotation, targetRotation,
                 RotationLerpSpeed * Mathf.Max(_Rigidbody.velocity.magnitude, _Config._MinSpeedToRotation) *
                 SpeedToRotationLerpMultiplier *
                 Time.fixedDeltaTime);
-            _Rigidbody.MoveRotation(Rotation);
+
+            if (_Rigidbody.isKinematic)
+            {
+                _Rigidbody.rotation = Rotation;
+            }
+            else
+            {
+                _Rigidbody.MoveRotation(Rotation);
+            }
         }
 
         private void OnImpulseSleepChange(bool isSleep)

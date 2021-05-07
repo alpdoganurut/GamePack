@@ -59,11 +59,15 @@ namespace GamePack
             }
         }
 
+        #region InitializeOnEnterPlayMode
+#if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
             _loadedScene = null;
-        }
+        } 
+#endif
+        #endregion
         
         /// Async. Unloads currently loaded level first and calls callback.
         public void LoadCurrentLevelScene(Action callback)
