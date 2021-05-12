@@ -14,6 +14,8 @@ namespace GamePack
         [SerializeField, ReadOnly] private float _CarLength;
         [SerializeField] private Collider _Collider;
 
+        private bool _isActive = true;
+        
         protected virtual float TargetSpeed
         {
             get => _SlingCar.TargetSpeed;
@@ -24,6 +26,12 @@ namespace GamePack
         public SlingCar SlingCar => _SlingCar;
         private Collider Collider => _Collider;
         private Vector3 Center => Collider ? _Collider.bounds.center : transform.position;
+
+        public bool IsActive
+        {
+            get => _isActive;
+            set => _isActive = value;
+        }
 
         private void OnValidate()   
         {

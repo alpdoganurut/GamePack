@@ -24,6 +24,8 @@ namespace GamePack
 
         private void InputDragHandlerOnDrag(Vector3 deltaPointerNorm)
         {
+            if(!IsActive) return;
+            
             if (_lastInputDirection * deltaPointerNorm.x < 0) _currentPos = _SlingCar.Rigidbody.position.x;
             _currentPos += deltaPointerNorm.x * _InputMultiplier;
             _currentPos = Mathf.Clamp(_currentPos, _posRange.Minimum, _posRange.Maximum);
