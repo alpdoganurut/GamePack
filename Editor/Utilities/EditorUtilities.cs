@@ -1,7 +1,11 @@
 ﻿#if UNITY_EDITOR
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Editor.Utilities;
+using GamePack.UnityUtilities.Vendor;
 using Sirenix.OdinInspector;
+using Sirenix.OdinInspector.Editor;
 using TMPro;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -13,16 +17,148 @@ using Random = UnityEngine.Random;
 namespace GamePack.UnityUtilities
 {
     [CreateAssetMenu(fileName = "Base Editor Utilities", menuName = "GamePack/Editor Utilities", order = 0)]
-    public class EditorUtilities : ScriptableObject
+    public class EditorUtilities : OdinEditorWindow
     {
+        private static EditorUtilitiesHelper _helper;
+        
+        static EditorUtilities()
+        {
+            Debug.Log($"Initializing static {nameof(EditorUtilities)} context.");
+
+            EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
+            SceneManager.sceneLoaded += (arg0, mode) => EnsureHelper();
+        }
+
+        private static void EditorSceneManagerOnSceneLoaded(Scene arg0, Scene arg1)
+        {
+            Debug.Log("Scene changed!");
+            EnsureHelper();
+        }
+
+        private static void EnsureHelper()
+        {
+            if (!_helper)
+            {
+                _helper = FindObjectOfType<EditorUtilitiesHelper>();
+                if(_helper)
+                    _helper.OnUpdate += HelperOnOnUpdate;
+            }
+            
+            if(!_helper)
+            {
+                _helper = new GameObject(nameof(EditorUtilitiesHelper)).AddComponent<EditorUtilitiesHelper>();
+                // _helper.gameObject.tag = "EditorOnly";
+                // _helper.hideFlags = HideFlags.HideInHierarchy;
+                _helper.OnUpdate += HelperOnOnUpdate;
+                // EditorApplication.RepaintHierarchyWindow();
+                // EditorApplication.DirtyHierarchyWindowSorting();
+            }
+        }
+        
+        private static void HelperOnOnUpdate(bool isPlaying)
+        {
+            if(!Application.isPlaying) return;
+            
+            if (
+                (Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.LeftControl)) 
+                && Mathf.Abs(Input.mouseScrollDelta.sqrMagnitude) > 0.01f
+                )
+            {
+                if (Input.mouseScrollDelta.y > 0)
+                {
+                    Time.timeScale *= 2;
+                }
+                else
+                {
+                    Time.timeScale /= 2;
+                }
+
+                Debug.Log($"TimeScale = {Time.timeScale}");
+            }
+        }
+
+        [MenuItem("Utilities/Window")]
+        public static void ShowWindow()
+        {
+            GetWindow<EditorUtilities>();
+        }
+
+        
+        /*[InitializeOnEnterPlayMode]
+        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
+        {
+            // Log($"OnEnterPlaymodeInEditor: {options}");
+
+            
+            if (!_instance || !options.HasFlag(EnterPlayModeOptions.DisableDomainReload)) return;
+            
+            _instance.StopListeningSceneChange();
+        }*/
+
+        
+        private void Update()
+        {
+        }
+
         #region Menu Items
 
-        [MenuItem("Utilities/SlowTimeDown %&T")]
+        // This totally blows, skinned mesh renderer to mesh renderer conversion is not that straightforward.
+        /*[MenuItem("Utilities/Convert SkinnedMeshRenderers To")]
+        public static void ConvertSkinnedMeshRenderersTo()
+        {
+            foreach (var sel in Selection.gameObjects)
+            {
+                // var sel = Selection.activeGameObject;
+                var smr = sel.GetComponent<SkinnedMeshRenderer>();
+                var bone = smr.bones[0];
+                
+                var scale = bone.lossyScale;
+                var pos = bone.transform.position;
+                sel.transform.position = pos;
+                sel.transform.SetGlobalScale(scale);
+                sel.transform.rotation = bone.transform.rotation;
+                
+                var newMr = sel.AddComponent<MeshRenderer>();
+                newMr.sharedMaterials = smr.sharedMaterials.ToArray();
+                
+                var newMf = sel.AddComponent<MeshFilter>();
+                newMf.sharedMesh = smr.sharedMesh;
+                
+                DestroyImmediate(smr);   
+                
+            }
+        }*/
+        
+        [MenuItem("Utilities/Center Mesh In Parent")]
+        private static void CenterMeshInParent()
+        {
+            var sel = Selection.gameObjects;
+            if (sel.Length < 1)
+            {
+                Debug.LogError("Select one or more object to center.");
+                return;
+            }
+
+            foreach (var obj in sel)
+            {
+                if (!obj.transform.parent)
+                {
+                    Debug.LogError($"{obj} has no parent.");
+                    continue;
+                }
+                
+                var bounds = obj.GetComponent<MeshRenderer>().bounds;
+                obj.transform.localPosition = -bounds.center;
+            } 
+        }
+        
+        [MenuItem("Utilities/Slow Time Down %&T")]
         private static void SlowTimeDown()
         {
             Time.timeScale /= 2;
         }
-        [MenuItem("Utilities/ResetSlowTimeDown %&R")]
+        
+        [MenuItem("Utilities/Reset Slow Time Down %&R")]
         private static void ResetSlowTimeDown()
         {
             Time.timeScale = 1;
@@ -175,10 +311,11 @@ namespace GamePack.UnityUtilities
 
                 return baseNameSpace == null || baseNameSpace != "UnityEngine";
             }).ToArray();
-            Undo.RecordObjects(components, "BaseEditorUtilities/Rename ");
 
             // Return if no component exists
             if (!components.Any()) return;
+            
+            Undo.RecordObjects(components, "BaseEditorUtilities/Rename ");
 
             var suffix = "";
             foreach (var component in components)
@@ -326,6 +463,7 @@ namespace GamePack.UnityUtilities
 
         #endregion
 
+        /*
         [Button]
         [MenuItem("Utilities/QuickScript")]
         private static void QuickScript()
@@ -348,8 +486,11 @@ namespace GamePack.UnityUtilities
                 var n = o.name;
                 var split = o.name.Split(new []{"_00", "_0", "_"}, StringSplitOptions.None);
                 o.name = split[0] + split[split.Length - 1];
-            }*/
+            }#1#
         }
+        */
+        
+        
     }
 }
 #endif

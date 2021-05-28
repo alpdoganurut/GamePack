@@ -14,19 +14,19 @@ namespace GamePack
     [CreateAssetMenu(fileName = "Level Manager", menuName = "Hex/Scene Level Manager", order = 0)]
     public class SceneLevelManager: ScriptableObject
     {
-        [SerializeField, ReadOnly, FoldoutGroup("Setup")]
+        [SerializeField, ReadOnly, TabGroup("Setup")]
         private string _LevelKey;
         
-        [SerializeField, FoldoutGroup("Setup")]
+        [SerializeField, TabGroup("Setup")]
         private bool _IsLoop = true;
         
-        [SerializeField, FoldoutGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@_LevelSceneNames.Length - 1")]
+        [SerializeField, TabGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@_LevelSceneNames.Length - 1")]
         private int _LoopIndex;
         
-        [SerializeField, ReadOnly, FoldoutGroup("Info")]
+        [SerializeField, ReadOnly, TabGroup("Info")]
         private string[] _LevelSceneNames;
         
-        [ShowInInspector, ReadOnly, FoldoutGroup("Info")]
+        [ShowInInspector, ReadOnly, TabGroup("Info")]
         private static Scene? _loadedScene;
         
         private AsyncOperation _asyncOperation;
@@ -38,13 +38,13 @@ namespace GamePack
             set => PlayerPrefs.SetInt(_LevelKey, value);
         }
 
-        [ShowInInspector, FoldoutGroup("Info")]
+        [ShowInInspector, TabGroup("Info")]
         private int ClampedLevelIndex
         {
             get
             {
+                if (_LevelSceneNames.Length == 0) return 0;
                 if (!_IsLoop) return Mathf.Clamp(CurrentLevelIndex, 0, _LevelSceneNames.Length - 1);
-                
                 if (_LevelSceneNames.Length - _LoopIndex <= 0)
                 {
                     Debug.LogError("_LoopIndex should be smaller than scene count.");
@@ -75,6 +75,14 @@ namespace GamePack
             Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
             
 #if UNITY_EDITOR
+            if(!_LoadLevel)
+            {
+                callback?.Invoke();
+                return;
+            }
+#endif
+            
+#if UNITY_EDITOR
             var levelSceneName = _TestLevel ? _TestLevel.name : _LevelSceneNames[ClampedLevelIndex];
 #else
             var levelSceneName = _LevelSceneNames[ClampedLevelIndex];
@@ -93,7 +101,15 @@ namespace GamePack
             {
                 Debug.Log("Scene unload complete");
                 Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
+
+#if UNITY_EDITOR
+                // Duplicate from non editor version
+                if(!_TestLevel) _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
+                else _asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(levelSceneName,
+                    new LoadSceneParameters(LoadSceneMode.Additive));
+#else
                 _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
+#endif
                 _asyncOperation.completed += LoadOnComplete;
             }
             
@@ -127,7 +143,7 @@ namespace GamePack
         #region Development
 #if UNITY_EDITOR
         
-        [SerializeField, Required, FoldoutGroup("Setup")] 
+        [SerializeField, Required, TabGroup("Setup")] 
         private SceneAsset[] _SceneAssets; 
         
         public SceneAsset[] SceneAssets
@@ -149,17 +165,6 @@ namespace GamePack
                 }
             }
             if(refreshBuildSettingScenes)  RefreshBuildSettings();
-            // Add test level
-            if (EditorBuildSettings.scenes.FirstOrDefault(scene =>
-                scene.path == AssetDatabase.GetAssetPath(_TestLevel)) == null)
-            {
-                Debug.Log("Adding Test Level to build settings.");
-                var allScenes = new List<EditorBuildSettingsScene>(EditorBuildSettings.scenes)
-                {
-                    new EditorBuildSettingsScene(AssetDatabase.GetAssetPath(_TestLevel), true)
-                };
-                EditorBuildSettings.scenes = allScenes.ToArray();
-            }
             // Convert scenes to names
             _LevelSceneNames = SceneAssets.Select(asset => asset.name).ToArray();
             // LevelKey
@@ -186,9 +191,10 @@ namespace GamePack
         
         [SerializeField,  InlineButton("@_TestLevel = null", "Clear")] 
         public SceneAsset _TestLevel;
+
+        [SerializeField] private bool _LoadLevel = true;
 #endif
+
         #endregion
-        
-        
     }
 }

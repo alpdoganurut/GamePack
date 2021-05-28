@@ -60,7 +60,7 @@ namespace HexGames
 
         private event Action EnterPlayCallback;
         
-        [MenuItem("Hex/Game")]
+        [MenuItem("Window/Game Window")]
         public static void ShowWindow()
         {
             GetWindow<GameWindow>();
@@ -131,11 +131,10 @@ namespace HexGames
             Log($"Scene opened: {scene.name}");
             InitScene(scene);
         }
-        
-        protected override void OnGUI()
+
+        private void OnInspectorUpdate()
         {
-            if(_isInit) base.OnGUI();
-            
+            // if(_isInit) base.OnGUI();
             if (!_isInit) Init();
         }
 

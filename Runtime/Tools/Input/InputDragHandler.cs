@@ -13,8 +13,10 @@ namespace GamePack
         [ShowInInspector, ReadOnly] private Vector3? _lastPos;
         [ShowInInspector, ReadOnly] private float _screenWidth;
         [ShowInInspector, ReadOnly] private float _screenHeight;
-        
-        #if UNITY_EDITOR
+
+        public Vector3 NormalizedDeltaInput { get; private set; }
+
+#if UNITY_EDITOR
         private static bool IsInput => Input.GetMouseButton(0);
         private static Vector3 InputPos => Input.mousePosition;
         #else
@@ -33,6 +35,8 @@ namespace GamePack
         {
             if(EventSystem.current && EventSystem.current.currentSelectedGameObject) return;
             
+            NormalizedDeltaInput = Vector3.zero;
+            
             if (IsInput)
             {
                 var inputPos = InputPos;
@@ -40,8 +44,9 @@ namespace GamePack
                 {
                     var delta = inputPos - _lastPos.Value;
                     Drag?.Invoke(delta);
-                    // DraggedScreenNormalized?.Invoke(new Vector3(delta.x / _screenWidth, delta.y / _screenHeight));
-                    DragNormalized?.Invoke(delta/_screenWidth);
+                    var normalizedDelta = delta/_screenWidth;
+                    DragNormalized?.Invoke(normalizedDelta);
+                    NormalizedDeltaInput = normalizedDelta;
                 }
 
                 _lastPos = inputPos;
