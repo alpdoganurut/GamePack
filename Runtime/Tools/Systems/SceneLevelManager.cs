@@ -127,7 +127,20 @@ namespace GamePack
 
         public void UnloadCurrentLevel(Action didUnload)
         {
-            if(!_loadedScene.HasValue) return;
+            
+#if UNITY_EDITOR
+            if(!_LoadLevel)
+            {
+                didUnload?.Invoke();
+                return;
+            }
+#endif
+            
+            if(!_loadedScene.HasValue)
+            {
+                Debug.Log("!_loadedScene.HasValue failed when unloading level. Returning but not sure if should all just callback immediately.");
+                return;
+            }
             
             _asyncOperation = SceneManager.UnloadSceneAsync(_loadedScene.Value);
             _asyncOperation.completed += DidUnload;

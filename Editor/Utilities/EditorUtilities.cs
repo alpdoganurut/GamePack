@@ -47,12 +47,13 @@ namespace GamePack.UnityUtilities
             if(!_helper)
             {
                 _helper = new GameObject(nameof(EditorUtilitiesHelper)).AddComponent<EditorUtilitiesHelper>();
-                // _helper.gameObject.tag = "EditorOnly";
-                // _helper.hideFlags = HideFlags.HideInHierarchy;
+                _helper.gameObject.tag = "EditorOnly";
                 _helper.OnUpdate += HelperOnOnUpdate;
-                // EditorApplication.RepaintHierarchyWindow();
-                // EditorApplication.DirtyHierarchyWindowSorting();
             }
+            
+            _helper.gameObject.hideFlags = HideFlags.HideInHierarchy;
+            EditorApplication.RepaintHierarchyWindow();
+            EditorApplication.DirtyHierarchyWindowSorting();
         }
         
         private static void HelperOnOnUpdate(bool isPlaying)
