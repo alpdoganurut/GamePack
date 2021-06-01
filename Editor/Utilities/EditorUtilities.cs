@@ -76,6 +76,11 @@ namespace GamePack.UnityUtilities
 
                 Debug.Log($"TimeScale = {Time.timeScale}");
             }
+
+            if ((Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.LeftControl)) && Input.GetMouseButtonDown(2))
+            {
+                Time.timeScale = 1;
+            }
         }
 
         [MenuItem("Utilities/Window")]

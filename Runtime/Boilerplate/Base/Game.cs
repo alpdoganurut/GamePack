@@ -18,6 +18,7 @@ namespace HexGames
 {
     public abstract class Game<TConfig, TLevelHelper> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperBase
     {
+
     private static TConfig _staticConfig;
 
     public static TConfig Config

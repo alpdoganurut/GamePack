@@ -14,13 +14,10 @@ namespace GamePack
     [CreateAssetMenu(fileName = "Level Manager", menuName = "Hex/Scene Level Manager", order = 0)]
     public class SceneLevelManager: ScriptableObject
     {
-        [SerializeField, ReadOnly, TabGroup("Setup")]
-        private string _LevelKey;
-        
         [SerializeField, TabGroup("Setup")]
         private bool _IsLoop = true;
         
-        [SerializeField, TabGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@_LevelSceneNames.Length - 1")]
+        [SerializeField, TabGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@Mathf.Max(_LevelSceneNames.Length - 1, 0)")]
         private int _LoopIndex;
         
         [SerializeField, ReadOnly, TabGroup("Info")]
@@ -31,7 +28,10 @@ namespace GamePack
         
         private AsyncOperation _asyncOperation;
         
-        [ShowInInspector, FoldoutGroup("Info"), InlineButton("IterateLevel", "+")]
+        [SerializeField, ReadOnly, TabGroup("Info")]
+        private string _LevelKey;
+        
+        [ShowInInspector, TabGroup("Info"), InlineButton("IterateLevel", "+")]
         public int CurrentLevelIndex
         {
             get => PlayerPrefs.GetInt(_LevelKey, 0);
@@ -75,7 +75,7 @@ namespace GamePack
             Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
             
 #if UNITY_EDITOR
-            if(!_LoadLevel)
+            if(!_LoadLevelScene)
             {
                 callback?.Invoke();
                 return;
@@ -103,7 +103,7 @@ namespace GamePack
                 Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
 
 #if UNITY_EDITOR
-                // Duplicate from non editor version
+                // Duplicate from non editor version below
                 if(!_TestLevel) _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
                 else _asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(levelSceneName,
                     new LoadSceneParameters(LoadSceneMode.Additive));
@@ -129,7 +129,7 @@ namespace GamePack
         {
             
 #if UNITY_EDITOR
-            if(!_LoadLevel)
+            if(!_LoadLevelScene)
             {
                 didUnload?.Invoke();
                 return;
@@ -202,10 +202,14 @@ namespace GamePack
             EditorBuildSettings.scenes = allScenes.ToArray();
         }
         
-        [SerializeField,  InlineButton("@_TestLevel = null", "Clear")] 
+        [SerializeField, 
+         HideInInspector,
+         InlineButton("@_TestLevel = null", "Clear"),
+         TabGroup("Setup")] 
         public SceneAsset _TestLevel;
 
-        [SerializeField] private bool _LoadLevel = true;
+        [SerializeField, InfoBox("Disable to cancel scene loading."),
+         TabGroup("Setup")] private bool _LoadLevelScene = true;
 #endif
 
         #endregion

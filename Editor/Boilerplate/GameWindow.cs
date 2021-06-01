@@ -14,6 +14,7 @@ using Debug = UnityEngine.Debug;
 
 namespace HexGames
 {
+    [Title("@PlayerSettings.productName")]
     [Title("@Title", horizontalLine: false)]
     // [TypeInfoBox("@IsValidGameScene ? (\"Scene: \" + _scene.name) : \"Not a valid scene\"")]
     public class GameWindow: OdinEditorWindow
@@ -32,15 +33,15 @@ namespace HexGames
             }
         }
 
-        [InfoBox("@\"Product Name: \" + PlayerSettings.productName", InfoMessageType.None)]
+        // [InfoBox("@\"Product Name: \" + PlayerSettings.productName", InfoMessageType.None)]
         [PropertyOrderAttribute(-1)]
         [ShowInInspector, HideInPlayMode, ShowIf("@_config != null")]
         private string GameIdentifier
         {
-            get => _config ? _config.WorkingTitle : null;
+            get => _config ? _game.WorkingTitle : null;
             set
             {
-                _config.WorkingTitle = value;
+                _game.WorkingTitle = value;
                 if(string.IsNullOrWhiteSpace(PlayerSettings.productName))
                     PlayerSettings.productName = value;
                 PlayerSettings.applicationIdentifier = "com.hex." + value.ToLower().Replace(" ", string.Empty);
@@ -158,13 +159,44 @@ namespace HexGames
         }
         
         #endregion
+        
+        #region Test Level
+
+        [PropertyOrderAttribute(-1)]
+        [ShowInInspector, HorizontalGroup("Test Level"),
+         ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
+        private SceneAsset TestLevel
+        {
+            get => _levelManager ? _levelManager._TestLevel : null;
+            set { if(_levelManager) _levelManager._TestLevel = value; }
+        }
+        
+        
+        [Button("Test"),
+         HorizontalGroup("Test Level", width: 50)/* ResponsiveButtonGroup("Editor Actions", AnimateVisibility = false)*/,
+         ShowIf("@DisableReloadDomain && !EditorApplication.isPlaying && IsValidGameScene")]
+        private void RunTestLevel()
+        {
+            EditorApplication.isPlaying = true;
+
+            void Callback()
+            {
+                _game.StartGame();
+                EnterPlayCallback -= Callback;
+            }
+
+            EnterPlayCallback += Callback;
+
+        }
+        
+        #endregion
 
         #region Game
 
-        // [FoldoutGroup("Main", order:1)]
+        // [TabGroup("Main", order:1)]
         
         
-        [FoldoutGroup("Game")]
+        [TabGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private GameBase _game;
 
@@ -172,11 +204,12 @@ namespace HexGames
 
         #region Events & UI
 
-        [FoldoutGroup("Game/Events & UI")]
+        [Title("Events & UI")]
+        [TabGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("@IsValidGameScene && _gameEvents")]
         private GameEvents _gameEvents;
 
-        [FoldoutGroup("Game/Events & UI", order: -1)]
+        [TabGroup("Game", order: -1)]
         [ShowInInspector, ShowIf("@IsValidGameScene")]
         private Button StartGameButton
         {
@@ -190,7 +223,7 @@ namespace HexGames
 
         
         
-        [FoldoutGroup("Config")]
+        [TabGroup("Config")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private ConfigBase _config;
 
@@ -198,24 +231,27 @@ namespace HexGames
 
         #region Levels
 
-        [FoldoutGroup("Levels")]
+        [TabGroup("Levels")]
+
+        /*[TabGroup("Levels")]
         [ShowInInspector, ShowIf("IsValidGameScene")]
         private SceneAsset[] Levels
         {
             get => _levelManager ? _levelManager.SceneAssets : null;
             set { if(_levelManager) _levelManager.SceneAssets = value; }
-        }
+        }*/
 
-        // [FoldoutGroup("Levels")]
-        // [ShowInInspector, ShowIf("IsValidGameScene")]
+        [ShowInInspector,
+         ShowIf("IsValidGameScene"),
+         InlineEditor(InlineEditorObjectFieldModes.Hidden)]
         private SceneLevelManager _levelManager;
 
-        [FoldoutGroup("Levels")]
+        /*[TabGroup("Levels")]
         [ShowInInspector, ShowIf("IsValidGameScene")]
         private void SelectLevelManager()
         {
             Selection.activeObject = _levelManager;
-        }
+        }*/
 
         
         #endregion
@@ -250,7 +286,7 @@ namespace HexGames
         private const string EnableAnalyticsDefineSymbol = "ENABLE_ANALYTICS";
         private const string LoggingDefineSymbol = "GAME_WINDOW_LOGGING";
 
-        [FoldoutGroup("Settings")]
+        [TabGroup("Settings")]
         [Button]
         private void Refresh()
         {
@@ -258,7 +294,7 @@ namespace HexGames
             Init();
         }
         
-        [FoldoutGroup("Settings"), ShowInInspector, HideInPlayMode]
+        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool DisableReloadDomain
         {
             get =>
@@ -271,7 +307,7 @@ namespace HexGames
             }
         }
         
-        [FoldoutGroup("Settings"), ShowInInspector, HideInPlayMode]
+        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool Analytics
         {
             get =>
@@ -279,7 +315,7 @@ namespace HexGames
             set => SetDefineSymbol(value, EnableAnalyticsDefineSymbol);
         }
         
-        [FoldoutGroup("Settings"), ShowInInspector, HideInPlayMode]
+        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool Logging
         {
             get =>
@@ -287,7 +323,7 @@ namespace HexGames
             set => SetDefineSymbol(value, LoggingDefineSymbol);
         }
         
-        [FoldoutGroup("Settings"), ShowInInspector, ShowIf("@_game != null")]
+        [TabGroup("Settings"), ShowInInspector, ShowIf("@_game != null")]
         private bool GameVisible
         {
             get =>
@@ -345,39 +381,6 @@ namespace HexGames
 
         #endregion
 
-        #region Test Level
-
-        
-        [Button("Test"),
-         HorizontalGroup("Test Level", width: 50, order: 100)/* ResponsiveButtonGroup("Editor Actions", AnimateVisibility = false)*/,
-         ShowIf("@DisableReloadDomain && !EditorApplication.isPlaying && IsValidGameScene")]
-        private void RunTestLevel()
-        {
-            EditorApplication.isPlaying = true;
-
-            void Callback()
-            {
-                _game.StartGame();
-                EnterPlayCallback -= Callback;
-            }
-
-            EnterPlayCallback += Callback;
-
-        }
-        
-        // [FoldoutGroup("Levels")]
-        [ShowInInspector, HorizontalGroup("Test Level"),
-         ShowIf("@IsValidGameScene && !EditorApplication.isPlaying"),
-         // InlineButton("@_levelManager._TestLevel = null", "Clear"),
-            // InlineButton("RunTestLevel", "Test")
-        ]
-        private SceneAsset TestLevel
-        {
-            get => _levelManager ? _levelManager._TestLevel : null;
-            set { if(_levelManager) _levelManager._TestLevel = value; }
-        }
-
-        #endregion
         
         #region Level Helper
 
