@@ -38,7 +38,7 @@ namespace HexGames
         [ShowInInspector, HideInPlayMode, ShowIf("@_config != null")]
         private string GameIdentifier
         {
-            get => _config ? _game.WorkingTitle : null;
+            get => _game ? _game.WorkingTitle : null;
             set
             {
                 _game.WorkingTitle = value;

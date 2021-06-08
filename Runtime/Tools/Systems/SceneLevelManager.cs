@@ -101,6 +101,26 @@ namespace GamePack
             {
                 Debug.Log("Scene unload complete");
                 Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
+#if UNITY_EDITOR
+                // Duplicate from non editor version below
+                if(!_TestLevel) _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
+                else 
+                {
+                    var guid = AssetDatabase.FindAssets($"{levelSceneName} t:scene")[0];
+                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    _asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(path,
+                        new LoadSceneParameters(LoadSceneMode.Additive));
+                }
+#else
+                _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
+#endif
+            }
+                _asyncOperation.completed += LoadOnComplete;
+            
+            /*void UnLoadComplete()
+            {
+                Debug.Log("Scene unload complete");
+                Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
 
 #if UNITY_EDITOR
                 // Duplicate from non editor version below
@@ -111,7 +131,7 @@ namespace GamePack
                 _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
 #endif
                 _asyncOperation.completed += LoadOnComplete;
-            }
+            }*/
             
             void LoadOnComplete(AsyncOperation obj)
             {

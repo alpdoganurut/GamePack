@@ -1,5 +1,7 @@
+#if UNITY_EDITOR
+using UnityEditor; 
+#endif
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
@@ -37,12 +39,14 @@ namespace GameStructure
             if (!ShowHelper) _helper.hideFlags = HideFlags.HideInHierarchy;
         }
 
+#if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
             Debug.Log("GameStructureSystem: InitializeOnEnterPlayMode");
             Responders.Clear();
-        }
+        } 
+#endif
 
         private static void OnUpdate()
         {

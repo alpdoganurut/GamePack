@@ -92,6 +92,10 @@ namespace HexGames
         if(_StartGameButton) _StartGameButton.onClick.AddListener(StartGame);
 
         Application.targetFrameRate = 60;
+
+        Debug.unityLogger.logEnabled = false;
+#if !UNITY_EDITOR
+#endif
     }
 
     #region Public API
