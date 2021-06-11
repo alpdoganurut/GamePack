@@ -93,8 +93,8 @@ namespace HexGames
 
         Application.targetFrameRate = 60;
 
-        Debug.unityLogger.logEnabled = false;
 #if !UNITY_EDITOR
+        Debug.unityLogger.logEnabled = false;
 #endif
     }
 
