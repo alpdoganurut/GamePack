@@ -43,7 +43,7 @@ namespace GamePack
         {
             get
             {
-                if (_LevelSceneNames.Length == 0) return 0;
+                if (_LevelSceneNames == null || _LevelSceneNames.Length == 0) return 0;
                 if (!_IsLoop) return Mathf.Clamp(CurrentLevelIndex, 0, _LevelSceneNames.Length - 1);
                 if (_LevelSceneNames.Length - _LoopIndex <= 0)
                 {

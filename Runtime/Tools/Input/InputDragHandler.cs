@@ -15,6 +15,7 @@ namespace GamePack
         [ShowInInspector, ReadOnly] private float _screenHeight;
 
         public Vector3 NormalizedDeltaInput { get; private set; }
+        public Vector3 NormalizedHorizontalDeltaInput { get; private set; }
 
 #if UNITY_EDITOR
         private static bool IsInput => Input.GetMouseButton(0);
@@ -36,6 +37,8 @@ namespace GamePack
             if(EventSystem.current && EventSystem.current.currentSelectedGameObject) return;
             
             NormalizedDeltaInput = Vector3.zero;
+            NormalizedHorizontalDeltaInput = Vector3.zero;
+            
             
             if (IsInput)
             {
@@ -47,6 +50,7 @@ namespace GamePack
                     var normalizedDelta = delta/_screenWidth;
                     DragNormalized?.Invoke(normalizedDelta);
                     NormalizedDeltaInput = normalizedDelta;
+                    NormalizedHorizontalDeltaInput = new Vector3(NormalizedDeltaInput.x, 0, NormalizedDeltaInput.y);
                 }
 
                 _lastPos = inputPos;
