@@ -27,7 +27,7 @@ namespace GamePack.UnityUtilities
             Debug.DrawLine(pos - new Vector3(0, 0, halfSize), pos + new Vector3(0, 0, halfSize), color, time);
         }
 
-        public static void LineArrow(Vector3 start, Vector3 end, Color color)
+        public static void LineArrow(Vector3 start, Vector3 end, Color color, float duration = 0f)
         {
             Debug.DrawLine(start, end, color);
             var directionRotation = Quaternion.LookRotation(end - start);
@@ -36,7 +36,7 @@ namespace GamePack.UnityUtilities
 
             var rotatedArrowLine = rotatedMatrix.MultiplyVector(arrowLine);
             
-            Debug.DrawRay(end, rotatedArrowLine, color);
+            Debug.DrawRay(end, rotatedArrowLine, color, duration);
         }
 
         public static void GizmosLineArrow(Vector3 start, Vector3 end, Color color, float size = .1f)

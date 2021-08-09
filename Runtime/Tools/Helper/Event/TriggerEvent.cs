@@ -1,4 +1,5 @@
 using System;
+using UnityEditor;
 using UnityEngine;
 
 namespace GamePack
@@ -12,7 +13,13 @@ namespace GamePack
         private void OnValidate()
         {
             var col = GetComponent<Collider>();
-            if (col && !col.isTrigger && UnityEditor.EditorUtility.DisplayDialog("TriggerEvent","TriggerEvent collider is not set as trigger, set it now?", "OK", "Cancel"))
+            if (col && !col.isTrigger
+                    #region Development
+#if UNITY_EDITOR
+                    && EditorUtility.DisplayDialog("TriggerEvent","TriggerEvent collider is not set as trigger, set it now?", "OK", "Cancel") 
+#endif
+                #endregion
+                )
             {
                 col.isTrigger = true;
             }
