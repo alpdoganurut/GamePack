@@ -17,7 +17,7 @@ namespace GamePack
         [SerializeField, TabGroup("Setup")]
         private bool _IsLoop = true;
         
-        [SerializeField, TabGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@Mathf.Max(_LevelSceneNames.Length - 1, 0)")]
+        [SerializeField, TabGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@Mathf.Max(_LevelSceneNames != null ? (_LevelSceneNames.Length - 1) : 0, 0)")]
         private int _LoopIndex;
         
         [SerializeField, ReadOnly, TabGroup("Info")]
@@ -187,19 +187,27 @@ namespace GamePack
         
         private void OnValidate()
         {
-            // Refresh build setting scenes
-            var refreshBuildSettingScenes = false;
-            foreach (var sceneAsset in SceneAssets)
+            if(_SceneAssets != null)
             {
-                if(EditorBuildSettings.scenes.FirstOrDefault(scene => scene.path == AssetDatabase.GetAssetPath(sceneAsset)) == null)
+                // Refresh build setting scenes
+                var refreshBuildSettingScenes = false;
+                foreach (var sceneAsset in SceneAssets)
                 {
-                    refreshBuildSettingScenes = true;
-                    Debug.Log($"{sceneAsset.name} is missing from build settings, adding it automatically!");
+                    if(!sceneAsset) continue;
+                    
+                    if (EditorBuildSettings.scenes.FirstOrDefault(scene =>
+                        scene.path == AssetDatabase.GetAssetPath(sceneAsset)) == null)
+                    {
+                        
+                        refreshBuildSettingScenes = true;
+                        Debug.Log($"{sceneAsset.name} is missing from build settings, adding it automatically!");
+                    }
                 }
+
+                if (refreshBuildSettingScenes) RefreshBuildSettings();
+                // Convert scenes to names
+                _LevelSceneNames = SceneAssets.Where(asset => asset).Select(asset => asset.name).ToArray();
             }
-            if(refreshBuildSettingScenes)  RefreshBuildSettings();
-            // Convert scenes to names
-            _LevelSceneNames = SceneAssets.Select(asset => asset.name).ToArray();
             // LevelKey
             _LevelKey = PlayerSettings.applicationIdentifier + ".levelindex";
         }

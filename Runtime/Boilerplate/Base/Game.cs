@@ -6,12 +6,12 @@ using UnityEditor;
 using ElephantSDK;
 using GameAnalyticsSDK;
 #endif
+
 using System.Linq;
 using GamePack;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace HexGames
@@ -50,6 +50,7 @@ namespace HexGames
     [SerializeField, Required, FoldoutGroup("Default")]
     private SceneLevelManager _SceneLevelManager;
     
+    
     [SerializeField, Required, FoldoutGroup("Default")]
     private bool _UnloadSceneAfterStop = true;
 
@@ -63,11 +64,18 @@ namespace HexGames
      FoldoutGroup("Default")]
     private GameEvents _GameEvents;
 
+    
+    [SerializeField,
+     InlineButton("SelectOrCreateTutorialManager", "@_TutorialManager ? \"Select\" : \"Create\""), 
+     FoldoutGroup("Default")]
+    private TutorialManager _TutorialManager;
+    
+    [SerializeField, HideInInlineEditors, Required, FoldoutGroup("Default")]
+    private Button _StartGameButton;
+    
     private TLevelHelper _levelHelper;
     
     [ShowInInspector, ReadOnly] private bool _isPlaying;
-    
-    [SerializeField, HideInInlineEditors, Required] private Button _StartGameButton;
 
     #region Development - InitializeOnEnterPlayMode
 #if UNITY_EDITOR
@@ -93,9 +101,9 @@ namespace HexGames
 
         Application.targetFrameRate = 60;
 
-#if !UNITY_EDITOR
+/*#if !UNITY_EDITOR
         Debug.unityLogger.logEnabled = false;
-#endif
+#endif*/
     }
 
     #region Public API
@@ -124,12 +132,18 @@ namespace HexGames
         {
             if(_GameEvents)
                 _GameEvents.Trigger(true);
+            
             _levelHelper = FindObjectOfType<TLevelHelper>();
             if (!LevelHelper)
             {
                 Debug.Log("No LevelHelper found in the scene.");
             }
 
+            if (_TutorialManager)
+            {
+                _TutorialManager.ShowTutorial(_SceneLevelManager.CurrentLevelIndex);
+            }
+            
             DidStartGame(LevelHelper);
         });
     }
@@ -228,13 +242,49 @@ namespace HexGames
         if (!_GameEvents)
         {
             _GameEvents = GetComponentInChildren<GameEvents>();
-            Debug.Log("Fetched already existing GameEvents.");
+            if(_GameEvents)
+                Debug.Log("Fetched already existing GameEvents.");
         }
 
         if (!_GameEvents)
         {
+            if (!EditorUtility.DisplayDialog("GameEvents", "No GameEvents have been found, create one?", "Create",
+                "Cancel")) return;
+            
+            Debug.Log($"Creating new GameEvents object under ");
             _GameEvents = new GameObject("GameEvents").AddComponent<GameEvents>();
             _GameEvents.transform.SetParent(transform);
+            Selection.activeGameObject = _GameEvents.gameObject;
+
+        }
+    }
+    
+    private void SelectOrCreateTutorialManager()
+    {
+        if (_TutorialManager)
+        {
+            Selection.activeGameObject = _TutorialManager.gameObject;
+            return;
+        }
+
+        if (!_TutorialManager)
+        {
+            _TutorialManager = GetComponentInChildren<TutorialManager>();
+            
+            if(_TutorialManager)
+                Debug.Log("Fetched already existing TutorialManager.");
+        }
+
+        if (!_TutorialManager)
+        {
+            
+            if (!EditorUtility.DisplayDialog("TutorialManager", "No TutorialManager have been found, create one?", "Create",
+                "Cancel")) return;
+            
+            _TutorialManager = new GameObject("TutorialManager").AddComponent<TutorialManager>();
+            _TutorialManager.transform.SetParent(transform);
+            
+            Selection.activeGameObject = _TutorialManager.gameObject;
         }
     }
 #endif

@@ -27,16 +27,32 @@ namespace GamePack.UnityUtilities
             Debug.DrawLine(pos - new Vector3(0, 0, halfSize), pos + new Vector3(0, 0, halfSize), color, time);
         }
 
-        public static void LineArrow(Vector3 start, Vector3 end, Color color, float duration = 0f)
+        public static void LineArrow(Vector3 start, Vector3 end, Color color, float size = .1f, float duration = 0f)
         {
             Debug.DrawLine(start, end, color);
             var directionRotation = Quaternion.LookRotation(end - start);
             var rotatedMatrix = Matrix4x4.Rotate(directionRotation);
-            var arrowLine = new Vector3(0, 1, 0);
 
-            var rotatedArrowLine = rotatedMatrix.MultiplyVector(arrowLine);
+            const float reverseArrowWidth = -1.6f;
+            var arrowLine1 = new Vector3(0, 1, reverseArrowWidth) * size;
+            var arrowLine2 = new Vector3(0, -1, reverseArrowWidth) * size;
+            var arrowLine3 = new Vector3(1, 0, reverseArrowWidth) * size;
+            var arrowLine4 = new Vector3(-1, 0, reverseArrowWidth) * size;
+
+            var rotated1 = rotatedMatrix.MultiplyVector(arrowLine1);
+            var rotated2 = rotatedMatrix.MultiplyVector(arrowLine2);
+            var rotated3 = rotatedMatrix.MultiplyVector(arrowLine3);
+            var rotated4 = rotatedMatrix.MultiplyVector(arrowLine4);
             
-            Debug.DrawRay(end, rotatedArrowLine, color, duration);
+            Debug.DrawRay(end, rotated1, color);
+            Debug.DrawRay(end, rotated2, color);
+            Debug.DrawRay(end, rotated3, color);
+            Debug.DrawRay(end, rotated4, color);
+            
+            Debug.DrawLine(end + rotated1, end + rotated3, color);
+            Debug.DrawLine(end + rotated2, end + rotated3, color);
+            Debug.DrawLine(end + rotated2, end + rotated4, color);
+            Debug.DrawLine(end + rotated4, end + rotated1, color);
         }
 
         public static void GizmosLineArrow(Vector3 start, Vector3 end, Color color, float size = .1f)

@@ -10,9 +10,10 @@
   },
   "keywords": [],
   "author": {
-    "name": "Alp Dogan urut",
+    "name": "Alp Dogan Urut",
     "email": "alpdoganurut@gmail.com",
     "url": ""
   },
-  "type": "library"
+  "type": "library",
+  "hideInEditor": false
 }
