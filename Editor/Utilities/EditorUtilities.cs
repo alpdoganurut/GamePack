@@ -135,6 +135,38 @@ namespace GamePack.UnityUtilities
             }
         }*/
         
+        
+        [MenuItem("Utilities/Remove Colliders")]
+        private static void RemoveColliders()
+        {
+            var sel = Selection.gameObjects;
+            /*if (sel.Length < 1)
+            {
+                Debug.LogError("Select one or more object to center.");
+                return;
+            }*/
+
+            var destroyList = new List<Collider>();
+            
+            foreach (var obj in sel)
+            {
+                var colliders = obj.GetComponents<Collider>();
+                foreach (var collider in colliders)
+                {
+                    destroyList.Add(collider);
+                }
+            }
+
+            if (EditorUtility.DisplayDialog("Collider Removal", $"Removing {destroyList.Count} colliders.", "OK",
+                "Cancel"))
+            {
+                foreach (var collider in destroyList)
+                {
+                    DestroyImmediate(collider);
+                }
+            }
+        }
+        
         [MenuItem("Utilities/Center Mesh In Parent")]
         private static void CenterMeshInParent()
         {

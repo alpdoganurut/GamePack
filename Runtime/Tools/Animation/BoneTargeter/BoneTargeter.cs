@@ -14,7 +14,7 @@ namespace GamePack.Animation
 
         private Transform _transform;
         private Quaternion _rotation;
-        [ShowInInspector] private bool _isActive;
+        [SerializeField] private bool _isActive;
         private Quaternion _directionRot;
 
         public int Priority
