@@ -1,5 +1,10 @@
+#region Development
+#if UNITY_EDITOR
+using UnityEditor; 
+#endif
+#endregion
+
 using System;
-using UnityEditor;
 using UnityEngine;
 
 namespace GamePack

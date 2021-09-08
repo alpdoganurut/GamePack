@@ -1,3 +1,9 @@
+#region Development
+#if UNITY_EDITOR
+using UnityEditor; 
+#endif
+#endregion
+
 using System;
 using UnityEngine;
 
@@ -12,7 +18,17 @@ namespace GamePack
         private void OnValidate()
         {
             var col = GetComponent<Collider>();
-            if (col) col.isTrigger = false;
+            
+            if (col && col.isTrigger
+                    #region Development
+#if UNITY_EDITOR
+                    && EditorUtility.DisplayDialog("ColliderEvent","ColliderEvent collider is set as trigger, unset it now?", "OK", "Cancel") 
+#endif
+                #endregion
+            )
+            {
+                col.isTrigger = false;
+            }
         }
 
         private void OnCollisionEnter(Collision collision)
