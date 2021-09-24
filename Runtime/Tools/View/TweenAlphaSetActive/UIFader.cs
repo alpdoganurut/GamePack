@@ -19,7 +19,7 @@ namespace GamePack.TweenAlphaSetActive
 
         protected override Color CurrentColor => new Color();
 
-        protected override void DoTween(bool isActive)
+        protected override void DoTween(bool isActive, bool ignoreTimescale)
         {
             if (isActive) gameObject.SetActive(true);
 
@@ -35,6 +35,7 @@ namespace GamePack.TweenAlphaSetActive
                     CurrentTweenId = -1;
                     if(!isActive) gameObject.SetActive(false);
                 })
+                .setIgnoreTimeScale(ignoreTimescale)
                 .uniqueId;
         }
     }

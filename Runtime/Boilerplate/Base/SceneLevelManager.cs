@@ -102,8 +102,7 @@ namespace GamePack
                 Debug.Log("Scene unload complete");
                 Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
 #if UNITY_EDITOR
-                // Duplicate from non editor version below
-                if(!_TestLevel) _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
+                if(!_TestLevel) _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive); // Duplicate of non editor version below
                 else 
                 {
                     var guid = AssetDatabase.FindAssets($"{levelSceneName} t:scene")[0];

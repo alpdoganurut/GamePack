@@ -112,6 +112,8 @@ namespace HexGames
 
     protected TLevelHelper LevelHelper => _levelHelper;
 
+    public SceneLevelManager LevelManager => _SceneLevelManager;
+
     public override void StartGame()
     {
         if (_isPlaying)

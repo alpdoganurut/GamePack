@@ -11,8 +11,22 @@ namespace GamePack.Poolable
 
         [ShowInInspector, ReadOnly] private readonly Stack<PoolableBase> _poolStack = new Stack<PoolableBase>();
         [ShowInInspector, ReadOnly] private readonly List<PoolableBase> _activeList = new List<PoolableBase>();
+        [SerializeField] private int _PreFillCount;
 
         public List<PoolableBase> ActiveList => _activeList;
+
+        private void Start()
+        {
+            for (var i = 0; i < _PreFillCount; i++)
+            {
+                var obj = Get();
+            }
+
+            foreach (var poolableBase in _activeList.ToArray())
+            {
+                poolableBase.EndLife();
+            }
+        }
 
         public PoolableBase Get()
         {

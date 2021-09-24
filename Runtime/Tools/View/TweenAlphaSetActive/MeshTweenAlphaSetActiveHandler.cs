@@ -28,10 +28,13 @@ namespace GamePack.TweenAlphaSetActive
             }
         }
 
-        protected override void DoTween(bool isActive)
+        protected override void DoTween(bool isActive, bool ignoreTimescale)
         {
-            CurrentTweenId = LeanTween.color(gameObject, isActive ? ActiveColor : DisabledColor, _Duration).setEase(_Easing)
-                .setOnComplete(() => { CurrentTweenId = -1; }).uniqueId;
+            CurrentTweenId = LeanTween.color(gameObject, isActive ? ActiveColor : DisabledColor, _Duration)
+                .setEase(_Easing)
+                .setOnComplete(() => { CurrentTweenId = -1; })
+                .setIgnoreTimeScale(ignoreTimescale)
+                .uniqueId;
         }
     }
 }

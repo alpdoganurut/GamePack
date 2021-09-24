@@ -47,27 +47,27 @@ namespace GamePack.TweenAlphaSetActive
             IsActive = false;
         }
 
-        public void SetIsActive(bool isActive, bool isAnimated = true)
+        public void SetIsActive(bool isActive, bool isAnimated = true, bool ignoreTimescale = false)
         {
             if (IsActive == isActive)
                 return;
             
+            IsActive = isActive;
+            
             if (!isAnimated)
             {
-                IsActive = isActive;
-                gameObject.SetActive(false);
+                gameObject.SetActive(isActive);
+                return;
             }
-        
-            IsActive = isActive;
         
             // Cancel current tween
             if (CurrentTweenId > 0)
                 LeanTween.cancel(CurrentTweenId);
         
-            DoTween(isActive);
+            DoTween(isActive, ignoreTimescale);
         }
 
-        protected abstract void DoTween(bool isActive);
+        protected abstract void DoTween(bool isActive, bool ignoreTimescale);
 
         public void Toggle()
         {
