@@ -9,7 +9,7 @@ using UnityEngine;
 namespace GamePack.UnityUtilities
 {
     /// <summary>
-    /// TR: Unity'nin kendi 'Object.FindObjectOfType' methodunun 'disabled GameObjects' dahil olarak çalışan versiyonunu içerir..
+    /// TR: Unity'nin kendi 'Object.FindObjectOfType' methodunun 'disabled GameObjects' dahil olarak çalışan versiyonunu içerir.
     /// Reference: https://docs.unity3d.com/ScriptReference/Resources.FindObjectsOfTypeAll.html
     /// </summary>
     public static class FindAllObjects

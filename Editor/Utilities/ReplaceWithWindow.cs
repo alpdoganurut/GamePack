@@ -7,19 +7,19 @@ using UnityEngine;
 
 namespace GamePack.UnityUtilities
 {
-    public class ReplaceWith : OdinEditorWindow
+    public class ReplaceWithWindow : OdinEditorWindow
     {
-        [MenuItem("Utilities/ReplaceWithTarget")]
+        [MenuItem("Utilities/Replace Selection Window")]
         public static void ShowWindow()
         {
-            GetWindow<ReplaceWith>();
+            GetWindow<ReplaceWithWindow>();
         }
 
         [SerializeField, Required] private bool _DeleteOld = true;
         [SerializeField, Required, AssetsOnly] private GameObject _Target;
         
         [Button]
-        private void ReplaceWithTarget()
+        private void ReplaceSelectionWithTarget()
         {
             var selection = Selection.gameObjects;
             foreach (var gameObject in selection)

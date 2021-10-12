@@ -1,8 +1,33 @@
-﻿// SRDebugger Options. Duplicate this into project to use. 
+﻿/*// SRDebugger Options. Duplicate this into project to use. 
 
 // ReSharper disable once InconsistentNaming
+
+using MoneyRun;
+using UnityEngine;
+
 public partial class SROptions
 {
+    #region Req. Component Game
+
+    private Game _game;
+
+    private Game Game
+    {
+        get
+        {
+            if (!_game) _game = Object.FindObjectOfType<Game>();
+            return _game;
+        }
+    }
+
+    #endregion
+    
+    public void ShowTutorial()
+    {
+        Game.LevelManager.CurrentLevelIndex = 0;
+        Game.StartGame();
+    }
+    
      // SAMPLES
     /*
      
@@ -223,5 +248,5 @@ public partial class SROptions
     {
         get => MainVariables.Instance.TouchDirectionalMoveDifference;
         set => MainVariables.Instance.TouchDirectionalMoveDifference = value;
-    }*/
-}
+    }#1#
+}*/

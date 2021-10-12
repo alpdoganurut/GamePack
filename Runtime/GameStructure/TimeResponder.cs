@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace GameStructure
 {
     public  class TimeResponder
@@ -7,6 +9,11 @@ namespace GameStructure
             GameStructureSystem.AddResponder(this);
         }
 
+        public void Deconstruct()
+        {
+            Debug.Log("Destroyed");
+        }
+
         public bool IsActive;
         
         public virtual void Start() {}
@@ -14,5 +21,10 @@ namespace GameStructure
         public virtual void Update() {}
 
         public virtual void FixedUpdate() {}
+
+        public void Destroy()
+        {
+            GameStructureSystem.RemoveResponder(this);
+        }
     }
 }

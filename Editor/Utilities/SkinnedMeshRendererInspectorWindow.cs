@@ -6,16 +6,18 @@ using UnityEngine;
 
 namespace GamePack
 {
-    public class SkinnedMeshRendererInspector : OdinEditorWindow
+    [TypeInfoBox("@_skinnedMeshRenderer ? _skinnedMeshRenderer.name : \"Select a SkinnedMeshRenderer to inspect bones.\"")]
+    public class SkinnedMeshRendererInspectorWindow : OdinEditorWindow
     {
+        
         private SkinnedMeshRenderer _skinnedMeshRenderer;
 
         [ShowInInspector, ShowIf("@_skinnedMeshRenderer")] private Transform[] Bones => _skinnedMeshRenderer ? _skinnedMeshRenderer.bones : null;
         
-        [MenuItem("Window/Skinned Mesh Renderer Inspector")]
+        [MenuItem("Utilities/Skinned Mesh Renderer Inspector")]
         public static void ShowWindow()
         {
-            GetWindow<SkinnedMeshRendererInspector>();
+            GetWindow<SkinnedMeshRendererInspectorWindow>();
         }
 
         private void Awake()

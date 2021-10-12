@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2db62ad8a5d94e44830c6ca9f9fb3047, type: 3}
+  m_Name: SlingCarConfig
+  m_EditorClassIdentifier: 
+  _SideMaxAcceleration: 20
+  Deceleration: 20
+  _RotationLerpSpeed: 2
+  _SpeedToRotationLerpMultiplier: 4
+  _MinSpeedToRotation: 4
+  _HardBreakMultiplier: 7
+  _SoftBreakMultiplier: 4
+  _BreakForecastTime: 0.15
+  _ImpulseForceMultiplier: 1
+  _ImpulseSleepDuration: 1
+  _ControlSleepDuration: 0.4
+  _AccelerationSpeedCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _MaxAcceleration: 10
+  _MaxSpeed: 24
+  _TimeSpeedCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  _AccelerationTimeCurve:
+    serializedVersion: 2
+    m_Curve: []
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
