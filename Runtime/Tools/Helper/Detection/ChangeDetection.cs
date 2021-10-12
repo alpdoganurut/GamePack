@@ -3,7 +3,7 @@ using System.Collections;
 using GamePack.UnityUtilities;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Tools.Helper
 {
     public class ChangeDetection
     {

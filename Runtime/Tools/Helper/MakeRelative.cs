@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace GamePack.Tools.Other
+namespace GamePack.Tools.Helper
 {
     [ExecuteInEditMode]
     public class MakeRelative : MonoBehaviour

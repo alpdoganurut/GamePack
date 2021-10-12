@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Tools.Helper
 {
     public class Sleep
     {

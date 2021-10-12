@@ -3,7 +3,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Tools.Helper
 {
     public class ChangeDetectionTester: MonoBehaviour
     {

@@ -3,7 +3,7 @@
 using System;
 using UnityEngine;
 
-namespace BabyCatcher.GamePack
+namespace GamePack.Tools.Helper
 {
     [Serializable]
     public struct TransformInfo

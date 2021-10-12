@@ -7,7 +7,7 @@ using UnityEditor;
 using System;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Tools.Helper
 {
     public class TriggerEvent: MonoBehaviour
     {

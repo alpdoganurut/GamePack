@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Tools.Helper
 {
     public class ApplicationFramerate : MonoBehaviour
     {
