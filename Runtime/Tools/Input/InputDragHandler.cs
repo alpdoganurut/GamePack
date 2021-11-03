@@ -7,7 +7,9 @@ namespace GamePack
 {
     public class InputDragHandler: MonoBehaviour
     { 
-        public  event Action<Vector3> Drag;
+        public event Action<Vector3> DragStart;
+        public event Action DragEnd;
+        public event Action<Vector3> Drag;
         public event Action<Vector3> DragNormalized;
         
         [ShowInInspector, ReadOnly] private Vector3? _lastPos;
@@ -15,7 +17,7 @@ namespace GamePack
         [ShowInInspector, ReadOnly] private float _screenHeight;
 
         public Vector3 NormalizedDeltaInput { get; private set; }
-        public Vector3 NormalizedHorizontalDeltaInput { get; private set; }
+        public Vector3 NormalizedGroundAlignedDeltaInput { get; private set; }
 
 #if UNITY_EDITOR
         private static bool IsInput => Input.GetMouseButton(0);
@@ -37,27 +39,36 @@ namespace GamePack
             if(EventSystem.current && EventSystem.current.currentSelectedGameObject) return;
             
             NormalizedDeltaInput = Vector3.zero;
-            NormalizedHorizontalDeltaInput = Vector3.zero;
-            
-            
-            if (IsInput)
-            {
-                var inputPos = InputPos;
-                if (_lastPos.HasValue)
-                {
-                    var delta = inputPos - _lastPos.Value;
-                    Drag?.Invoke(delta);
-                    var normalizedDelta = delta/_screenWidth;
-                    DragNormalized?.Invoke(normalizedDelta);
-                    NormalizedDeltaInput = normalizedDelta;
-                    NormalizedHorizontalDeltaInput = new Vector3(NormalizedDeltaInput.x, 0, NormalizedDeltaInput.y);
-                }
+            NormalizedGroundAlignedDeltaInput = Vector3.zero;
+            var isInput = IsInput;
 
-                _lastPos = inputPos;
-            }
-            else if (_lastPos.HasValue)
+            switch (isInput)
             {
-                _lastPos = null;
+                case true:
+                    var inputPos = InputPos;
+                    if (_lastPos.HasValue)  // Continue Drag
+                    {
+                        var delta = inputPos - _lastPos.Value;
+                        var normalizedDelta = delta/_screenWidth;
+                    
+                        Drag?.Invoke(delta);
+                        DragNormalized?.Invoke(normalizedDelta);
+                    
+                        NormalizedDeltaInput = normalizedDelta;
+                        NormalizedGroundAlignedDeltaInput = new Vector3(NormalizedDeltaInput.x, 0, NormalizedDeltaInput.y);
+                    }
+                    else    // Start Drag
+                    {
+                        DragStart?.Invoke(inputPos);
+                    }
+
+                    _lastPos = inputPos;
+                    break;
+                // Stop Drag
+                case false when _lastPos.HasValue:
+                    _lastPos = null;
+                    DragEnd?.Invoke();
+                    break;
             }
         }
     }
