@@ -44,7 +44,7 @@ namespace HexGames
                 _game.WorkingTitle = value;
                 if(string.IsNullOrWhiteSpace(PlayerSettings.productName))
                     PlayerSettings.productName = value;
-                PlayerSettings.applicationIdentifier = "com.hex." + value.ToLower().Replace(" ", string.Empty);
+                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.hex." + value.ToLower().Replace(" ", string.Empty));
                 EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
             }
         }
@@ -193,8 +193,12 @@ namespace HexGames
 
         #region Game
 
-        // [TabGroup("Main", order:1)]
-        
+        [PropertyOrderAttribute(-2)]
+        [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene")]
+        private void OpenMainScene()
+        {
+            EditorSceneManager.OpenScene("Assets/01_Scenes/main.unity");
+        }
         
         [TabGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
@@ -380,7 +384,6 @@ namespace HexGames
         }
 
         #endregion
-
         
         #region Level Helper
 

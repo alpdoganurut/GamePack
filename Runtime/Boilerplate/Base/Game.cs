@@ -219,7 +219,7 @@ namespace HexGames
             Debug.Log("SceneLevelManager is empty. Trying to find it in Assets.");
             _SceneLevelManager = FindAllObjects.InEditor<SceneLevelManager>().FirstOrDefault();
 
-            Debug.Log(!_SceneLevelManager
+            Debug.LogError(!_SceneLevelManager
                 ? "Can't find SceneLevelManager for game. Please create one."
                 : $"Found a SceneLevelManager at {UnityEditor.AssetDatabase.GetAssetPath(_SceneLevelManager)}");
         }

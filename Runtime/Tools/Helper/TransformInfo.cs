@@ -10,7 +10,7 @@ namespace GamePack.Tools.Helper
     {
         public readonly Vector3 Position;
         public readonly Quaternion Rotation;
-        public readonly Vector3 LossyScale;
+        public readonly Vector3 LossyWorldScale;
 
         public readonly Vector3 LocalPosition;
         public readonly Quaternion LocalRotation;
@@ -22,7 +22,7 @@ namespace GamePack.Tools.Helper
         {
             Position = transform.position;
             Rotation = transform.rotation;
-            LossyScale = transform.lossyScale;
+            LossyWorldScale = transform.lossyScale;
 
             LocalPosition = transform.localPosition;
             LocalRotation = transform.localRotation;
@@ -37,6 +37,15 @@ namespace GamePack.Tools.Helper
             transform.localPosition = LocalPosition;
             transform.localRotation = LocalRotation;
             transform.localScale = LocalScale;
+        }
+        public void ApplyWorld(Transform transform)
+        {
+            transform.position = Position;
+            transform.rotation = Rotation;
+
+            var parent = transform.parent;
+            var parentWorldScale = parent ? parent.lossyScale : Vector3.one;
+            transform.localScale = new Vector3(LossyWorldScale.x / parentWorldScale.x, LossyWorldScale.y / parentWorldScale.y, LossyWorldScale.z / parentWorldScale.z);
         }
     }
 }
