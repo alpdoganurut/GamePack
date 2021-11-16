@@ -14,12 +14,18 @@ namespace GamePack
     [CreateAssetMenu(fileName = "Level Manager", menuName = "Hex/Scene Level Manager", order = 0)]
     public class SceneLevelManager: ScriptableObject
     {
+        private const string ActivateSceneNamesInfo =
+            "Enable to use level scenes lighting settings. Activating scenes also cause new objects to be Instantiated in that scene.";
+            
         [SerializeField, TabGroup("Setup")]
         private bool _IsLoop = true;
         
         [SerializeField, TabGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@Mathf.Max(_LevelSceneNames != null ? (_LevelSceneNames.Length - 1) : 0, 0)")]
         private int _LoopIndex;
-        
+
+        [SerializeField, TabGroup("Setup"), InfoBox(ActivateSceneNamesInfo)]
+        private bool _ActivateAfterLoad;
+
         [SerializeField, ReadOnly, TabGroup("Info")]
         private string[] _LevelSceneNames;
         
@@ -74,6 +80,7 @@ namespace GamePack
         {
             Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
             
+            // Not loading a scene is a test feature.
 #if UNITY_EDITOR
             if(!_LoadLevelScene)
             {
@@ -81,60 +88,43 @@ namespace GamePack
                 return;
             }
 #endif
-            
-#if UNITY_EDITOR
-            var levelSceneName = _TestLevel ? _TestLevel.name : _LevelSceneNames[ClampedLevelIndex];
-#else
+            // Set Scene Name
             var levelSceneName = _LevelSceneNames[ClampedLevelIndex];
+#if UNITY_EDITOR
+            if (_TestLevel)
+                levelSceneName = _TestLevel.name;
 #endif
 
-            if (_loadedScene.HasValue)
-            {
-                UnloadCurrentLevel(UnLoadComplete);
-            }
-            else
-            {
-                UnLoadComplete();
-            }
+            // Unload if necessary
+            if (_loadedScene.HasValue) UnloadCurrentLevel(LoadScene);
+            else LoadScene();
             
-            void UnLoadComplete()
+            void LoadScene()
             {
                 Debug.Log("Scene unload complete");
                 Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
+                
+                // Load TestLevel if it is set and in Editor environment 
 #if UNITY_EDITOR
-                if(!_TestLevel) _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive); // Duplicate of non editor version below
-                else 
+                if (_TestLevel)
                 {
-                    var guid = AssetDatabase.FindAssets($"{levelSceneName} t:scene")[0];
+                    var guid = AssetDatabase.FindAssets($"{_TestLevel.name} t:scene")[0];
                     var path = AssetDatabase.GUIDToAssetPath(guid);
                     _asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(path,
                         new LoadSceneParameters(LoadSceneMode.Additive));
+                    _asyncOperation.completed += OnloadComplete;
+                    return;
                 }
-#else
+#endif          
                 _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
-#endif
+                _asyncOperation.completed += OnloadComplete;
             }
-                _asyncOperation.completed += LoadOnComplete;
-            
-            /*void UnLoadComplete()
-            {
-                Debug.Log("Scene unload complete");
-                Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
 
-#if UNITY_EDITOR
-                // Duplicate from non editor version below
-                if(!_TestLevel) _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
-                else _asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(levelSceneName,
-                    new LoadSceneParameters(LoadSceneMode.Additive));
-#else
-                _asyncOperation = SceneManager.LoadSceneAsync(levelSceneName, LoadSceneMode.Additive);
-#endif
-                _asyncOperation.completed += LoadOnComplete;
-            }*/
-            
-            void LoadOnComplete(AsyncOperation obj)
+            void OnloadComplete(AsyncOperation asyncOperation)
             {
                 _loadedScene = SceneManager.GetSceneByName(levelSceneName);
+                if(_ActivateAfterLoad)
+                    SceneManager.SetActiveScene(_loadedScene.Value);
                 callback?.Invoke();
             }
         }
@@ -157,7 +147,7 @@ namespace GamePack
             
             if(!_loadedScene.HasValue)
             {
-                Debug.Log("!_loadedScene.HasValue failed when unloading level. Returning but not sure if should all just callback immediately.");
+                Debug.LogError("!_loadedScene.HasValue failed when unloading level. Returning but not sure if should all just callback immediately.");
                 return;
             }
             
@@ -235,7 +225,7 @@ namespace GamePack
          TabGroup("Setup")] 
         public SceneAsset _TestLevel;
 
-        [SerializeField, InfoBox("Disable to cancel scene loading."),
+        [SerializeField, InfoBox("Disable to cancel scene loading for testing."),
          TabGroup("Setup")] private bool _LoadLevelScene = true;
 #endif
 
