@@ -1,4 +1,4 @@
-#define TIMER_ENABLE_LOG
+// Use #define TIMER_ENABLE_LOG to enable logs for Engine
 
 using System;
 using System.Collections.Generic;
