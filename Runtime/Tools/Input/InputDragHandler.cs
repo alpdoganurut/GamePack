@@ -12,7 +12,7 @@ namespace GamePack
         public event Action<Vector3> Drag;
         public event Action<Vector3> DragNormalized;
         
-        [ShowInInspector, ReadOnly] private Vector3? _lastPos;
+        private Vector3? _lastPos;
         [ShowInInspector, ReadOnly] private float _screenWidth;
         [ShowInInspector, ReadOnly] private float _screenHeight;
 
