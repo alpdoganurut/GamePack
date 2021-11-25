@@ -256,6 +256,29 @@ namespace GamePack.Editor.Utilities
 
             sel.ForEach(o => { o.transform.SetParent(wrapperGo.transform); });
         }
+        
+        
+        [Button, TabGroup("Design")]
+        private static void CreateIndividualWrappers()
+        {
+            var sel = Selection.gameObjects;
+            if (sel.Length <= 0) return;
+
+            foreach (var o in sel)
+            {
+                var parent = o.transform.parent;
+                var meshRenderer = o.GetComponent<MeshRenderer>();
+                var wrapperPos = meshRenderer ? meshRenderer.bounds.center : o.transform.position;
+
+                var wrapperGo = new GameObject($"{o.name} Wrapper");
+                wrapperGo.transform.position = wrapperPos;
+                
+                if(parent)
+                    wrapperGo.transform.SetParent(parent);
+                
+                o.transform.SetParent(wrapperGo.transform, true);
+            }
+        }
 
         [Button, TabGroup("Design")]
         private static void PlaceItems(float verticalOffset = 100)

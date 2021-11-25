@@ -86,7 +86,7 @@ namespace GamePack.Editor.Utilities
 
             foreach (var obj in sel)
             {
-                var colliders = obj.GetComponents<Collider>();
+                var colliders = obj.GetComponentsInChildren<Collider>();
                 foreach (var collider in colliders)
                 {
                     destroyList.Add(collider);

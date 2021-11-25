@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace GamePack.Tools.Helper
 {
-    public class ColliderEvent: MonoBehaviour
+    public class EventCollider: MonoBehaviour
     {
         public event Action<Collision> Enter;
         public event Action<Collision> Stay;

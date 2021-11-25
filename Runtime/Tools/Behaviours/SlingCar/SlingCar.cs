@@ -2,6 +2,7 @@
 using GamePack.Tools.Helper;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GamePack
 {
@@ -46,7 +47,7 @@ namespace GamePack
         
         [SerializeField, Required] private SlingCarControllerBase _Controller;
         [SerializeField, Required] private Rigidbody _Rigidbody;
-        [SerializeField, Required] private ColliderEvent _ColliderEvent;
+        [FormerlySerializedAs("_ColliderEvent")] [SerializeField, Required] private EventCollider _EventCollider;
         [Space] 
         [SerializeField] private float _TargetSpeed = 12;
         [Space]
@@ -149,7 +150,7 @@ namespace GamePack
             // _neutralPos = _NeutralPosRef.position.x;
             // _activePos = _ActivePosRef.position.x;
 
-            _ColliderEvent.Enter += OnCollision;
+            _EventCollider.Enter += OnCollision;
 
             /*
             var @delegate = _Rigidbody.gameObject.AddComponent<SlingCarDelegate>();

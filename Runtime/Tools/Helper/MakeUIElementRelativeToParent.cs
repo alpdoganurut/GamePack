@@ -1,10 +1,10 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using UnityEngine;
 using UnityEngine.Serialization;
 
 namespace GamePack.Tools.Helper
 {
-    [ExecuteInEditMode]
-    public class MakeRelative : MonoBehaviour
+    public class MakeUIElementRelativeToParent : MonoBehaviour
     {
         [FormerlySerializedAs("manualRefresh")]
         public bool _ManualRefresh = true;

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace GamePack.Tools.Helper
 {
-    public class TriggerEvent: MonoBehaviour
+    public class EventTrigger: MonoBehaviour
     {
         public event Action<Collider> Enter;
         public event Action<Collider> Stay;
