@@ -1,10 +1,13 @@
 // Use #define TIMER_ENABLE_LOG to enable logs for Engine
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.Assertions;
 using Debug = UnityEngine.Debug;
+using Object = System.Object;
 
 namespace GamePack.Timer
 {
@@ -28,6 +31,7 @@ namespace GamePack.Timer
         private readonly List<float?> _rootOperationTimes = new List<float?>();
         
         private readonly List<Operation> _runningOperations = new List<Operation>();
+        private readonly List<float> _runningOperationStartTimes = new List<float>();
         private readonly List<float?> _runningOperationEndTimes = new List<float?>();
         
         public void AddOperation(Operation operation)
@@ -40,7 +44,7 @@ namespace GamePack.Timer
 
         private void Update()
         {
-            SyncRemove(_rootOperations, _rootOperationTimes, operation => operation.State != OperationState.Waiting);
+            SyncRemove(operation => operation.State != OperationState.Waiting, _rootOperations, _rootOperationTimes);
             
             for (var index = 0; index < _rootOperations.Count; index++)
             {
@@ -62,23 +66,29 @@ namespace GamePack.Timer
                 }
             }
 
-            SyncRemove(_runningOperations, _runningOperationEndTimes, operation => operation.State != OperationState.Running);
+            SyncRemove<Operation>(operation => operation.State != OperationState.Running, _runningOperations, _runningOperationEndTimes, _runningOperationStartTimes);
             
             for (var index = 0; index < _runningOperations.Count; index++)
             {
                 var runningOperation = _runningOperations[index];
-                var runningOperationEndTime = _runningOperationEndTimes[index];
+                var endTime = _runningOperationEndTimes[index];
 
                 if (
-                    (runningOperationEndTime.HasValue && Time.time > runningOperationEndTime) ||
+                    (endTime.HasValue && Time.time > endTime) ||
                     runningOperation.IsFinished() 
                     )
                 {
+                    float? oneF = 1f;
+                    runningOperation.Update(endTime.HasValue ? oneF : null);
                     Resolve(runningOperation);
                     return;
                 }
 
-                runningOperation.Update();
+                var startTime = _runningOperationStartTimes[index];
+                var duration = endTime - startTime;
+                var time = Time.time - startTime;
+                var t = time / duration;
+                runningOperation.Update(t);
             }
         }
 
@@ -89,6 +99,7 @@ namespace GamePack.Timer
             operation.Run();
             
             _runningOperations.Add(operation);
+            _runningOperationStartTimes.Add(Time.time);
             _runningOperationEndTimes.Add(Time.time + operation.Duration);
         }
 
@@ -105,32 +116,53 @@ namespace GamePack.Timer
                     AddOperation(childOperation);
                 }
             }
+            else
+            {
+                Log("Operation chain ended");
+            }
         }
 
         [Conditional("TIMER_ENABLE_LOG")]
         private void Log(object obj)
         {
-            Debug.Log(obj + $"\t {Time.time}");
+            Debug.Log(obj + $"\t Time: {Time.time}");
         }
 
         // Removes from list1 by condition and removes from list2 by the same index
-        private static void SyncRemove<T1, T2>(IList<T1> list1, IList<T2> list2, Func<T1, bool> condition)
+        // private static void SyncRemove<T1, T2>(IList<T1> list1, IList<T2> list2, Func<T1, bool> condition)
+        private static void SyncRemove<T1>(Func<T1, bool> firstListRemovalCondition, IList<T1> lookupList, params IList[] lists)
         {
-            var removalArray = new List<int>();
-            for (var index = 0; index < list1.Count; index++)
+            Assert.IsTrue(lists.Length > 0);
+            // Assert that all lists have same number of items 
+            for (var index = 0; index < lists.Length - 1; index++)
             {
-                var item1 = list1[index];
+                var list = lists[index];
+                var nextList = lists[index];
+                Assert.IsTrue(list.Count == nextList.Count);
+            }
 
-                if (condition.Invoke(item1))
+            // Find removal indices
+            var removalIndexArray = new List<int>();
+            for (var index = 0; index < lookupList.Count; index++)
+            {
+                var item1 = lookupList[index];
+
+                if (firstListRemovalCondition.Invoke(item1))
                 {
-                    removalArray.Add(index);
+                    removalIndexArray.Add(index);
                 }
             }
 
-            foreach (var i in removalArray)
+            removalIndexArray.Sort((int i1, int i2) => i2 - i1);
+            
+            // Remove from all arrays
+            foreach (var i in removalIndexArray)
             {
-                list1.RemoveAt(i);
-                list2.RemoveAt(i);
+                lookupList.RemoveAt(i);
+                foreach (var list in lists)
+                {
+                    list.RemoveAt(i);
+                }
             }
         }
     }

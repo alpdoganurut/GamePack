@@ -14,9 +14,10 @@ namespace GamePack.Timer
                     })
                 .Add("Second Op", duration: 2,
                     // skipCondition: () => true,
-                    updateAction: () =>
+                    updateAction: (tVal) =>
                     {
                         Debug.Log("Second Op update");
+                        Debug.Log($"tVal: {tVal}");
                     })
                 .Add(new Operation("Third Op", delay: 1,
                     action: () =>

@@ -11,6 +11,7 @@ namespace GamePack.Tools.Helper
     {
         // [SerializeField, Required] private List<Transform> _Points;
         [SerializeField, Required] private List<PolyLinePathPoint> _PointsNew;
+        [SerializeField, Required] private Vector3 _DirectionRotation;
 
         private float[] _distances;
         private float _totalLength;
@@ -55,6 +56,7 @@ namespace GamePack.Tools.Helper
             if (distance <= 0)
             {
                 direction = _PointsNew[1].Position - _PointsNew[0].Position;
+                direction = RotateDirection(direction);
                 return _PointsNew[0].Position;
             }
             
@@ -72,12 +74,16 @@ namespace GamePack.Tools.Helper
                     var nextPoint = _PointsNew[index + 1].Position;
                     // direction = Vector3.Cross(nextPoint - point, Vector3.up);
                     direction = nextPoint - point;
+                    direction = RotateDirection(direction);
                     return Vector3.Lerp(point, nextPoint, partialT);
                 }
             }
             direction = _PointsNew[_PointsNew.Count - 1].Position - _PointsNew[_PointsNew.Count - 2].Position;
+            direction = RotateDirection(direction);
             return _PointsNew[_PointsNew.Count - 1].Position;
         }
+
+        private Vector3 RotateDirection(Vector3 direction) => Quaternion.Euler(_DirectionRotation) * direction;
 
         #region Development
 #if UNITY_EDITOR

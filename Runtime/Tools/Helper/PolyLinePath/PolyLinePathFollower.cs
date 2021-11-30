@@ -5,6 +5,7 @@ namespace GamePack.Tools.Helper
 {
     public class PolyLinePathFollower: MonoBehaviour
     {
+        [SerializeField, Required] private float _FollowSpeed = 10;
         [SerializeField]private float _RotationSpeed = 15;
 
         private PolyLinePath _path;
@@ -22,12 +23,13 @@ namespace GamePack.Tools.Helper
             
             var pos = _path.GetWorldPosAtPathPos(PathPos, out var direction);
             var t = transform;
-            t.position = pos;
+            // t.position = pos;
+            t.position = Vector3.Lerp(t.position, pos, _FollowSpeed * Time.deltaTime);
             t.rotation = Quaternion.Lerp(t.rotation, Quaternion.LookRotation(direction), _RotationSpeed * Time.deltaTime);
         }
 
         [Button, DisableInEditorMode]
-        public void SetPathAndPos(PolyLinePath path, float pathPos)
+        public void SetPathAndPos(PolyLinePath path, float pathPos, bool rotationStaysInitially = false)
         {
             _path = path;
             PathPos = pathPos;
@@ -37,7 +39,7 @@ namespace GamePack.Tools.Helper
             
             // Set initial rotation
             _path.GetWorldPosAtPathPos(PathPos, out var direction);
-            transform.rotation = Quaternion.LookRotation(direction);
+            if(!rotationStaysInitially) transform.rotation = Quaternion.LookRotation(direction);
         }
 
         public void Destroy()

@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace GamePack.Tools.Helper
 {
+    [DisallowMultipleComponent]
     public class PolyLinePathPoint: MonoBehaviour
     {
         [SerializeField, Required] private Vector3 _Offset;

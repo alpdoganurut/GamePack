@@ -6,13 +6,15 @@ namespace GamePack.Timer
     public class Operation
     {
         public delegate void OperationAction();
-        public delegate void OperationUpdateAction();
+        public delegate void OperationUpdateAction(float? tVal);
+        public delegate void OperationEndAction();
         public delegate bool OperationFinishCondition();
         public delegate bool OperationWaitForCondition();
         public delegate bool OperationSkipCondition();
 
         private readonly OperationAction _action;
         private readonly OperationUpdateAction _updateAction;
+        private readonly OperationEndAction _endAction;
         private readonly OperationFinishCondition _finishCondition;
         private readonly OperationWaitForCondition _waitForCondition;
         private readonly OperationSkipCondition _skipCondition;
@@ -30,6 +32,7 @@ namespace GamePack.Timer
             float delay = 0,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
+            OperationEndAction endAction = null,
             OperationWaitForCondition waitForCondition = null,
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
@@ -39,6 +42,7 @@ namespace GamePack.Timer
             
             _action = action;
             _updateAction = updateAction;
+            _endAction = endAction;
             _finishCondition = finishCondition;
             _waitForCondition = waitForCondition;
             _skipCondition = skipCondition;
@@ -73,11 +77,12 @@ namespace GamePack.Timer
             float delay = 0,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
+            OperationEndAction endAction = null,
             OperationWaitForCondition waitForCondition = null,
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
         {
-            var newOp = new Operation(name, duration, delay, action, updateAction, waitForCondition, skipCondition,
+            var newOp = new Operation(name, duration, delay, action, updateAction, endAction,  waitForCondition, skipCondition,
                 finishCondition);
             return Add(newOp);
         }
@@ -90,13 +95,14 @@ namespace GamePack.Timer
             State = OperationState.Running;
         }
 
-        internal void Update()
+        internal void Update(float? tVal)
         {
-            _updateAction?.Invoke();
+            _updateAction?.Invoke(tVal);
         }
         
         internal void SetFinished()
         {
+            _endAction?.Invoke();
             State = OperationState.Finished;
         }
 
