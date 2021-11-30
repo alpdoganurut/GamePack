@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -103,23 +104,35 @@ namespace TrickyHands
 
             var sourcePath = AssetDatabase.GetAssetPath(_OriginalMaterial);
             var folderPath = "AutoTileDuplicate";
-            var targetPath = $"Assets/{folderPath}/{newMatName}.mat";
+            string AssetsRelativePath() => $"/{folderPath}/{newMatName}.mat";
+            string TargetPath() => "Assets" + AssetsRelativePath();
 
+            bool fileExists;
+            do
+            {
+                fileExists = File.Exists(Application.dataPath + AssetsRelativePath());
+                
+                Debug.Log($"File already exists at {TargetPath()}, changing name.");
+                newMatName += "_";
+                
+            } while (fileExists);
+
+            
             if (EditorUtility.DisplayDialog("AutoTile",
-                $"AutoTile will create a new material at {targetPath}", "OK", "Remove Auto Tile"))
+                $"AutoTile will create a new material at {TargetPath()}", "OK", "Remove Auto Tile"))
             {
                 if (!AssetDatabase.IsValidFolder($"Assets/{folderPath}"))
                 {
                     AssetDatabase.CreateFolder("Assets", folderPath);
                 }
 
-                if (!AssetDatabase.CopyAsset(sourcePath, targetPath))
+                if (!AssetDatabase.CopyAsset(sourcePath, TargetPath()))
                 {
                     Debug.LogWarning($"Failed to copy {sourcePath}");
                     Fail();
                 }
 
-                var newMaterial = AssetDatabase.LoadAssetAtPath<Material>(targetPath);
+                var newMaterial = AssetDatabase.LoadAssetAtPath<Material>(TargetPath());
                 _SharedMaterial = newMaterial;
                 Material = newMaterial;
 
