@@ -6,7 +6,7 @@ namespace GamePack.Timer
     public class Operation
     {
         public delegate void OperationAction();
-        public delegate void OperationUpdateAction(float? tVal);
+        public delegate void OperationUpdateAction(float tVal);
         public delegate void OperationEndAction();
         public delegate bool OperationFinishCondition();
         public delegate bool OperationWaitForCondition();
@@ -18,9 +18,13 @@ namespace GamePack.Timer
         private readonly OperationFinishCondition _finishCondition;
         private readonly OperationWaitForCondition _waitForCondition;
         private readonly OperationSkipCondition _skipCondition;
+        private readonly EasingFunction.Ease _ease;
+        private readonly float _duration;
 
         private Operation Parent { get; set; }
-        public float? Duration { get; }
+
+        public float? Duration => _duration < 0 ? (float?) null : _duration;
+
         public float Delay { get; }
         public OperationState State { get; private set; }
         public List<Operation> Children { get; } = new List<Operation>();
@@ -28,8 +32,9 @@ namespace GamePack.Timer
 
         public Operation(
             string name = null,
-            float? duration = null,
+            float duration = -1,
             float delay = 0,
+            EasingFunction.Ease ease = EasingFunction.Ease.Linear,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
             OperationEndAction endAction = null,
@@ -37,8 +42,17 @@ namespace GamePack.Timer
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
         {
+            // Validity checks
+            // Check if duration or finish condition
+            var isDurationSupplied = duration > 0;
+            Assert.IsTrue(isDurationSupplied || finishCondition != null); // One must be supplied
+            Assert.IsFalse(isDurationSupplied && finishCondition != null); // Botch can't be supplied
+            // Ease can't be used if no duration is set
+            Assert.IsTrue(ease == EasingFunction.Ease.Linear || isDurationSupplied);
+            
             Delay = delay;
-            Duration = duration;
+            _duration = duration;
+            _ease = ease;
             
             _action = action;
             _updateAction = updateAction;
@@ -46,7 +60,7 @@ namespace GamePack.Timer
             _finishCondition = finishCondition;
             _waitForCondition = waitForCondition;
             _skipCondition = skipCondition;
-            
+
             State = OperationState.Waiting;
 
             Name = name;
@@ -73,8 +87,9 @@ namespace GamePack.Timer
         
         public Operation Add(
             string name = null,
-            float? duration = null,
+            float duration = -1,
             float delay = 0,
+            EasingFunction.Ease ease = EasingFunction.Ease.Linear,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
             OperationEndAction endAction = null,
@@ -82,12 +97,12 @@ namespace GamePack.Timer
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
         {
-            var newOp = new Operation(name, duration, delay, action, updateAction, endAction,  waitForCondition, skipCondition,
+            var newOp = new Operation(name, duration, delay, ease, action, updateAction, endAction,  waitForCondition, skipCondition,
                 finishCondition);
             return Add(newOp);
         }
 
-        #region Internal API - This is used by Engine
+        #region Internal API - These are used by Engine
 
         internal void Run()
         {
@@ -97,7 +112,13 @@ namespace GamePack.Timer
 
         internal void Update(float? tVal)
         {
-            _updateAction?.Invoke(tVal);
+            if(!Duration.HasValue) return;
+            if(!tVal.HasValue) return;
+            
+            if (_ease != EasingFunction.Ease.Linear)
+                tVal = EasingFunction.GetEasingFunction(_ease)(0, 1, tVal.Value);
+            
+            _updateAction?.Invoke(tVal.Value);
         }
         
         internal void SetFinished()

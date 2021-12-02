@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace GamePack.Poolable
@@ -30,6 +31,13 @@ namespace GamePack.Poolable
         public override void OnStop()
         {
             gameObject.SetActive(false);
+        }
+
+        private void OnValidate()
+        {
+            var mainSettings = ParticleSystem.main;
+            if (mainSettings.stopAction != ParticleSystemStopAction.Callback)
+                mainSettings.stopAction = ParticleSystemStopAction.Callback;
         }
     }
 }

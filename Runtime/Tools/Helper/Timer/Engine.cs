@@ -7,7 +7,6 @@ using System.Diagnostics;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Debug = UnityEngine.Debug;
-using Object = System.Object;
 
 namespace GamePack.Timer
 {
@@ -36,7 +35,7 @@ namespace GamePack.Timer
         
         public void AddOperation(Operation operation)
         {
-            Log($"Adding operation {operation.Name}");
+            Log($"Adding operation {operation.Name}, delay: {operation.Delay}");
             
             _rootOperations.Add(operation);
             _rootOperationTimes.Add(Time.time + operation.Delay);
@@ -66,29 +65,33 @@ namespace GamePack.Timer
                 }
             }
 
-            SyncRemove<Operation>(operation => operation.State != OperationState.Running, _runningOperations, _runningOperationEndTimes, _runningOperationStartTimes);
+            SyncRemove(operation => operation.State != OperationState.Running, _runningOperations, _runningOperationEndTimes, _runningOperationStartTimes);
             
             for (var index = 0; index < _runningOperations.Count; index++)
             {
                 var runningOperation = _runningOperations[index];
                 var endTime = _runningOperationEndTimes[index];
+                var shouldUpdate = runningOperation.Duration.HasValue;
 
+                // Resolve
                 if (
                     (endTime.HasValue && Time.time > endTime) ||
                     runningOperation.IsFinished() 
                     )
                 {
-                    float? oneF = 1f;
-                    runningOperation.Update(endTime.HasValue ? oneF : null);
+                    if(shouldUpdate) runningOperation.Update(1);
                     Resolve(runningOperation);
-                    return;
+                    continue;
                 }
-
-                var startTime = _runningOperationStartTimes[index];
-                var duration = endTime - startTime;
-                var time = Time.time - startTime;
-                var t = time / duration;
-                runningOperation.Update(t);
+                
+                if(shouldUpdate)
+                {
+                    var startTime = _runningOperationStartTimes[index];
+                    var duration = endTime - startTime;
+                    var time = Time.time - startTime;
+                    var t = time / duration;
+                    runningOperation.Update(t);
+                }
             }
         }
 
@@ -129,7 +132,6 @@ namespace GamePack.Timer
         }
 
         // Removes from list1 by condition and removes from list2 by the same index
-        // private static void SyncRemove<T1, T2>(IList<T1> list1, IList<T2> list2, Func<T1, bool> condition)
         private static void SyncRemove<T1>(Func<T1, bool> firstListRemovalCondition, IList<T1> lookupList, params IList[] lists)
         {
             Assert.IsTrue(lists.Length > 0);
