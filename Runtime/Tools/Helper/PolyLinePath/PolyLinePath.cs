@@ -83,7 +83,7 @@ namespace GamePack.Tools.Helper
             return _PointsNew[_PointsNew.Count - 1].Position;
         }
 
-        private Vector3 RotateDirection(Vector3 direction) => Quaternion.Euler(_DirectionRotation) * direction;
+        private Vector3 RotateDirection(Vector3 direction) => Quaternion.LookRotation(direction) *  Quaternion.Euler(_DirectionRotation) * Vector3.forward ;
 
         #region Development
 #if UNITY_EDITOR

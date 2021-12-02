@@ -1,3 +1,5 @@
+#region Development
+#if UNITY_EDITOR
 using System;
 using System.IO;
 using System.Linq;
@@ -222,4 +224,6 @@ namespace TrickyHands
             DestroyImmediate(this);
         }
     }
-}
+} 
+#endif
+#endregion
