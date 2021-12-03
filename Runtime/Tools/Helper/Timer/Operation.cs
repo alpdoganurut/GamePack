@@ -45,7 +45,6 @@ namespace GamePack.Timer
             // Validity checks
             // Check if duration or finish condition
             var isDurationSupplied = duration > 0;
-            Assert.IsTrue(isDurationSupplied || finishCondition != null); // One must be supplied
             Assert.IsFalse(isDurationSupplied && finishCondition != null); // Botch can't be supplied
             // Ease can't be used if no duration is set
             Assert.IsTrue(ease == EasingFunction.Ease.Linear || isDurationSupplied);
