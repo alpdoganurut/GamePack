@@ -17,7 +17,7 @@ namespace GamePack.Timer
         {
             get
             {
-                if (_instance == null)
+                if (!_instance)
                 {
                     _instance = new GameObject("TimerEngine").AddComponent<Engine>();
                 }
@@ -43,13 +43,17 @@ namespace GamePack.Timer
 
         private void Update()
         {
+            // Remove root operations if they are no longer waiting
             SyncRemove(operation => operation.State != OperationState.Waiting, _rootOperations, _rootOperationTimes);
             
+            // Start operations if ready
             for (var index = 0; index < _rootOperations.Count; index++)
             {
                 var rootOperation = _rootOperations[index];
                 var rootOperationTime = _rootOperationTimes[index];
 
+                if(rootOperation.IsCancelled) Debug.LogError($"{rootOperation.Name} is cancelled before it started.");
+                
                 if (rootOperation.ShouldSkip())
                 {
                     Resolve(rootOperation);
@@ -65,26 +69,27 @@ namespace GamePack.Timer
                 }
             }
 
+            // Remove running operations if they are no longer running
             SyncRemove(operation => operation.State != OperationState.Running, _runningOperations, _runningOperationEndTimes, _runningOperationStartTimes);
             
+            // Update, resolve or cancel operations based on conditions
             for (var index = 0; index < _runningOperations.Count; index++)
             {
                 var runningOperation = _runningOperations[index];
                 var endTime = _runningOperationEndTimes[index];
-                var shouldUpdate = runningOperation.Duration.HasValue;
-
+                var hasUpdateTime = runningOperation.Duration != null;
+                // var shouldUpdate = runningOperation.IsUpdatable;
+                
                 // Resolve
-                if (
-                    (endTime.HasValue && Time.time > endTime) ||
-                    runningOperation.IsFinished() 
-                    )
+                if (endTime.HasValue && Time.time > endTime ||
+                    runningOperation.IsFinished())
                 {
-                    if(shouldUpdate) runningOperation.Update(1);
+                    runningOperation.Update(1);
                     Resolve(runningOperation);
                     continue;
                 }
                 
-                if(shouldUpdate)
+                if(hasUpdateTime)
                 {
                     var startTime = _runningOperationStartTimes[index];
                     var duration = endTime - startTime;
@@ -92,6 +97,8 @@ namespace GamePack.Timer
                     var t = time / duration;
                     runningOperation.Update(t);
                 }
+                else
+                    runningOperation.Update(null);
             }
         }
 

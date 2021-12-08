@@ -9,12 +9,19 @@ namespace GamePack.Timer
         [SerializeField, Required] private GameObject _ObjectToMove;
         [SerializeField] private EasingFunction.Ease _MoveObjectEase;
         [SerializeField] private float _InitialDelay = 2;
+        private OperationTreeDescription _operation;
+
+        [Button]
+        private void Cancel()
+        {
+            _operation.Cancel();
+        }
         
         private void Start()
         {
             var objectStartPos = _ObjectToMove.transform.position;
             
-            var newOp =
+            _operation =
                 new Operation(name + " Root Op", delay: _InitialDelay, duration: 1, 
                     action: () =>
                     {
@@ -51,7 +58,7 @@ namespace GamePack.Timer
                     }))
                 .Save();
 
-            newOp.Start();
+            _operation.Start();
         }
     }
 }

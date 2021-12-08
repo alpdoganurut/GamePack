@@ -11,5 +11,13 @@ namespace GamePack.Timer
         {
             Engine.Instance.AddOperation(Root);
         }
+
+        public void Cancel()
+        {
+            foreach (var operation in Operations)
+            {
+                operation.Cancel();
+            }
+        }
     }
 }

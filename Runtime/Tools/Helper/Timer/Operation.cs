@@ -1,10 +1,13 @@
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Assertions;
 
 namespace GamePack.Timer
 {
     public class Operation
     {
+        public const float NullUpdateTVal = -1;
+
         public delegate void OperationAction();
         public delegate void OperationUpdateAction(float tVal);
         public delegate void OperationEndAction();
@@ -12,29 +15,36 @@ namespace GamePack.Timer
         public delegate bool OperationWaitForCondition();
         public delegate bool OperationSkipCondition();
 
+        public string Name { get; }
+        private readonly float _duration;
+        public float Delay { get; }
+        private readonly EasingFunction.Ease _ease;
+        private readonly AnimationCurve _easeCurve;
+        
         private readonly OperationAction _action;
         private readonly OperationUpdateAction _updateAction;
         private readonly OperationEndAction _endAction;
         private readonly OperationFinishCondition _finishCondition;
         private readonly OperationWaitForCondition _waitForCondition;
         private readonly OperationSkipCondition _skipCondition;
-        private readonly EasingFunction.Ease _ease;
-        private readonly float _duration;
 
         private Operation Parent { get; set; }
-
-        public float? Duration => _duration < 0 ? (float?) null : _duration;
-
-        public float Delay { get; }
         public OperationState State { get; private set; }
         public List<Operation> Children { get; } = new List<Operation>();
-        public string Name { get; }
+
+        public bool IsCancelled { get; private set; }
+        
+        // Property Accessors
+        public float? Duration => _duration < 0 ? (float?) null : _duration;
+
+        // public bool IsUpdatable => Duration > 0;
 
         public Operation(
             string name = null,
-            float duration = -1,
+            float duration = NullUpdateTVal,
             float delay = 0,
             EasingFunction.Ease ease = EasingFunction.Ease.Linear,
+            AnimationCurve easeCurve = null,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
             OperationEndAction endAction = null,
@@ -43,15 +53,18 @@ namespace GamePack.Timer
             OperationFinishCondition finishCondition = null)
         {
             // Validity checks
-            // Check if duration or finish condition
+            // Check if duration and finish condition both supplied
             var isDurationSupplied = duration > 0;
-            Assert.IsFalse(isDurationSupplied && finishCondition != null); // Botch can't be supplied
+            Assert.IsFalse(isDurationSupplied && finishCondition != null, "Duration and finish condition both can't be supplied!"); // Botch can't be supplied
             // Ease can't be used if no duration is set
-            Assert.IsTrue(ease == EasingFunction.Ease.Linear || isDurationSupplied);
+            Assert.IsTrue(ease == EasingFunction.Ease.Linear || isDurationSupplied, "Ease can't be used if no duration is set!");
+            // There can't be two easing
+            Assert.IsFalse(ease != EasingFunction.Ease.Linear && easeCurve != null, "There can't be two easing method!");
             
             Delay = delay;
             _duration = duration;
             _ease = ease;
+            _easeCurve = easeCurve;
             
             _action = action;
             _updateAction = updateAction;
@@ -83,12 +96,18 @@ namespace GamePack.Timer
             Children.Add(operation);
             return operation;
         }
+
+        public void Cancel()
+        {
+            State = OperationState.Cancelled;
+        }
         
         public Operation Add(
             string name = null,
-            float duration = -1,
+            float duration = NullUpdateTVal,
             float delay = 0,
             EasingFunction.Ease ease = EasingFunction.Ease.Linear,
+            AnimationCurve easeCurve = null,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
             OperationEndAction endAction = null,
@@ -96,7 +115,7 @@ namespace GamePack.Timer
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
         {
-            var newOp = new Operation(name, duration, delay, ease, action, updateAction, endAction,  waitForCondition, skipCondition,
+            var newOp = new Operation(name, duration, delay, ease, easeCurve, action, updateAction, endAction,  waitForCondition, skipCondition,
                 finishCondition);
             return Add(newOp);
         }
@@ -111,11 +130,19 @@ namespace GamePack.Timer
 
         internal void Update(float? tVal)
         {
-            if(!Duration.HasValue) return;
-            if(!tVal.HasValue) return;
+            if (!tVal.HasValue)
+            {
+                _updateAction?.Invoke(NullUpdateTVal);
+                return;
+            }
+            Assert.IsTrue(tVal.HasValue);
+            Assert.IsTrue(tVal >= 0 && tVal <= 1, $"tVal is not between [0,1]! tVal: {tVal}");
             
+            // Apply easing
             if (_ease != EasingFunction.Ease.Linear)
                 tVal = EasingFunction.GetEasingFunction(_ease)(0, 1, tVal.Value);
+            else if (_easeCurve != null)
+                tVal = _easeCurve.Evaluate(tVal.Value);
             
             _updateAction?.Invoke(tVal.Value);
         }
