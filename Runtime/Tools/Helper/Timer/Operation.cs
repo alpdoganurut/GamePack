@@ -37,8 +37,6 @@ namespace GamePack.Timer
         // Property Accessors
         public float? Duration => _duration < 0 ? (float?) null : _duration;
 
-        // public bool IsUpdatable => Duration > 0;
-
         public Operation(
             string name = null,
             float duration = NullUpdateTVal,
@@ -52,6 +50,11 @@ namespace GamePack.Timer
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
         {
+            #if UNITY_EDITOR
+            // Can't start on editor mode
+            Assert.IsTrue(Application.isPlaying);  
+            #endif
+            
             // Validity checks
             // Check if duration and finish condition both supplied
             var isDurationSupplied = duration > 0;
