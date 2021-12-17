@@ -87,7 +87,7 @@ namespace GamePack.Timer
             return GetDescription();
         }
         
-        public OperationTreeDescription Start(bool ignoreTimeScale)
+        public OperationTreeDescription Start(bool ignoreTimeScale = false)
         {
             var description = GetDescription();
             description.Start(ignoreTimeScale);
