@@ -35,10 +35,10 @@ namespace GamePack.Timer
         
         public void AddOperation(Operation operation)
         {
-            Log($"Adding operation {operation.Name}, delay: {operation.Delay}");
+            Log($"Adding operation {operation.Name}, delay: {operation.Delay}, ignoreTimeScale: {operation.IsIgnoreTimeScale}");
             
             _rootOperations.Add(operation);
-            _rootOperationTimes.Add(Time.time + operation.Delay);
+            _rootOperationTimes.Add(GetTimeForOperation(operation) + operation.Delay);
         }
 
         private void Update()
@@ -51,16 +51,15 @@ namespace GamePack.Timer
             {
                 var rootOperation = _rootOperations[index];
                 var rootOperationTime = _rootOperationTimes[index];
+                var timeForOperation = GetTimeForOperation(rootOperation);
 
-                if(rootOperation.IsCancelled) Debug.LogError($"{rootOperation.Name} is cancelled before it started.");
-                
                 if (rootOperation.ShouldSkip())
                 {
                     Resolve(rootOperation);
                     continue;
                 }
-                
-                if (Time.time > rootOperationTime &&
+
+                if (timeForOperation > rootOperationTime &&
                     rootOperation.WaitForCondition()
                 )
                 {
@@ -78,10 +77,10 @@ namespace GamePack.Timer
                 var runningOperation = _runningOperations[index];
                 var endTime = _runningOperationEndTimes[index];
                 var hasUpdateTime = runningOperation.Duration != null;
-                // var shouldUpdate = runningOperation.IsUpdatable;
+                var timeForOperation = GetTimeForOperation(runningOperation);
                 
                 // Resolve
-                if (endTime.HasValue && Time.time > endTime ||
+                if (endTime.HasValue && timeForOperation > endTime ||
                     runningOperation.IsFinished())
                 {
                     runningOperation.Update(1);
@@ -93,7 +92,7 @@ namespace GamePack.Timer
                 {
                     var startTime = _runningOperationStartTimes[index];
                     var duration = endTime - startTime;
-                    var time = Time.time - startTime;
+                    var time = timeForOperation - startTime;
                     var t = time / duration;
                     runningOperation.Update(t);
                 }
@@ -104,13 +103,14 @@ namespace GamePack.Timer
 
         private void RunOperation(Operation operation)
         {
+            var timeForOperation = GetTimeForOperation(operation);
             Log($"Running {operation.Name}");
             
             operation.Run();
             
             _runningOperations.Add(operation);
-            _runningOperationStartTimes.Add(Time.time);
-            _runningOperationEndTimes.Add(Time.time + operation.Duration);
+            _runningOperationStartTimes.Add(timeForOperation);
+            _runningOperationEndTimes.Add(timeForOperation + operation.Duration);
         }
 
         private void Resolve(Operation operation)
@@ -138,6 +138,11 @@ namespace GamePack.Timer
             Debug.Log(obj + $"\t Time: {Time.time}");
         }
 
+        private float GetTimeForOperation(Operation operation)
+        {
+            return operation.IsIgnoreTimeScale ? Time.unscaledTime : Time.time;
+        }
+        
         // Removes from list1 by condition and removes from list2 by the same index
         private static void SyncRemove<T1>(Func<T1, bool> firstListRemovalCondition, IList<T1> lookupList, params IList[] lists)
         {

@@ -28,13 +28,19 @@ namespace GamePack.TweenAlphaSetActive
             set => _Duration = value;
         }
 
+        public bool DisableOnStart
+        {
+            get => _DisableOnStart;
+            set => _DisableOnStart = value;
+        }
+
         // Setting initial _isActive value on enable
         private void OnEnable()
         {
             IsActive = true;
         }
 
-        private void Awake()
+        private void Start()
         {
             if (_DisableOnStart)
             {

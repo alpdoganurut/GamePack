@@ -156,6 +156,7 @@ MonoBehaviour:
   _ObjectToMove: {fileID: 1381583502}
   _MoveObjectEase: 14
   _InitialDelay: 4
+  _IgnoreTimeScale: 0
 --- !u!4 &663795517
 Transform:
   m_ObjectHideFlags: 0
@@ -393,6 +394,7 @@ MonoBehaviour:
   _ObjectToMove: {fileID: 749175984}
   _MoveObjectEase: 14
   _InitialDelay: 2
+  _IgnoreTimeScale: 1
 --- !u!4 &2012851845
 Transform:
   m_ObjectHideFlags: 0

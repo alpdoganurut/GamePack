@@ -6,7 +6,7 @@ namespace GamePack.Timer
 {
     public class Operation
     {
-        public const float NullUpdateTVal = -1;
+        private const float NullUpdateTVal = -1;
 
         public delegate void OperationAction();
         public delegate void OperationUpdateAction(float tVal);
@@ -15,9 +15,9 @@ namespace GamePack.Timer
         public delegate bool OperationWaitForCondition();
         public delegate bool OperationSkipCondition();
 
-        public string Name { get; }
+        internal string Name { get; }
         private readonly float _duration;
-        public float Delay { get; }
+        internal float Delay { get; }
         private readonly EasingFunction.Ease _ease;
         private readonly AnimationCurve _easeCurve;
         
@@ -29,18 +29,17 @@ namespace GamePack.Timer
         private readonly OperationSkipCondition _skipCondition;
 
         private Operation Parent { get; set; }
-        public OperationState State { get; private set; }
-        public List<Operation> Children { get; } = new List<Operation>();
-
-        public bool IsCancelled { get; private set; }
-        
+        internal OperationState State { get; private set; }
+        internal List<Operation> Children { get; } = new List<Operation>();
         // Property Accessors
-        public float? Duration => _duration < 0 ? (float?) null : _duration;
+        internal float? Duration => _duration < 0 ? (float?) null : _duration;
+        internal bool IsIgnoreTimeScale { get; private set; }
 
         public Operation(
             string name = null,
             float duration = NullUpdateTVal,
             float delay = 0,
+            bool ignoreTimeScale = false,
             EasingFunction.Ease ease = EasingFunction.Ease.Linear,
             AnimationCurve easeCurve = null,
             OperationAction action = null,
@@ -64,8 +63,11 @@ namespace GamePack.Timer
             // There can't be two easing
             Assert.IsFalse(ease != EasingFunction.Ease.Linear && easeCurve != null, "There can't be two easing method!");
             
-            Delay = delay;
+            Name = name;
             _duration = duration;
+            Delay = delay;
+            IsIgnoreTimeScale = ignoreTimeScale;
+            
             _ease = ease;
             _easeCurve = easeCurve;
             
@@ -78,7 +80,6 @@ namespace GamePack.Timer
 
             State = OperationState.Waiting;
 
-            Name = name;
         }
 
         public OperationTreeDescription Save()
@@ -86,10 +87,10 @@ namespace GamePack.Timer
             return GetDescription();
         }
         
-        public OperationTreeDescription Start()
+        public OperationTreeDescription Start(bool ignoreTimeScale)
         {
             var description = GetDescription();
-            description.Start();
+            description.Start(ignoreTimeScale);
             return description;
         }
         
@@ -99,16 +100,12 @@ namespace GamePack.Timer
             Children.Add(operation);
             return operation;
         }
-
-        public void Cancel()
-        {
-            State = OperationState.Cancelled;
-        }
         
         public Operation Add(
             string name = null,
             float duration = NullUpdateTVal,
-            float delay = 0,
+            float delay = 0, 
+            bool ignoreTimeScale = false,
             EasingFunction.Ease ease = EasingFunction.Ease.Linear,
             AnimationCurve easeCurve = null,
             OperationAction action = null,
@@ -118,7 +115,7 @@ namespace GamePack.Timer
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
         {
-            var newOp = new Operation(name, duration, delay, ease, easeCurve, action, updateAction, endAction,  waitForCondition, skipCondition,
+            var newOp = new Operation(name, duration, delay, ignoreTimeScale, ease, easeCurve, action, updateAction, endAction,  waitForCondition, skipCondition,
                 finishCondition);
             return Add(newOp);
         }
@@ -176,6 +173,16 @@ namespace GamePack.Timer
             return !Duration.HasValue && _finishCondition == null;
         }
 
+        internal void SetIgnoreTimeScale(bool isIgnore)
+        {
+            IsIgnoreTimeScale = isIgnore;
+        }
+        
+        internal void Cancel()
+        {
+            State = OperationState.Cancelled;
+        }
+        
         #endregion
 
         #region Private
@@ -214,6 +221,5 @@ namespace GamePack.Timer
         }
 
         #endregion
-        
     }
 }

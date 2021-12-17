@@ -1,3 +1,4 @@
+using System;
 using Boilerplate.Base;
 using GamePack.TweenAlphaSetActive;
 using Sirenix.OdinInspector;
@@ -9,7 +10,6 @@ namespace GamePack
     public class TutorialManager: MonoBehaviour
     {
         [SerializeField, ReadOnly] private string _TutorialPrefsKey;
-        
         [SerializeField, Required] private TutorialConfig _TutorialConfig;
 
         private UIFader _activePanel;
@@ -74,6 +74,11 @@ namespace GamePack
         private void OnValidate()
         {
             _TutorialPrefsKey = PlayerSettings.applicationIdentifier + ".tutorial";
+            
+            foreach (var panelConfig in _TutorialConfig.PanelConfigs)
+            {
+                panelConfig.Panel.DisableOnStart = true;
+            }
         }
 
 

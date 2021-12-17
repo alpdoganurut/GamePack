@@ -7,9 +7,10 @@ namespace GamePack.Timer
         public Operation Root;
         public List<Operation> Operations;
 
-        public void Start()
+        public void Start(bool ignoreTimeScale = false)
         {
             Engine.Instance.AddOperation(Root);
+            if(ignoreTimeScale) SetIgnoreTimeScale(true);
         }
 
         public void Cancel()
@@ -17,6 +18,14 @@ namespace GamePack.Timer
             foreach (var operation in Operations)
             {
                 operation.Cancel();
+            }
+        }
+
+        private void SetIgnoreTimeScale(bool isIgnore)
+        {
+            foreach (var operation in Operations)
+            {
+                operation.SetIgnoreTimeScale(isIgnore);
             }
         }
     }

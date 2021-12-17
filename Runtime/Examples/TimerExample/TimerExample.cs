@@ -9,8 +9,15 @@ namespace GamePack.Timer
         [SerializeField, Required] private GameObject _ObjectToMove;
         [SerializeField] private EasingFunction.Ease _MoveObjectEase;
         [SerializeField] private float _InitialDelay = 2;
+        [SerializeField, Required] private bool _IgnoreTimeScale = false;
         private OperationTreeDescription _operation;
 
+        [Button]
+        private void SetTimeScale(float scale = .5f)
+        {
+            Time.timeScale = scale;
+        }
+        
         [Button]
         private void Cancel()
         {
@@ -57,8 +64,8 @@ namespace GamePack.Timer
                         _ObjectToMove.transform.position = Vector3.Lerp(objectStartPos, objectStartPos + new Vector3(0, 0, 5), 1 - tVal);
                     }))
                 .Save();
-
-            _operation.Start();
+            _operation.Start(ignoreTimeScale:_IgnoreTimeScale);
+            
         }
     }
 }
