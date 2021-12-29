@@ -1,5 +1,6 @@
 ﻿using System;
 using GamePack.Tools.Helper;
+using GamePack.Tools.Helper.CollisionDetection;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;

@@ -7,7 +7,7 @@ using UnityEditor;
 using System;
 using UnityEngine;
 
-namespace GamePack.Tools.Helper
+namespace GamePack.Tools.Helper.CollisionDetection
 {
     public class EventTrigger: MonoBehaviour
     {

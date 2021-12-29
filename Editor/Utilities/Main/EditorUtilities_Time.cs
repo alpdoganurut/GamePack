@@ -5,14 +5,19 @@ namespace GamePack.Editor.Utilities
 {
     public partial class EditorUtilities
     {
-        [MenuItem("Utilities/Time/Slow Time Down %&T")]
-        private static void SlowTimeDown()
+        [MenuItem("Utilities/Time/Decrease Time Scale %&Z")]
+        private static void DecreaseTimeScale()
         {
             Time.timeScale /= 2;
         }
+        [MenuItem("Utilities/Time/Increase Time Scale %&C")]
+        private static void IncreaseTimeScale()
+        {
+            Time.timeScale *= 2;
+        }
 
-        [MenuItem("Utilities/Time/Reset Slow Time Down %&R")]
-        private static void ResetSlowTimeDown()
+        [MenuItem("Utilities/Time/Reset Time Scale %&X")]
+        private static void ResetTimeScale()
         {
             Time.timeScale = 1;
         }

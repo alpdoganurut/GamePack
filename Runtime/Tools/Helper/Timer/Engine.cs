@@ -80,10 +80,13 @@ namespace GamePack.Timer
                 var timeForOperation = GetTimeForOperation(runningOperation);
                 
                 // Resolve
+                // ReSharper disable once MergeSequentialChecks
                 if (endTime.HasValue && timeForOperation > endTime ||
                     runningOperation.IsFinished())
                 {
-                    runningOperation.Update(1);
+                    if(runningOperation.Duration.HasValue)
+                        runningOperation.Update( 1);
+                    
                     Resolve(runningOperation);
                     continue;
                 }
