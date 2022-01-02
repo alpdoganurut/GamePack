@@ -4,13 +4,13 @@ using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace GamePack.Tools.Helper
 {
     public class PolyLinePath: MonoBehaviour
     {
-        // [SerializeField, Required] private List<Transform> _Points;
-        [SerializeField, Required] private List<PolyLinePathPoint> _PointsNew;
+        [FormerlySerializedAs("_PointsNew")] [SerializeField, Required] private List<PolyLinePathPoint> _Points;
         [SerializeField, Required] private Vector3 _DirectionRotation;
 
         private float[] _distances;
@@ -25,12 +25,12 @@ namespace GamePack.Tools.Helper
 
         private void InitializeDistances()
         {
-            _distances = new float[_PointsNew.Count - 1];
+            _distances = new float[_Points.Count - 1];
 
-            for (var index = 0; index < _PointsNew.Count - 1; index++)
+            for (var index = 0; index < _Points.Count - 1; index++)
             {
-                var point = _PointsNew[index].Position;
-                var nextPoint = _PointsNew[index + 1].Position;
+                var point = _Points[index].Position;
+                var nextPoint = _Points[index + 1].Position;
                 var distance = (point - nextPoint).magnitude;
 
                 _distances[index] = distance;
@@ -41,23 +41,23 @@ namespace GamePack.Tools.Helper
 
         public Vector3 GetWorldPosAtPathPos(float distance, out Vector3 direction)
         {
-            if (_PointsNew.Count <= 0)
+            if (_Points.Count <= 0)
             {
                 direction = Vector3.zero;
                 return Vector3.zero;
             } 
             
-            if (_PointsNew.Count <= 1)
+            if (_Points.Count <= 1)
             {
                 direction = Vector3.zero;
-                return _PointsNew[0].Position;
+                return _Points[0].Position;
             } 
             
             if (distance <= 0)
             {
-                direction = _PointsNew[1].Position - _PointsNew[0].Position;
+                direction = _Points[1].Position - _Points[0].Position;
                 direction = RotateDirection(direction);
-                return _PointsNew[0].Position;
+                return _Points[0].Position;
             }
             
             var total = 0f;
@@ -70,17 +70,17 @@ namespace GamePack.Tools.Helper
                 if (total > distance)
                 {
                     var partialT = (distance - lastTotal) / (total - lastTotal);
-                    var point = _PointsNew[index].Position;
-                    var nextPoint = _PointsNew[index + 1].Position;
+                    var point = _Points[index].Position;
+                    var nextPoint = _Points[index + 1].Position;
                     // direction = Vector3.Cross(nextPoint - point, Vector3.up);
                     direction = nextPoint - point;
                     direction = RotateDirection(direction);
                     return Vector3.Lerp(point, nextPoint, partialT);
                 }
             }
-            direction = _PointsNew[_PointsNew.Count - 1].Position - _PointsNew[_PointsNew.Count - 2].Position;
+            direction = _Points[_Points.Count - 1].Position - _Points[_Points.Count - 2].Position;
             direction = RotateDirection(direction);
-            return _PointsNew[_PointsNew.Count - 1].Position;
+            return _Points[_Points.Count - 1].Position;
         }
 
         private Vector3 RotateDirection(Vector3 direction) => Quaternion.LookRotation(direction) *  Quaternion.Euler(_DirectionRotation) * Vector3.forward ;
@@ -105,14 +105,14 @@ namespace GamePack.Tools.Helper
         [Button(ButtonSizes.Large)]
         private void AddPoint()
         {
-            var np = new GameObject($"Point {_PointsNew.Count}").AddComponent<PolyLinePathPoint>();
-            np.transform.position = _PointsNew.Count > 0 ? _PointsNew.Last().Position : transform.position;
-            _PointsNew.Add(np);
+            var np = new GameObject($"Point {_Points.Count}").AddComponent<PolyLinePathPoint>();
+            np.transform.position = _Points.Count > 0 ? _Points.Last().Position : transform.position;
+            _Points.Add(np);
             np.transform.SetParent(transform);
         }
 
         [Button]
-        private void Reverse() => _PointsNew.Reverse();
+        private void Reverse() => _Points.Reverse();
 
         private void OnDrawGizmos()
         {
@@ -124,20 +124,20 @@ namespace GamePack.Tools.Helper
 
             var lineColor = isSelectedPath ? selectedPathColor : normalColor;
             
-            if(_PointsNew == null) return;
+            if(_Points == null) return;
             
-            var hasMoreThanOnePoint = _PointsNew.Count > 1;
+            var hasMoreThanOnePoint = _Points.Count > 1;
             
-            for (var index = 0; index < _PointsNew.Count; index++)
+            for (var index = 0; index < _Points.Count; index++)
             {
-                var point = _PointsNew[index];
+                var point = _Points[index];
                 var pointPos = point.Position;
                 var isSelectedPoint = Selection.gameObjects.Contains(point.gameObject);
                 // Draw Line
                 Gizmos.color = lineColor;
-                if(index < _PointsNew.Count - 1 && hasMoreThanOnePoint)
+                if(index < _Points.Count - 1 && hasMoreThanOnePoint)
                 {
-                    var nextPoint = _PointsNew[index + 1].Position;
+                    var nextPoint = _Points[index + 1].Position;
                     Gizmos.DrawLine(pointPos, nextPoint);
                 }
                 // Draw Sphere

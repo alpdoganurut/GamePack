@@ -9,13 +9,7 @@ namespace GamePack.UnityUtilities
 
         public static void SetFieldWithReflection(object @object, string field, object value)
         {
-            SetPropOrField(@object, field, value);
-            
-            /* var fieldInfo = @object.GetType().GetField(field, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public);
-
-            Assert.IsNotNull(fieldInfo);
-
-            fieldInfo.SetValue(@object, value); */
+            SetPropertyOrField(@object, field, value);
         }
 
         public static bool IsValueConformsField(object obj, string field, object value)
@@ -29,12 +23,12 @@ namespace GamePack.UnityUtilities
 
         public static Object GetFieldAsUnityObject(object obj, string field)
         {
-            return GetPropOrField(obj, field) as Object;
+            return GetPropertyOrField(obj, field) as Object;
             // return obj.GetType().GetField(field, BindingFlags)?.GetValue(obj) as Object;
         }
 
         
-        private static void SetPropOrField(object obj, string field, object value)
+        private static void SetPropertyOrField(object obj, string field, object value)
         {
             var fieldInfo = obj.GetType().GetField(field, BindingFlags);
             if (fieldInfo != null)
@@ -58,7 +52,7 @@ namespace GamePack.UnityUtilities
             }
         }
         
-        public static object GetPropOrField(object obj, string field)
+        public static object GetPropertyOrField(object obj, string field)
         {
             var fieldInfo = obj.GetType().GetField(field, BindingFlags);
             if (fieldInfo != null)

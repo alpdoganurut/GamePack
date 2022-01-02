@@ -8,16 +8,31 @@ namespace GamePack.Minimap
     {
         [SerializeField, Required] private int _MinimapId;
         private bool _isQuitting;
+        private bool _addedToMinimap;
 
-        public void OnEnable()
+        private void OnEnable()
         {
-            MinimapBase.GetById(_MinimapId)?.AddMapObject(this);
+            AddToMinimap();
+        }
+
+        public void AddToMinimap()
+        {
+            if(_addedToMinimap) return;
+            
+            var minimapBase = MinimapBase.GetById(_MinimapId);
+            if(minimapBase)
+            {
+                _addedToMinimap = true;
+                minimapBase.AddMapObject(this);
+            }
+            
         }
 
         private void OnDisable()
         {
             if(_isQuitting) return;
             MinimapBase.GetById(_MinimapId)?.RemoveMapObject(this);
+            _addedToMinimap = false;
         }
 
         private void OnApplicationQuit()

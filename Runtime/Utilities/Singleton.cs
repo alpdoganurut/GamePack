@@ -10,7 +10,7 @@ namespace GamePack.UnityUtilities
     {
         private static T _instance;
 
-        /// Override this to create this automatically when Instance is accessed.  
+        /// Override to create new instance automatically when Instance is accessed.
         protected virtual bool IsAutoCreate => false;
         
         public static bool HasInstance => !IsDestroyed;

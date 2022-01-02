@@ -67,7 +67,8 @@ namespace TrickyHands
         private void OnDrawGizmos()
         {
             Handles.color = Color.yellow;
-            Handles.DrawWireDisc(Vector3.zero, Vector3.up, _Radius );
+            Handles.DrawWireDisc(Vector3.zero, Vector3.up, _Radius ); // Draw radius
+            Handles.Label(new Vector3(_Radius, 0, 0), nameof(ScatterObjects) + " " + name);  // Draw name
         } 
 #endif
         #endregion

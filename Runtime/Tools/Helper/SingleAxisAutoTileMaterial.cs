@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace TrickyHands
 {
+    [Obsolete("Don't use until update to cover edge cases.")]
     [RequireComponent(typeof(MeshRenderer))]
     [ExecuteInEditMode]
     public class SingleAxisAutoTileMaterial: MonoBehaviour

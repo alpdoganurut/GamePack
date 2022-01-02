@@ -102,9 +102,9 @@ namespace HexGames
             // Check if valid Scene
             if (IsValidGameScene)
             {
-                _config = ReflectionHelper.GetPropOrField(_game, "_Config") as ConfigBase;
-                _levelManager = ReflectionHelper.GetPropOrField(_game, "_SceneLevelManager") as SceneLevelManager;
-                _gameEvents = ReflectionHelper.GetPropOrField(_game, "_GameEvents") as GameEvents;
+                _config = ReflectionHelper.GetPropertyOrField(_game, "_Config") as ConfigBase;
+                _levelManager = ReflectionHelper.GetPropertyOrField(_game, "_SceneLevelManager") as SceneLevelManager;
+                _gameEvents = ReflectionHelper.GetPropertyOrField(_game, "_GameEvents") as GameEvents;
                 Log($"{scene.name} is valid Game scene.");
             }
             else if (_levelHelper)

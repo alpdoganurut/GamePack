@@ -37,6 +37,7 @@ namespace GamePack.Tools.Helper
             // ReSharper disable once IteratorNeverReturns
         }
         
+        // TODO: This would not be called naturally since coroutine running operation should have a reference to this object 
         ~ConstantChangeDetection()
         {
             CoroutineRunner.Runner.StopCoroutine(_coroutine);

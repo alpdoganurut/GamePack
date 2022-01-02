@@ -193,16 +193,16 @@ namespace GamePack.Timer
             else return this;
         }
 
-        private void AddSelfAndDistribute(ref List<Operation> operations)
+        private void RecursiveFindAllInTree(ref List<Operation> operations)
         {
             if(operations.Contains(this)) return;
 
             operations.Add(this);
             
-            Parent?.AddSelfAndDistribute(ref operations);
+            Parent?.RecursiveFindAllInTree(ref operations);
             foreach (var child in Children)
             {
-                child.AddSelfAndDistribute(ref operations);
+                child.RecursiveFindAllInTree(ref operations);
             }
         }
         
@@ -210,7 +210,7 @@ namespace GamePack.Timer
         {
             var root = GetRoot();
             var operations = new List<Operation>();
-            AddSelfAndDistribute(ref operations);
+            RecursiveFindAllInTree(ref operations);
 
             var operationTreeDescription = new OperationTreeDescription
             {

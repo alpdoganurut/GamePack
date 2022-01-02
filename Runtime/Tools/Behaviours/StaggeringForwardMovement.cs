@@ -6,8 +6,8 @@ namespace TrickyHands
 {
     public class StaggeringForwardMovement : MonoBehaviour
     {
-        [SerializeField, Required] private float _StaggerDuration;
-        [SerializeField, Required] private AnimationCurve _StaggerSpeedCurve;
+        [SerializeField, Required] private float _StaggerDuration = 1;
+        [SerializeField, Required] private AnimationCurve _StaggerSpeedCurve = AnimationCurve.Linear(0, 0, 1, 1);
         
         private float _baseSpeed;
         private float _speed;

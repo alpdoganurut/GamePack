@@ -14,7 +14,10 @@ namespace GamePack
         [SerializeField, Required, ShowIf("_IsLerp")] private float _LerpSpeed = 5;
         [Space]
         [SerializeField, Required] private UpdateType _UpdateType = UpdateType.LateUpdate;
-        
+        [Space]
+        [SerializeField, Required] private bool _X = true;
+        [SerializeField, Required] private bool _Y = true;
+        [SerializeField, Required] private bool _Z = true;
         private Vector3 TargetPosition => _ObjectToFollow.transform.position + _Offset;
 
         private void Update()
@@ -34,12 +37,17 @@ namespace GamePack
         private void TargetUpdate()
         {
             if (!_ObjectToFollow) return;
+
+            var targetPos = TargetPosition;
+            if (!_X) targetPos.x = transform.position.x;
+            if (!_Y) targetPos.y = transform.position.y;
+            if (!_Z) targetPos.z = transform.position.z;
             
             if (_IsLerp)
-                transform.position = Vector3.Lerp(transform.position, TargetPosition,
+                transform.position = Vector3.Lerp(transform.position, targetPos,
                     _LerpSpeed * Time.deltaTime);
             else
-                transform.position = TargetPosition;
+                transform.position = targetPos;
         }
 
         public void SetObjectToFollow(GameObject toFollow, Vector3? offset = null)

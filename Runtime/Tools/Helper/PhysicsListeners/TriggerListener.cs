@@ -7,9 +7,9 @@ using UnityEditor;
 using System;
 using UnityEngine;
 
-namespace GamePack.Tools.Helper.CollisionDetection
+namespace GamePack.Tools.Helper.PhysicsListeners
 {
-    public class EventTrigger: MonoBehaviour
+    public class TriggerListener: MonoBehaviour
     {
         public event Action<Collider> Enter;
         public event Action<Collider> Stay;

@@ -15,28 +15,29 @@ namespace GamePack.Poolable
 
         public List<PoolableBase> ActiveList => _activeList;
 
-        private void Start()
+        private void Awake()
         {
+            Prefill();
+        }
+
+        private void Prefill()
+        {
+            var objs = new PoolableBase[_PreFillCount];
             for (var i = 0; i < _PreFillCount; i++)
             {
-                var obj = Get();
-            }
-
-            foreach (var poolableBase in _activeList.ToArray())
-            {
-                poolableBase.EndLife();
+                objs[i] = FetchNew();
             }
         }
 
         public PoolableBase Get()
         {
             var newObj = FetchNew();
-            newObj.LifeDidEnd += PoolObj;
             newObj.OnStart();
             ActiveList.Add(newObj);
             return newObj;
         }
         
+        /// Grab one from pool if available or create.  
         private PoolableBase FetchNew()
         {
             if (_poolStack.Count > 0)
@@ -46,14 +47,15 @@ namespace GamePack.Poolable
             else
             {
                 var newObj = Instantiate(_Prefab);
+                newObj.LifeDidEnd += PoolObject;
                 return newObj;
             }
         }
 
-        private void PoolObj(PoolableBase obj)
+        private void PoolObject(PoolableBase obj)
         {
             _poolStack.Push(obj);
-            obj.LifeDidEnd -= PoolObj;
+            obj.LifeDidEnd -= PoolObject;
             obj.OnStop();
             _activeList.Remove(obj);
         }
@@ -62,7 +64,7 @@ namespace GamePack.Poolable
         {
             foreach (var poolableBase in ActiveList)
             {
-                poolableBase.LifeDidEnd -= PoolObj;
+                poolableBase.LifeDidEnd -= PoolObject;
             }
         }
     }

@@ -1,6 +1,6 @@
 ﻿using System;
 using GamePack.Tools.Helper;
-using GamePack.Tools.Helper.CollisionDetection;
+using GamePack.Tools.Helper.PhysicsListeners;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -48,7 +48,7 @@ namespace GamePack
         
         [SerializeField, Required] private SlingCarControllerBase _Controller;
         [SerializeField, Required] private Rigidbody _Rigidbody;
-        [FormerlySerializedAs("_ColliderEvent")] [SerializeField, Required] private EventCollider _EventCollider;
+        [FormerlySerializedAs("_EventCollider")] [FormerlySerializedAs("_ColliderEvent")] [SerializeField, Required] private CollisionListener _CollisionListener;
         [Space] 
         [SerializeField] private float _TargetSpeed = 12;
         [Space]
@@ -151,7 +151,7 @@ namespace GamePack
             // _neutralPos = _NeutralPosRef.position.x;
             // _activePos = _ActivePosRef.position.x;
 
-            _EventCollider.Enter += OnCollision;
+            _CollisionListener.Enter += OnCollision;
 
             /*
             var @delegate = _Rigidbody.gameObject.AddComponent<SlingCarDelegate>();

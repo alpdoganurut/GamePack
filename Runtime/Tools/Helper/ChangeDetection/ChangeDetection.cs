@@ -62,7 +62,7 @@ namespace GamePack.Tools.Helper
             }
             // ReSharper disable once IteratorNeverReturns
         }
-
+        
         public void Destroy()
         {
             CoroutineRunner.Stop(_coroutine);

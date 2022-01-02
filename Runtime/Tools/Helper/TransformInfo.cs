@@ -38,6 +38,7 @@ namespace GamePack.Tools.Helper
             transform.localRotation = LocalRotation;
             transform.localScale = LocalScale;
         }
+        
         public void ApplyWorld(Transform transform)
         {
             transform.position = Position;
@@ -46,6 +47,13 @@ namespace GamePack.Tools.Helper
             var parent = transform.parent;
             var parentWorldScale = parent ? parent.lossyScale : Vector3.one;
             transform.localScale = new Vector3(LossyWorldScale.x / parentWorldScale.x, LossyWorldScale.y / parentWorldScale.y, LossyWorldScale.z / parentWorldScale.z);
+        }
+
+        public static void CopyFromTo(Transform from, Transform to, bool isLocal)
+        {
+            var info = new TransformInfo(from);
+            if(isLocal) info.ApplyLocal(to);
+            else info.ApplyWorld(to);
         }
     }
 }

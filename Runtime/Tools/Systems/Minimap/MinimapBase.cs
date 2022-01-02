@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.Serialization;
@@ -11,8 +12,8 @@ namespace GamePack.Minimap
     {
         #region Static
 
-        private static readonly Dictionary<int, MinimapBase> Minimaps = new Dictionary<int, MinimapBase>();
-        public static MinimapBase GetById(int id){return Minimaps.ContainsKey(id) ? Minimaps[id] : null; }
+        private static Dictionary<int, MinimapBase> _minimaps;
+        public static MinimapBase GetById(int id){return _minimaps.ContainsKey(id) ? _minimaps[id] : null; }
         
         #endregion
         
@@ -33,22 +34,30 @@ namespace GamePack.Minimap
         
         [ShowInInspector, ReadOnly] private Dictionary<MinimapObject, PoolableIndicator> _indicatorsDictionary = new Dictionary<MinimapObject, PoolableIndicator>();
         
+        // Clear static minimap array
+        [InitializeOnEnterPlayMode]
+        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
+        {
+            _minimaps = new Dictionary<int, MinimapBase>(); 
+        }
+
         private void Awake()
         {
-            Assert.IsFalse(Minimaps.ContainsKey(_ID));
+            Assert.IsFalse(_minimaps.ContainsKey(_ID));
             
-            Minimaps.Add(_ID, this);
+            _minimaps.Add(_ID, this);
 
-            // InitializeSceneMinimapObjects();
+            InitializeSceneMinimapObjects();
             // _MapArea.GetWorldCorners(_mapAreaCorners);
         }
 
+        [Button]
         private void InitializeSceneMinimapObjects()
         {
             var sceneMinimapObjects = FindObjectsOfType<MinimapObject>();
             foreach (var sceneMinimapObject in sceneMinimapObjects)
             {
-                sceneMinimapObject.OnEnable();
+                sceneMinimapObject.AddToMinimap();
             }
         }
 
