@@ -17,6 +17,9 @@ namespace GamePack
         private const string ActivateSceneNamesInfo =
             "Enable to use level scenes lighting settings. Activating scenes also cause new objects to be Instantiated in that scene.";
             
+        [ShowInInspector, ReadOnly, TabGroup("Info")]
+        private static Scene? _loadedScene;
+        
         [SerializeField, TabGroup("Setup")]
         private bool _IsLoop = true;
         
@@ -29,13 +32,12 @@ namespace GamePack
         [SerializeField, ReadOnly, TabGroup("Info")]
         private string[] _LevelSceneNames;
         
-        [ShowInInspector, ReadOnly, TabGroup("Info")]
-        private static Scene? _loadedScene;
-        
         private AsyncOperation _asyncOperation;
         
         [SerializeField, ReadOnly, TabGroup("Info")]
         private string _LevelKey;
+
+        public static Scene? LoadedScene => _loadedScene;
         
         [ShowInInspector, TabGroup("Info"), InlineButton("IterateLevel", "+")]
         public int CurrentLevelIndex
@@ -173,7 +175,7 @@ namespace GamePack
             get => _SceneAssets;
             set => _SceneAssets = value;
         }
-        
+
         private void OnValidate()
         {
             if(_SceneAssets != null)
@@ -225,8 +227,8 @@ namespace GamePack
          TabGroup("Setup")] 
         public SceneAsset _TestLevel;
 
-        [SerializeField, InfoBox("Disable to cancel scene loading for testing."),
-         TabGroup("Setup")] private bool _LoadLevelScene = true;
+        [SerializeField, InfoBox("Disable to cancel scene loading for testing."), TabGroup("Setup")] 
+        private bool _LoadLevelScene = true;
 #endif
 
         #endregion

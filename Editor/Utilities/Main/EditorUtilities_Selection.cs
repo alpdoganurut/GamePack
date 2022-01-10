@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Sirenix.OdinInspector.Editor;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -71,8 +70,7 @@ namespace GamePack.Editor.Utilities
 
             foreach (var obj in Selection.gameObjects)
             {
-                var go = obj as GameObject;
-                if (go != null && go.transform.childCount > 0)
+                if (obj != null && obj.transform.childCount > 0)
                 {
                     // selectedObjects.Add(go.transform.parent.gameObject);
                     var tmp = obj.GetComponentInChildren<TextMeshProUGUI>();
@@ -82,7 +80,7 @@ namespace GamePack.Editor.Utilities
                 }
                 else
                 {
-                    selectedObjects.Add(go);
+                    selectedObjects.Add(obj);
                 }
             }
 

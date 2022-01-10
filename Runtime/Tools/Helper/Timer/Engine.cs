@@ -97,6 +97,13 @@ namespace GamePack.Timer
                     var duration = endTime - startTime;
                     var time = timeForOperation - startTime;
                     var t = time / duration;
+
+                    // TODO: This is hacky
+                    if (t != null && float.IsNaN(t.Value))
+                    {
+                        t = 1;
+                    }
+                    
                     runningOperation.Update(t);
                 }
                 else

@@ -10,9 +10,13 @@ using GameAnalyticsSDK;
 using System.Linq;
 using GamePack;
 using GamePack.UnityUtilities;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Scene = UnityEngine.SceneManagement.Scene;
 
 namespace HexGames
 {
@@ -47,6 +51,8 @@ namespace HexGames
         }
     } // Access config when not in play mode
 
+    public static Scene? LoadedScene => SceneLevelManager.LoadedScene;
+    
     [SerializeField, Required, FoldoutGroup("Default")]
     private SceneLevelManager _SceneLevelManager;
     

@@ -1,10 +1,11 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace HexGames
 {
     public abstract class GameBase : MonoBehaviour
     {
-        [SerializeField, HideInInspector] public string WorkingTitle;
+        [FormerlySerializedAs("WorkingTitle")] [SerializeField, HideInInspector] public string Identifier;
         public abstract bool IsPlaying { get; }
         public abstract void StartGame();
         public abstract void StopGame(bool isSuccess);

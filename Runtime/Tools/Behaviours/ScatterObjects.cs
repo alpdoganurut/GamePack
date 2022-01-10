@@ -9,7 +9,7 @@ using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace TrickyHands
+namespace GamePack
 {
     public class ScatterObjects: MonoBehaviour
     {

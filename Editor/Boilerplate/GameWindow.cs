@@ -14,38 +14,26 @@ using Debug = UnityEngine.Debug;
 
 namespace HexGames
 {
-    [Title("@PlayerSettings.productName")]
-    [Title("@Title", horizontalLine: false)]
-    // [TypeInfoBox("@IsValidGameScene ? (\"Scene: \" + _scene.name) : \"Not a valid scene\"")]
+    [Title("@\"Game Name: \" + PlayerSettings.productName")]
     public class GameWindow: OdinEditorWindow
     {
-        // ReSharper disable once UnusedMember.Local
-        private string Title
-        {
-            get
-            {
-                if (_levelHelper != null)
-                    return $"{_scene.name}";
-                
-                return IsValidGameScene
-                    ? _scene.name + (EditorApplication.isCompiling ? " | Compiling..." : "")
-                    : "Not Valid";
-            }
-        }
-
-        // [InfoBox("@\"Product Name: \" + PlayerSettings.productName", InfoMessageType.None)]
+        private const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
+        
+        [InfoBox("GameIdentifier is empty. Set this to name of the game, eg. \"Lonely Soccer\"", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
         [PropertyOrderAttribute(-1)]
-        [ShowInInspector, HideInPlayMode, ShowIf("@_config != null")]
+        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
         private string GameIdentifier
         {
-            get => _game ? _game.WorkingTitle : null;
+            get => _game ? _game.Identifier : null;
             set
             {
-                _game.WorkingTitle = value;
+                _game.Identifier = value;
                 if(string.IsNullOrWhiteSpace(PlayerSettings.productName))
                     PlayerSettings.productName = value;
                 PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.hex." + value.ToLower().Replace(" ", string.Empty));
                 EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
+
+                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             }
         }
         
@@ -56,7 +44,7 @@ namespace HexGames
         
         private static bool _isListening;
 
-        private bool IsValidGameScene => _game;
+        private bool IsValidGameScene => _game && SceneManager.GetActiveScene().path == MainSceneAssetPath;
         private Scene _scene;
 
         private event Action EnterPlayCallback;
@@ -73,7 +61,7 @@ namespace HexGames
             _instance = this;
         }
 
-        public void Init()
+        private void Init()
         {
             Log("Initializing Game Window.");
             if(!_isListening)
@@ -171,7 +159,6 @@ namespace HexGames
             set { if(_levelManager) _levelManager._TestLevel = value; }
         }
         
-        
         [Button("Test"),
          HorizontalGroup("Test Level", width: 50)/* ResponsiveButtonGroup("Editor Actions", AnimateVisibility = false)*/,
          ShowIf("@DisableReloadDomain && !EditorApplication.isPlaying && IsValidGameScene")]
@@ -197,7 +184,7 @@ namespace HexGames
         [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene")]
         private void OpenMainScene()
         {
-            EditorSceneManager.OpenScene("Assets/01_Scenes/main.unity");
+            EditorSceneManager.OpenScene(MainSceneAssetPath);
         }
         
         [TabGroup("Game")]
@@ -236,28 +223,11 @@ namespace HexGames
         #region Levels
 
         [TabGroup("Levels")]
-
-        /*[TabGroup("Levels")]
-        [ShowInInspector, ShowIf("IsValidGameScene")]
-        private SceneAsset[] Levels
-        {
-            get => _levelManager ? _levelManager.SceneAssets : null;
-            set { if(_levelManager) _levelManager.SceneAssets = value; }
-        }*/
-
         [ShowInInspector,
          ShowIf("IsValidGameScene"),
          InlineEditor(InlineEditorObjectFieldModes.Hidden)]
         private SceneLevelManager _levelManager;
 
-        /*[TabGroup("Levels")]
-        [ShowInInspector, ShowIf("IsValidGameScene")]
-        private void SelectLevelManager()
-        {
-            Selection.activeObject = _levelManager;
-        }*/
-
-        
         #endregion
         
         #region Game Actions

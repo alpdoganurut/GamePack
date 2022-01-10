@@ -15,18 +15,18 @@ namespace GamePack.Timer
         public delegate bool OperationWaitForCondition();
         public delegate bool OperationSkipCondition();
 
-        internal string Name { get; }
-        private readonly float _duration;
+        internal string Name { get; set; }
+        protected float _duration;
         internal float Delay { get; }
-        private readonly EasingFunction.Ease _ease;
-        private readonly AnimationCurve _easeCurve;
+        protected readonly EasingFunction.Ease _ease;
+        protected readonly AnimationCurve _easeCurve;
         
-        private readonly OperationAction _action;
-        private readonly OperationUpdateAction _updateAction;
-        private readonly OperationEndAction _endAction;
-        private readonly OperationFinishCondition _finishCondition;
-        private readonly OperationWaitForCondition _waitForCondition;
-        private readonly OperationSkipCondition _skipCondition;
+        protected readonly OperationAction _action;
+        protected OperationUpdateAction _updateAction;
+        protected readonly OperationEndAction _endAction;
+        protected readonly OperationFinishCondition _finishCondition;
+        protected readonly OperationWaitForCondition _waitForCondition;
+        protected readonly OperationSkipCondition _skipCondition;
 
         private Operation Parent { get; set; }
         internal OperationState State { get; private set; }
@@ -125,8 +125,11 @@ namespace GamePack.Timer
         internal void Run()
         {
             _action?.Invoke();
+            OnStart();
             State = OperationState.Running;
         }
+
+        protected virtual void OnStart() {}
 
         internal void Update(float? tVal)
         {
