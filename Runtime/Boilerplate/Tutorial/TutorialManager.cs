@@ -1,87 +1,58 @@
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using Boilerplate.Base;
-using GamePack.TweenAlphaSetActive;
+using GamePack.Timer;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 
 namespace GamePack
 {
     public class TutorialManager: MonoBehaviour
     {
-        [SerializeField, ReadOnly] private string _TutorialPrefsKey;
         [SerializeField, Required] private TutorialConfig _TutorialConfig;
 
-        private UIFader _activePanel;
+        private readonly List<OperationTreeDescription> _operations = new List<OperationTreeDescription>();
 
-        public void ShowTutorial(int index)
+        public void ShowTutorial(int levelIndex)
         {
-            
-            if(_TutorialConfig.PanelConfigs == null || index >= _TutorialConfig.PanelConfigs.Length) return;
-            
-            var panelConfig = _TutorialConfig.PanelConfigs[index];
-            
-            LeanTween.cancel(gameObject);
-            
-            if(IsTutorialShown(index)) return;
-            if(_activePanel) _activePanel.SetIsActive(false);
+            if(_TutorialConfig.PanelConfigs == null || levelIndex >= _TutorialConfig.PanelConfigs.Length) return;
 
-            var tutorialPanel = panelConfig.Panel;
-            
-            _activePanel = tutorialPanel;
-            
-            SetTutorialShown(index, true);
+            var panelConfigs = _TutorialConfig.PanelConfigs.Where(config => config.LevelIndex == levelIndex);
 
-            // Show with delay
-            LeanTween.delayedCall(gameObject, panelConfig.Delay, () =>
+            foreach (var config in panelConfigs)
             {
-                tutorialPanel.SetIsActive(true);
-            });
-            // Hide
-            LeanTween.delayedCall(gameObject, panelConfig.Delay + panelConfig.Duration, () =>
-            {
-                tutorialPanel.SetIsActive(false);
-                _activePanel = null;
-            });
-        }
-
-        private bool IsTutorialShown(int index)
-        {
-            return PlayerPrefs.GetInt(GetTutorialKey(index)) > 0;
-        }
-
-        private void SetTutorialShown(int index, bool isShown)
-        {
-            PlayerPrefs.SetInt(GetTutorialKey(index), isShown ? 1 : 0);
-        }
-
-        private string GetTutorialKey(int index)
-        {
-            return _TutorialPrefsKey + index;
-        }
-
-        [Button]
-        private void ResetTutorial()
-        {
-            for (var index = 0; index < _TutorialConfig.PanelConfigs.Length; index++)
-            {
-                SetTutorialShown(index, false);
+                var op = new Operation(delay: config.Delay, duration: config.Duration,
+                    action: () =>
+                    {
+                        config.Panel.SetIsActive(true);
+                    },
+                    endAction: () =>
+                    {
+                        config.Panel.SetIsActive(false);
+                    }).Start();
+                
+                _operations.Add(op);
             }
+        }
+
+        public void Cancel()
+        {
+            foreach (var operation in _operations)
+            {
+                operation.Cancel();
+            }
+            _operations.Clear();
         }
         
         #region Development
 #if UNITY_EDITOR
         private void OnValidate()
         {
-            _TutorialPrefsKey = PlayerSettings.applicationIdentifier + ".tutorial";
-            
             foreach (var panelConfig in _TutorialConfig.PanelConfigs)
             {
-                panelConfig.Panel.DisableOnStart = true;
+                if(panelConfig.Panel) panelConfig.Panel.DisableOnStart = true;
             }
         }
-
-
 #endif
         #endregion
     }

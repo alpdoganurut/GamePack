@@ -81,6 +81,7 @@ namespace GamePack
         public void LoadCurrentLevelScene(Action callback)
         {
             Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
+            Assert.IsTrue(_LevelSceneNames.Length > 0, "No levels set in Level Manager!");
             
             // Not loading a scene is a test feature.
 #if UNITY_EDITOR
@@ -178,9 +179,9 @@ namespace GamePack
 
         private void OnValidate()
         {
+            // Refresh build setting scenes
             if(_SceneAssets != null)
             {
-                // Refresh build setting scenes
                 var refreshBuildSettingScenes = false;
                 foreach (var sceneAsset in SceneAssets)
                 {
@@ -196,9 +197,11 @@ namespace GamePack
                 }
 
                 if (refreshBuildSettingScenes) RefreshBuildSettings();
-                // Convert scenes to names
-                _LevelSceneNames = SceneAssets.Where(asset => asset).Select(asset => asset.name).ToArray();
             }
+            
+            // Convert scenes to names
+            _LevelSceneNames = SceneAssets.Where(asset => asset).Select(asset => asset.name).ToArray();
+            
             // LevelKey
             _LevelKey = PlayerSettings.applicationIdentifier + ".levelindex";
         }

@@ -34,6 +34,8 @@ namespace GamePack.Timer
         // Property Accessors
         internal float? Duration => _duration < 0 ? (float?) null : _duration;
         internal bool IsIgnoreTimeScale { get; private set; }
+        
+        public bool IsRunEndActionBeforeCancel { get; private set; }
 
         public Operation(
             string name = null,
@@ -181,8 +183,9 @@ namespace GamePack.Timer
             IsIgnoreTimeScale = isIgnore;
         }
         
-        internal void Cancel()
+        internal void Cancel(bool isRunEndActionBeforeCancel = false)
         {
+            IsRunEndActionBeforeCancel = isRunEndActionBeforeCancel; 
             State = OperationState.Cancelled;
         }
         

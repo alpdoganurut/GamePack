@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace HexGames
 {
-    public class LevelHelperBase: MonoBehaviour
+    public abstract class LevelHelperBase: MonoBehaviour
     {
     }
 }

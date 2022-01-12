@@ -43,7 +43,7 @@ namespace GamePack.Timer
 
         private void Update()
         {
-            // Remove root operations if they are no longer waiting
+            // Remove root operations if they are no longer waiting -- Operations that are cancelled before started is removed at this stage
             SyncRemove(operation => operation.State != OperationState.Waiting, _rootOperations, _rootOperationTimes);
             
             // Start operations if ready
@@ -68,7 +68,17 @@ namespace GamePack.Timer
                 }
             }
 
-            // Remove running operations if they are no longer running
+            // Catch cancelled operations and run their end actions if set to true
+            foreach (var runningOperation in _runningOperations)
+            {
+                if (runningOperation.State == OperationState.Cancelled &&
+                    runningOperation.IsRunEndActionBeforeCancel)
+                {
+                    runningOperation.SetFinished();
+                }
+            }
+            
+            // Remove operations if they are no longer running
             SyncRemove(operation => operation.State != OperationState.Running, _runningOperations, _runningOperationEndTimes, _runningOperationStartTimes);
             
             // Update, resolve or cancel operations based on conditions
@@ -80,7 +90,6 @@ namespace GamePack.Timer
                 var timeForOperation = GetTimeForOperation(runningOperation);
                 
                 // Resolve
-                // ReSharper disable once MergeSequentialChecks
                 if (endTime.HasValue && timeForOperation > endTime ||
                     runningOperation.IsFinished())
                 {
@@ -88,17 +97,15 @@ namespace GamePack.Timer
                         runningOperation.Update( 1);
                     
                     Resolve(runningOperation);
-                    continue;
                 }
-                
-                if(hasUpdateTime)
+                else if(hasUpdateTime)
                 {
                     var startTime = _runningOperationStartTimes[index];
                     var duration = endTime - startTime;
                     var time = timeForOperation - startTime;
                     var t = time / duration;
 
-                    // TODO: This is hacky
+                    // TODO: This is hacky - this happens if for some reason (MoveOperation, 0 distance and speed supplied) duration is 0 
                     if (t != null && float.IsNaN(t.Value))
                     {
                         t = 1;

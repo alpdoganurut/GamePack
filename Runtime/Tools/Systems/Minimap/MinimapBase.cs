@@ -34,12 +34,14 @@ namespace GamePack.Minimap
         
         [ShowInInspector, ReadOnly] private Dictionary<MinimapObject, PoolableIndicator> _indicatorsDictionary = new Dictionary<MinimapObject, PoolableIndicator>();
         
+#if UNITY_EDITOR
         // Clear static minimap array
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
             _minimaps = new Dictionary<int, MinimapBase>(); 
-        }
+        } 
+#endif
 
         private void Awake()
         {

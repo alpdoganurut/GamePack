@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using GamePack;
 using GamePack.UnityUtilities;
@@ -109,7 +110,6 @@ namespace HexGames
 
             _isInit = false;
             
-            
             if (!_instance || !options.HasFlag(EnterPlayModeOptions.DisableDomainReload)) return;
             
             _instance.StopListeningSceneChange();
@@ -195,18 +195,7 @@ namespace HexGames
 
         #region Events & UI
 
-        [Title("Events & UI")]
-        [TabGroup("Game")]
-        [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("@IsValidGameScene && _gameEvents")]
         private GameEvents _gameEvents;
-
-        [TabGroup("Game", order: -1)]
-        [ShowInInspector, ShowIf("@IsValidGameScene")]
-        private Button StartGameButton
-        {
-            get => _game ? ReflectionHelper.GetFieldAsUnityObject(_game, "_StartGameButton") as Button : null;
-            set { if(_game) ReflectionHelper.SetFieldWithReflection(_game, "_StartGameButton", value); }
-        }
 
         #endregion
         
@@ -259,6 +248,10 @@ namespace HexGames
 
         private const string EnableAnalyticsDefineSymbol = "ENABLE_ANALYTICS";
         private const string LoggingDefineSymbol = "GAME_WINDOW_LOGGING";
+
+        private const string VersionFileName = "version.txt";
+
+        [ShowInInspector, PropertyOrder(-1)] private string Version => File.ReadAllText(Application.dataPath + "/" + VersionFileName);
 
         [TabGroup("Settings")]
         [Button]
