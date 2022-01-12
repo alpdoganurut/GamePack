@@ -250,8 +250,31 @@ namespace HexGames
         private const string LoggingDefineSymbol = "GAME_WINDOW_LOGGING";
 
         private const string VersionFileName = "version.txt";
+        
+        private const string PackagesLockJsonName = "packages-lock.json";
+        private const string PackagesDirectoryName = "Packages";
 
         [ShowInInspector, PropertyOrder(-1)] private string Version => File.ReadAllText(Application.dataPath + "/" + VersionFileName);
+
+        [TabGroup("Settings")]
+        [Button]
+        private void UpdateGamePack()
+        {
+            if (!EditorUtility.DisplayDialog("Update Packages", "This will delete packages.lock. Continue?", "Update",
+                "Cancel")) return;
+
+            var directoryInfo = Directory.GetParent(Application.dataPath);
+            
+            if(directoryInfo == null)
+            {
+                Debug.LogError("Failed to find packages.lock");
+                return;
+            }
+
+            var path = Path.Combine(directoryInfo.FullName, PackagesDirectoryName, PackagesLockJsonName) ;
+            File.Delete(path);
+            UnityEditor.PackageManager.Client.Resolve();
+        }
 
         [TabGroup("Settings")]
         [Button]
