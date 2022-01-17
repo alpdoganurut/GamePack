@@ -18,6 +18,8 @@ namespace GamePack.Timer
         public MoveOperation(Transform transform = null,
             float? duration = null, float? speed = null,
             Vector3? targetPos = null, [CanBeNull] Transform targetPosRef = null,
+            EasingFunction.Ease? ease = null,
+            AnimationCurve easeCurve = null,
             string name = null)
         {
             Assert.IsTrue(targetPos != null || targetPosRef, "targetPos or targetPosRef must have value!");
@@ -32,13 +34,16 @@ namespace GamePack.Timer
             _targetPos = targetPos;
             _targetPosRef = targetPosRef;
 
+            _ease = ease;
+            _easeCurve = easeCurve;
+            
             Name = name ?? $"{(_transform ? _transform.name + " "  : "")}Move Operation";
 
             
             _updateAction = UpdateAction;
         }
 
-        protected override void OnStart()
+        protected override void OnRun()
         {
             _initialPos = _transform.position;
             var finalDuration = _suppliedDuration ?? (Vector3.Distance(_targetPos ?? _targetPosRef.position, _initialPos) / _speed);

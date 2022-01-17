@@ -2,6 +2,6 @@ namespace GamePack.Timer
 {
     public enum OperationState
     {
-        Waiting, Running, Finished, Cancelled
+        NotStarted, Waiting, Running, Finished, Cancelled
     }
 }

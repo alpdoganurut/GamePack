@@ -4,6 +4,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Assertions;
 using Debug = UnityEngine.Debug;
@@ -26,10 +28,10 @@ namespace GamePack.Timer
             }
         }
         
-        private readonly List<Operation> _rootOperations = new List<Operation>();
+        [ShowInInspector] private readonly List<Operation> _rootOperations = new List<Operation>();
         private readonly List<float?> _rootOperationTimes = new List<float?>();
         
-        private readonly List<Operation> _runningOperations = new List<Operation>();
+        [ShowInInspector] private readonly List<Operation> _runningOperations = new List<Operation>();
         private readonly List<float> _runningOperationStartTimes = new List<float>();
         private readonly List<float?> _runningOperationEndTimes = new List<float?>();
         
@@ -43,6 +45,15 @@ namespace GamePack.Timer
 
         private void Update()
         {
+            #if TIMER_ENABLE_LOG
+            // Logging all operations to remove
+            var toRemove = _rootOperations.Where(operation => operation.State != OperationState.Waiting);
+            foreach (var operation in toRemove)
+            {
+                Debug.Log($"Will remove {operation.Name}");
+            }
+            #endif
+            
             // Remove root operations if they are no longer waiting -- Operations that are cancelled before started is removed at this stage
             SyncRemove(operation => operation.State != OperationState.Waiting, _rootOperations, _rootOperationTimes);
             
@@ -74,7 +85,7 @@ namespace GamePack.Timer
                 if (runningOperation.State == OperationState.Cancelled &&
                     runningOperation.IsRunEndActionBeforeCancel)
                 {
-                    runningOperation.SetFinished();
+                    runningOperation.Finish();
                 }
             }
             
@@ -90,8 +101,8 @@ namespace GamePack.Timer
                 var timeForOperation = GetTimeForOperation(runningOperation);
                 
                 // Resolve
-                if (endTime.HasValue && timeForOperation > endTime ||
-                    runningOperation.IsFinished())
+                if ((endTime.HasValue && timeForOperation > endTime) ||
+                    runningOperation.IsFinisCondition())
                 {
                     if(runningOperation.Duration.HasValue)
                         runningOperation.Update( 1);
@@ -134,7 +145,9 @@ namespace GamePack.Timer
         {
             Log($"Resolving {operation.Name}");
             
-            operation.SetFinished();
+            SyncRemove(op => op == operation, _rootOperations, _rootOperationTimes);
+            
+            operation.Finish();
             
             if (operation.Children.Count > 0)
             {

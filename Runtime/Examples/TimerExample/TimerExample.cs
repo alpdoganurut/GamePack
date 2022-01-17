@@ -10,8 +10,9 @@ namespace GamePack.TimerExample
         [SerializeField, Required] private GameObject _ObjectToMove;
         [SerializeField] private EasingFunction.Ease _MoveObjectEase;
         [SerializeField] private float _InitialDelay = 2;
-        [SerializeField, Required] private bool _IgnoreTimeScale = false;
-        private OperationTreeDescription _operation;
+        [SerializeField, Required] private bool _IgnoreTimeScale;
+        [SerializeField, Required] private bool _IsRepeat;
+        private OperationTreeDescription _operationDescription;
 
         [Button]
         private void SetTimeScale(float scale = .5f)
@@ -22,14 +23,14 @@ namespace GamePack.TimerExample
         [Button]
         private void Cancel()
         {
-            _operation.Cancel();
+            _operationDescription.Cancel();
         }
         
         private void Start()
         {
             var objectStartPos = _ObjectToMove.transform.position;
             
-            _operation =
+            _operationDescription =
                 new Operation(name + " Root Op", delay: _InitialDelay, duration: 1, 
                     action: () =>
                     {
@@ -65,8 +66,10 @@ namespace GamePack.TimerExample
                         _ObjectToMove.transform.position = Vector3.Lerp(objectStartPos, objectStartPos + new Vector3(0, 0, 5), 1 - tVal);
                     }))
                 .Save();
-            _operation.Start(ignoreTimeScale:_IgnoreTimeScale);
             
+            if(_IsRepeat) _operationDescription.RepeatInfinite();
+            
+            _operationDescription.Start(ignoreTimeScale:_IgnoreTimeScale);
         }
     }
 }

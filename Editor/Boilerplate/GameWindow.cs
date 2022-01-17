@@ -19,6 +19,16 @@ namespace HexGames
     public class GameWindow: OdinEditorWindow
     {
         private const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
+        private const string NotSetProductName = "notset";
+        
+        [InfoBox("GameName is not set!", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || String.IsNullOrEmpty(GameName) ")]
+        [PropertyOrderAttribute(-1)]
+        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
+        private string GameName
+        {
+            get => PlayerSettings.productName;
+            set => PlayerSettings.productName = value;
+        }
         
         [InfoBox("GameIdentifier is empty. Set this to name of the game, eg. \"Lonely Soccer\"", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
         [PropertyOrderAttribute(-1)]
@@ -254,7 +264,31 @@ namespace HexGames
         private const string PackagesLockJsonName = "packages-lock.json";
         private const string PackagesDirectoryName = "Packages";
 
-        [ShowInInspector, PropertyOrder(-1)] private string Version => File.ReadAllText(Application.dataPath + "/" + VersionFileName);
+        [ShowInInspector, PropertyOrder(-1)] private string Version
+        {
+            get
+            {
+                // Backwards compatibility
+                try
+                {
+                    return File.ReadAllText(Application.dataPath + "/" + VersionFileName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                try
+                {
+                    return File.ReadAllText(Application.dataPath + "/." + VersionFileName);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    throw;
+                }
+            }
+        }
 
         [TabGroup("Settings")]
         [Button]

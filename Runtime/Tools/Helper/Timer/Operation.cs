@@ -6,7 +6,7 @@ namespace GamePack.Timer
 {
     public class Operation
     {
-        private const float NullUpdateTVal = -1;
+        private const float NullFloatValue = -1f;
 
         public delegate void OperationAction();
         public delegate void OperationUpdateAction(float tVal);
@@ -15,34 +15,44 @@ namespace GamePack.Timer
         public delegate bool OperationWaitForCondition();
         public delegate bool OperationSkipCondition();
 
+        #region Readonly State
+
         internal string Name { get; set; }
         protected float _duration;
         internal float Delay { get; }
-        protected readonly EasingFunction.Ease _ease;
-        protected readonly AnimationCurve _easeCurve;
-        
-        protected readonly OperationAction _action;
+        protected EasingFunction.Ease? _ease;
+        protected AnimationCurve _easeCurve;
+
+        private readonly OperationAction _action;
         protected OperationUpdateAction _updateAction;
-        protected readonly OperationEndAction _endAction;
-        protected readonly OperationFinishCondition _finishCondition;
-        protected readonly OperationWaitForCondition _waitForCondition;
-        protected readonly OperationSkipCondition _skipCondition;
+        private readonly OperationEndAction _endAction;
+        private readonly OperationFinishCondition _finishCondition;
+        private readonly OperationWaitForCondition _waitForCondition;
+        private readonly OperationSkipCondition _skipCondition;
 
         private Operation Parent { get; set; }
+        
+        #endregion
+
+        #region Mutating State
+
         internal OperationState State { get; private set; }
         internal List<Operation> Children { get; } = new List<Operation>();
-        // Property Accessors
-        internal float? Duration => _duration < 0 ? (float?) null : _duration;
+        
         internal bool IsIgnoreTimeScale { get; private set; }
         
         public bool IsRunEndActionBeforeCancel { get; private set; }
 
+        internal float? Duration => _duration < 0 ? (float?) null : _duration;
+        
+        #endregion
+
         public Operation(
             string name = null,
-            float duration = NullUpdateTVal,
+            float duration = NullFloatValue,
             float delay = 0,
             bool ignoreTimeScale = false,
-            EasingFunction.Ease ease = EasingFunction.Ease.Linear,
+            EasingFunction.Ease? ease = null,
             AnimationCurve easeCurve = null,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
@@ -61,9 +71,9 @@ namespace GamePack.Timer
             var isDurationSupplied = duration > 0;
             Assert.IsFalse(isDurationSupplied && finishCondition != null, "Duration and finish condition both can't be supplied!"); // Botch can't be supplied
             // Ease can't be used if no duration is set
-            Assert.IsTrue(ease == EasingFunction.Ease.Linear || isDurationSupplied, "Ease can't be used if no duration is set!");
+            Assert.IsTrue(ease == null || isDurationSupplied, "Ease can't be used if no duration is set!");
             // There can't be two easing
-            Assert.IsFalse(ease != EasingFunction.Ease.Linear && easeCurve != null, "There can't be two easing method!");
+            Assert.IsFalse(ease != null && easeCurve != null, "There can't be two easing method!");
             
             Name = name;
             _duration = duration;
@@ -79,9 +89,6 @@ namespace GamePack.Timer
             _finishCondition = finishCondition;
             _waitForCondition = waitForCondition;
             _skipCondition = skipCondition;
-
-            State = OperationState.Waiting;
-
         }
 
         public OperationTreeDescription Save()
@@ -95,9 +102,17 @@ namespace GamePack.Timer
             description.Start(ignoreTimeScale);
             return description;
         }
+
+        public void Restart()
+        {
+            ResetState();
+            Start();
+        }
         
         public Operation Add(Operation operation)
         {
+            // Assert.IsTrue(State == OperationState.NotStarted, "Can't add to operation that is started.");
+            
             operation.Parent = this;
             Children.Add(operation);
             return operation;
@@ -105,7 +120,7 @@ namespace GamePack.Timer
         
         public Operation Add(
             string name = null,
-            float duration = NullUpdateTVal,
+            float duration = NullFloatValue,
             float delay = 0, 
             bool ignoreTimeScale = false,
             EasingFunction.Ease ease = EasingFunction.Ease.Linear,
@@ -122,43 +137,48 @@ namespace GamePack.Timer
             return Add(newOp);
         }
 
-        #region Internal API - These are used by Engine
+        #region Internal API - These are used by Engine and OperationTreeDescription
 
         internal void Run()
         {
             _action?.Invoke();
-            OnStart();
+            OnRun();
             State = OperationState.Running;
         }
 
-        protected virtual void OnStart() {}
+        protected virtual void OnRun() {}
 
         internal void Update(float? tVal)
         {
             if (!tVal.HasValue)
             {
-                _updateAction?.Invoke(NullUpdateTVal);
+                _updateAction?.Invoke(NullFloatValue);
                 return;
             }
             Assert.IsTrue(tVal.HasValue);
             Assert.IsTrue(tVal >= 0 && tVal <= 1, $"tVal is not between [0,1]! tVal: {tVal}");
             
             // Apply easing
-            if (_ease != EasingFunction.Ease.Linear)
-                tVal = EasingFunction.GetEasingFunction(_ease)(0, 1, tVal.Value);
+            if (_ease != null)
+                tVal = EasingFunction.GetEasingFunction(_ease.Value)(0, 1, tVal.Value);
             else if (_easeCurve != null)
                 tVal = _easeCurve.Evaluate(tVal.Value);
             
             _updateAction?.Invoke(tVal.Value);
         }
         
-        internal void SetFinished()
+        internal void SetWaiting()
         {
-            _endAction?.Invoke();
+            State = OperationState.Waiting;
+        }
+        
+        internal void Finish()
+        {
             State = OperationState.Finished;
+            _endAction?.Invoke();
         }
 
-        internal bool IsFinished()
+        internal bool IsFinisCondition()
         {
             return _finishCondition?.Invoke() ?? false;
         }
@@ -189,6 +209,12 @@ namespace GamePack.Timer
             State = OperationState.Cancelled;
         }
         
+        internal void ResetState()
+        {
+            State = OperationState.Waiting;
+            IsRunEndActionBeforeCancel = false;
+        }
+
         #endregion
 
         #region Private
@@ -199,16 +225,18 @@ namespace GamePack.Timer
             else return this;
         }
 
-        private void RecursiveFindAllInTree(ref List<Operation> operations)
+        private void RecursiveFindAllInTree(ref List<Operation> operations, ref List<Operation> tips)
         {
             if(operations.Contains(this)) return;
 
             operations.Add(this);
+            if (Children.Count == 0) tips.Add(this);
             
-            Parent?.RecursiveFindAllInTree(ref operations);
+            Parent?.RecursiveFindAllInTree(ref operations, ref tips);
+            
             foreach (var child in Children)
             {
-                child.RecursiveFindAllInTree(ref operations);
+                child.RecursiveFindAllInTree(ref operations, ref tips);
             }
         }
         
@@ -216,16 +244,19 @@ namespace GamePack.Timer
         {
             var root = GetRoot();
             var operations = new List<Operation>();
-            RecursiveFindAllInTree(ref operations);
+            var tips = new List<Operation>();
+            RecursiveFindAllInTree(ref operations, ref tips);
 
             var operationTreeDescription = new OperationTreeDescription
             {
                 Operations = operations,
-                Root = root
+                Root = root,
+                Tips = tips
             };
             return operationTreeDescription;
         }
-
+        
         #endregion
+
     }
 }
