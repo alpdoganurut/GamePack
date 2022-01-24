@@ -47,30 +47,30 @@ namespace HexGames
             }
         }
 
-        [SerializeField, Required]
+        [SerializeField, Required, FoldoutGroup("Default")]
         private SceneLevelManager _SceneLevelManager;
         
-        [SerializeField, 
+        [SerializeField, FoldoutGroup("Default"),
          Required, InlineButton("@UnityEditor.Selection.activeObject = _Config", "Select")]
         private TConfig _Config;
 
-        [SerializeField,
+        [SerializeField, FoldoutGroup("Default"),
          InlineButton("SelectOrCreateGameEvents", "@_GameEvents ? \"Select\" : \"Create\"")]
         private GameEvents _GameEvents;
 
-        [SerializeField,
+        [SerializeField, FoldoutGroup("Default"),
          InlineButton("SelectOrCreateTutorialManager", "@_TutorialManager ? \"Select\" : \"Create\"")]
         private TutorialManager _TutorialManager;
 
-        [SerializeField]
+        [SerializeField, FoldoutGroup("Default")]
         private GameObject _FakeScene;
         
-        [SerializeField, Required]
+        [SerializeField, Required, FoldoutGroup("Default")]
         private Button _StartGameButton;
         
         [Space]
-        [SerializeField, Required]
         
+        [SerializeField, Required, FoldoutGroup("Default")]
         private bool _UnloadSceneAfterStop = true;
         private TLevelHelper _levelHelper;
         
@@ -101,10 +101,7 @@ namespace HexGames
             if(_FakeScene) _FakeScene.SetActive(true);
 
             Application.targetFrameRate = 60;
-
-    /*#if !UNITY_EDITOR
-            Debug.unityLogger.logEnabled = false;
-    #endif*/
+            Time.timeScale = _Config.DefaultTimeScale;
         }
 
         #region Public API
@@ -291,6 +288,5 @@ namespace HexGames
     #endif
 
         #endregion
-
     }
 }

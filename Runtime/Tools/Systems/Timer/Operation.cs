@@ -123,7 +123,7 @@ namespace GamePack.Timer
             float duration = NullFloatValue,
             float delay = 0, 
             bool ignoreTimeScale = false,
-            EasingFunction.Ease ease = EasingFunction.Ease.Linear,
+            EasingFunction.Ease? ease = null,
             AnimationCurve easeCurve = null,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,

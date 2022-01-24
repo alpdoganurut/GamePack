@@ -11,8 +11,7 @@ namespace SeesawCatapult
         {
             if(GameBase.LoadedScene == null)
             {
-                Debug.LogError("Game.LoadedScene is null!");
-
+                Debug.LogError($"Game.LoadedScene is null, not instantiating {obj.name}!", obj);
                 return null;
             }
 

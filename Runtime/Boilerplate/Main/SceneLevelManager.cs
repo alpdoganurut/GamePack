@@ -16,7 +16,10 @@ namespace GamePack
     {
         private const string ActivateSceneNamesInfo =
             "Enable to use level scenes lighting settings. Activating scenes also cause new objects to be Instantiated in that scene.";
-            
+     
+        // Static access to Loaded Scene
+        public static Scene? LoadedScene => _loadedScene;
+
         [ShowInInspector, ReadOnly, TabGroup("Info")]
         private static Scene? _loadedScene;
         
@@ -37,8 +40,6 @@ namespace GamePack
         [SerializeField, ReadOnly, TabGroup("Info")]
         private string _LevelKey;
 
-        public static Scene? LoadedScene => _loadedScene;
-        
         [ShowInInspector, TabGroup("Info"), InlineButton("IterateLevel", "+")]
         public int CurrentLevelIndex
         {
@@ -87,6 +88,8 @@ namespace GamePack
 #if UNITY_EDITOR
             if(!_LoadLevelScene)
             {
+                if(SceneManager.sceneCount > 2) Debug.LogError("Invalid scene count!");
+                _loadedScene = SceneManager.GetSceneAt(1);
                 callback?.Invoke();
                 return;
             }

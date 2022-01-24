@@ -7,11 +7,11 @@ namespace HexGames
 {
     public abstract class GameBase : MonoBehaviour
     {
-        [FormerlySerializedAs("WorkingTitle")] [SerializeField, HideInInspector] public string Identifier;
-        
         public static Scene? LoadedScene => SceneLevelManager.LoadedScene;
         
-        public abstract bool IsPlaying { get; }
+        // ReSharper disable once UnusedMember.Global - Used by GameWindow inspector
+        public abstract bool IsPlaying { get; } 
+        
         public abstract void StartGame();
         public abstract void StopGame(bool isSuccess);
     }

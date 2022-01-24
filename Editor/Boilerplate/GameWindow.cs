@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using GamePack;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
@@ -16,18 +17,19 @@ using Debug = UnityEngine.Debug;
 namespace HexGames
 {
     [Title("@\"Game Name: \" + PlayerSettings.productName")]
-    public class GameWindow: OdinEditorWindow
+    public partial class GameWindow: OdinEditorWindow
     {
         private const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
         private const string NotSetProductName = "notset";
+        private const string BuildIdentifierPrefix = "com.hex.";
         
-        [InfoBox("GameName is not set!", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || String.IsNullOrEmpty(GameName) ")]
+        [InfoBox("GameName is not set!", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
         [PropertyOrderAttribute(-1)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
         private string GameName
         {
             get => PlayerSettings.productName;
-            set => PlayerSettings.productName = value;
+            set => PlayerSettings.productName = string.IsNullOrEmpty(value) ? NotSetProductName : value;
         }
         
         [InfoBox("GameIdentifier is empty. Set this to name of the game, eg. \"Lonely Soccer\"", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
@@ -35,131 +37,29 @@ namespace HexGames
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
         private string GameIdentifier
         {
-            get => _game ? _game.Identifier : null;
+            get
+            {
+                var applicationIdentifier = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
+                return applicationIdentifier.Contains(BuildIdentifierPrefix) ? applicationIdentifier.Replace(BuildIdentifierPrefix, "") : "";
+            }
             set
             {
-                _game.Identifier = value;
                 if(string.IsNullOrWhiteSpace(PlayerSettings.productName))
                     PlayerSettings.productName = value;
-                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.hex." + value.ToLower().Replace(" ", string.Empty));
+                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, BuildIdentifierPrefix + value.ToLower().Replace(" ", string.Empty));
                 EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
-
-                EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
             }
         }
+
+        #region ProjectConfig
+
         
-        #region Initilization
 
-        private static GameWindow _instance;
-        private static bool _isInit;
-        
-        private static bool _isListening;
-
-        private bool IsValidGameScene => _game && SceneManager.GetActiveScene().path == MainSceneAssetPath;
-        private Scene _scene;
-
-        private event Action EnterPlayCallback;
-        
-        [MenuItem("Window/Game Window")]
-        public static void ShowWindow()
-        {
-            GetWindow<GameWindow>();
-        }
-
-        private void Awake()
-        {
-            Init();
-            _instance = this;
-        }
-
-        private void Init()
-        {
-            Log("Initializing Game Window.");
-            if(!_isListening)
-            {
-                ListenSceneChange();
-            }
-            else
-                Log("Skipped event subscribing.");
-            
-            _isInit = true;
-
-            InitScene(SceneManager.GetActiveScene());
-            if(Application.isPlaying)
-                EnterPlayCallback?.Invoke();
-        }
-
-        private void InitScene(Scene scene)
-        {
-            Log($"Initializing scene {scene.name}");
-
-            _scene = scene;
-            
-            _game = FindObjectOfType<GameBase>();
-            _levelHelper = FindObjectOfType<LevelHelperBase>();
-
-            // Check if valid Scene
-            if (IsValidGameScene)
-            {
-                _config = ReflectionHelper.GetPropertyOrField(_game, "_Config") as ConfigBase;
-                _levelManager = ReflectionHelper.GetPropertyOrField(_game, "_SceneLevelManager") as SceneLevelManager;
-                _gameEvents = ReflectionHelper.GetPropertyOrField(_game, "_GameEvents") as GameEvents;
-                Log($"{scene.name} is valid Game scene.");
-            }
-            else if (_levelHelper)
-            {
-                Log($"{scene.name} Is valid Level scene.");
-            }
-
-        }
-
-        [InitializeOnEnterPlayMode]
-        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
-        {
-            Log($"OnEnterPlaymodeInEditor: {options}");
-
-            _isInit = false;
-            
-            if (!_instance || !options.HasFlag(EnterPlayModeOptions.DisableDomainReload)) return;
-            
-            _instance.StopListeningSceneChange();
-        }
-
-        private void EditorSceneManagerOnSceneLoaded(Scene arg1, Scene scene)
-        {
-            Log($"Scene opened: {scene.name}");
-            InitScene(scene);
-        }
-
-        private void OnInspectorUpdate()
-        {
-            // if(_isInit) base.OnGUI();
-            if (!_isInit) Init();
-        }
-
-        protected override void OnDestroy()
-        {
-            StopListeningSceneChange();
-            Log("Window closed.");
-        }
-
-        private void ListenSceneChange()
-        {
-            EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
-            _isListening = true;
-        }
-        
-        public void StopListeningSceneChange()
-        {
-            Log("Stopping listening.");
-            EditorSceneManager.activeSceneChangedInEditMode -= EditorSceneManagerOnSceneLoaded;
-            _isListening = false;
-        }
-        
         #endregion
         
         #region Test Level
 
+        [PropertySpace]
         [PropertyOrderAttribute(-1)]
         [ShowInInspector, HorizontalGroup("Test Level"),
          ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
@@ -211,8 +111,6 @@ namespace HexGames
         
         #region Config
 
-        
-        
         [TabGroup("Config")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private ConfigBase _config;
@@ -250,157 +148,6 @@ namespace HexGames
         private void StopGameFail()
         {
             _game.StopGame(false);
-        }
-
-        #endregion
-
-        #region Settings
-
-        private const string EnableAnalyticsDefineSymbol = "ENABLE_ANALYTICS";
-        private const string LoggingDefineSymbol = "GAME_WINDOW_LOGGING";
-
-        private const string VersionFileName = "version.txt";
-        
-        private const string PackagesLockJsonName = "packages-lock.json";
-        private const string PackagesDirectoryName = "Packages";
-
-        [ShowInInspector, PropertyOrder(-1)] private string Version
-        {
-            get
-            {
-                // Backwards compatibility
-                try
-                {
-                    return File.ReadAllText(Application.dataPath + "/" + VersionFileName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-
-                try
-                {
-                    return File.ReadAllText(Application.dataPath + "/." + VersionFileName);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
-            }
-        }
-
-        [TabGroup("Settings")]
-        [Button]
-        private void UpdateGamePack()
-        {
-            if (!EditorUtility.DisplayDialog("Update Packages", "This will delete packages.lock. Continue?", "Update",
-                "Cancel")) return;
-
-            var directoryInfo = Directory.GetParent(Application.dataPath);
-            
-            if(directoryInfo == null)
-            {
-                Debug.LogError("Failed to find packages.lock");
-                return;
-            }
-
-            var path = Path.Combine(directoryInfo.FullName, PackagesDirectoryName, PackagesLockJsonName) ;
-            File.Delete(path);
-            UnityEditor.PackageManager.Client.Resolve();
-        }
-
-        [TabGroup("Settings")]
-        [Button]
-        private void Refresh()
-        {
-            
-            Init();
-        }
-        
-        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
-        private bool DisableReloadDomain
-        {
-            get =>
-                EditorSettings.enterPlayModeOptionsEnabled &&
-                EditorSettings.enterPlayModeOptions == EnterPlayModeOptions.DisableDomainReload;
-            set
-            {
-                EditorSettings.enterPlayModeOptionsEnabled = value;
-                EditorSettings.enterPlayModeOptions =  value ? EnterPlayModeOptions.DisableDomainReload : EnterPlayModeOptions.None;
-            }
-        }
-        
-        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
-        private bool Analytics
-        {
-            get =>
-                IsDefineSymbolEnabled(EnableAnalyticsDefineSymbol);
-            set => SetDefineSymbol(value, EnableAnalyticsDefineSymbol);
-        }
-        
-        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
-        private bool Logging
-        {
-            get =>
-                IsDefineSymbolEnabled(LoggingDefineSymbol);
-            set => SetDefineSymbol(value, LoggingDefineSymbol);
-        }
-        
-        [TabGroup("Settings"), ShowInInspector, ShowIf("@_game != null")]
-        private bool GameVisible
-        {
-            get =>
-                _game && _game.hideFlags == HideFlags.None;
-            set
-            {
-                if(value)
-                {
-                    _game.gameObject.hideFlags = HideFlags.None;
-                    EditorApplication.RepaintHierarchyWindow();
-                    EditorApplication.DirtyHierarchyWindowSorting();
-                }
-                else
-                {
-                    _game.gameObject.hideFlags = HideFlags.HideInHierarchy;
-                    EditorApplication.RepaintHierarchyWindow();
-                    EditorApplication.DirtyHierarchyWindowSorting();
-                }
-
-                if(!Application.isPlaying)
-                    EditorSceneManager.MarkSceneDirty(_scene);
-            }
-        }
-
-        private static bool IsDefineSymbolEnabled(string symbol)
-        {
-            return PlayerSettings
-                .GetScriptingDefineSymbolsForGroup(
-                    BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget)).Contains(symbol);
-        }
-
-        private static void SetDefineSymbol(bool value, string symbol)
-        {
-            var settings =
-                PlayerSettings.GetScriptingDefineSymbolsForGroup(
-                    BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget));
-
-            var containsSymbol = settings.Contains(symbol);
-            if (!value && containsSymbol)
-            {
-                var splitSettings = settings.Split(';').ToList();
-                splitSettings.Remove(symbol);
-
-                settings = splitSettings.Aggregate((s, s1) => s + ";" + s1);
-            }
-
-            if (value && !containsSymbol)
-            {
-                settings += ";" + symbol;
-            }
-
-            PlayerSettings.SetScriptingDefineSymbolsForGroup(
-                BuildPipeline.GetBuildTargetGroup(EditorUserBuildSettings.activeBuildTarget), settings);
         }
 
         #endregion

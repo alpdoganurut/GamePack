@@ -1,3 +1,4 @@
+using HexGames;
 using UnityEditor;
 using UnityEngine;
 
@@ -8,18 +9,19 @@ namespace GamePack.Editor.Utilities
         [MenuItem("Utilities/Time/Decrease Time Scale %&Z")]
         private static void DecreaseTimeScale()
         {
-            Time.timeScale /= 2;
+            Time.timeScale /= 2f;
         }
+        
         [MenuItem("Utilities/Time/Increase Time Scale %&C")]
         private static void IncreaseTimeScale()
         {
-            Time.timeScale *= 2;
+            Time.timeScale *= 2f;
         }
 
         [MenuItem("Utilities/Time/Reset Time Scale %&X")]
         private static void ResetTimeScale()
         {
-            Time.timeScale = 1;
+            Time.timeScale = 1f;
         }
     }
 }

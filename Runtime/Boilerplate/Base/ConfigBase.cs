@@ -1,11 +1,11 @@
-using Sirenix.OdinInspector;
 using UnityEngine;
-// ReSharper disable InconsistentNaming
 
 namespace HexGames
 {
-    // [CreateAssetMenu(fileName = "GameConfig", menuName = "Hex/Game Config", order = 0)]
     public class ConfigBase : ScriptableObject
     {
+        // Shared config among projects
+        [SerializeField, Range(.5f, 1.5f)] private float _DefaultTimeScale = 1;
+        public float DefaultTimeScale => _DefaultTimeScale;
     }
 }
