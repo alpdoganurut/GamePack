@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+// ReSharper disable InconsistentNaming
 
 namespace GamePack.Timer
 {
@@ -19,7 +20,7 @@ namespace GamePack.Timer
 
         internal string Name { get; set; }
         protected float _duration;
-        internal float Delay { get; }
+        internal float Delay { get; set; }
         protected EasingFunction.Ease? _ease;
         protected AnimationCurve _easeCurve;
 
@@ -28,7 +29,7 @@ namespace GamePack.Timer
         private readonly OperationEndAction _endAction;
         private readonly OperationFinishCondition _finishCondition;
         private readonly OperationWaitForCondition _waitForCondition;
-        private readonly OperationSkipCondition _skipCondition;
+        protected OperationSkipCondition _skipCondition;
 
         private Operation Parent { get; set; }
         

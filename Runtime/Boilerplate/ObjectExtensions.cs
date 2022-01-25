@@ -17,6 +17,15 @@ namespace SeesawCatapult
 
             var newObj = Object.Instantiate(obj, position ?? Vector3.zero, rotation ?? Quaternion.identity);
             
+            var go = GetGameObject(newObj);
+
+            SceneManager.MoveGameObjectToScene(go, GameBase.LoadedScene.Value);
+
+            return newObj;
+        }
+
+        private static GameObject GetGameObject<T>(T newObj) where T : Object
+        {
             GameObject go = null;
             switch (newObj)
             {
@@ -30,10 +39,22 @@ namespace SeesawCatapult
                     Debug.LogError("Only instantiate Component or GameObjects!");
                     break;
             }
+
+            return go;
+        }
+
+        public static T MoveToLevelScene<T>(this T obj) where T : Object
+        {
+            if(GameBase.LoadedScene == null)
+            {
+                Debug.LogError($"Game.LoadedScene is null, not instantiating {obj.name}!", obj);
+                return null;
+            }
             
+            var go = GetGameObject(obj);
             SceneManager.MoveGameObjectToScene(go, GameBase.LoadedScene.Value);
 
-            return newObj;
+            return obj;
         }
     }
 }

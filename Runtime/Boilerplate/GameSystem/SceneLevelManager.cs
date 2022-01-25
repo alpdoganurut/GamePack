@@ -88,7 +88,7 @@ namespace GamePack
 #if UNITY_EDITOR
             if(!_LoadLevelScene)
             {
-                if(SceneManager.sceneCount > 2) Debug.LogError("Invalid scene count!");
+                if(SceneManager.sceneCount > 2 || SceneManager.sceneCount <= 1) Debug.LogError("Invalid scene count! There should be 2 scenes on level load.");
                 _loadedScene = SceneManager.GetSceneAt(1);
                 callback?.Invoke();
                 return;

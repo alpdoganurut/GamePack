@@ -21,6 +21,14 @@ namespace GamePack.UnityUtilities.Vendor
         }
         
         // Collection
+        public static void ForEach<T>(this IEnumerable<T> coll, Action<T> func)
+        {
+            foreach (var item in coll)
+            {
+                func(item);
+            }
+        }
+        
         public static int GetIndexWithMaxValue<T>(this IEnumerable<T> coll, Func<T, float> func)
         {
             var greatestVal = float.MinValue;

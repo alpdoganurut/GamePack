@@ -20,7 +20,7 @@ namespace GamePack.TweenAlphaSetActive
 
         [field: ShowInInspector]
         [field: ReadOnly]
-        public bool IsActive { get; private set; }
+        public bool IsActive { get; private set; } = true;
 
         public float Duration
         {
@@ -35,23 +35,25 @@ namespace GamePack.TweenAlphaSetActive
         }
 
         // Setting initial _isActive value on enable
-        private void OnEnable()
+        /*private void OnEnable()
         {
             IsActive = true;
-        }
+        }*/
 
         private void Start()
         {
             if (_DisableOnStart)
             {
-                gameObject.SetActive(false);
+                SetIsActive(false, false);
             }
         }
 
+        /*
         private void OnDisable()
         {
             IsActive = false;
         }
+        */
 
         public void SetIsActive(bool isActive, bool isAnimated = true, bool ignoreTimescale = false)
         {
