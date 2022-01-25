@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using Boilerplate.Structure;
 using UnityEditor; 
 #endif
 
@@ -17,7 +18,7 @@ using Scene = UnityEngine.SceneManagement.Scene;
 
 namespace HexGames
 {
-    public abstract class Game<TConfig, TLevelHelper> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperBase
+    public abstract class GameGenericBase<TConfig, TLevelHelper, TLevelInitData> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperGenericBase<TLevelInitData> where TLevelInitData: LevelInitDataBase
     {
         private static TConfig _staticConfig;
 
@@ -28,7 +29,7 @@ namespace HexGames
                 // Try to find Game in editor mode
                 if (!_staticConfig && !Application.isPlaying)
                 {
-                    var sceneGame = FindObjectOfType<Game<TConfig, TLevelHelper>>();
+                    var sceneGame = FindObjectOfType<GameGenericBase<TConfig, TLevelHelper, TLevelInitData>>();
                     
                     if(_staticConfig) return _staticConfig = sceneGame._Config;
                 }
@@ -76,6 +77,10 @@ namespace HexGames
         
         [ShowInInspector, ReadOnly, PropertyOrder(-1)] private bool _isPlaying;
 
+        [SerializeField, Required] private TLevelInitData _LevelInitData;
+        
+        [ShowInInspector, ReadOnly] private ControllerGenericBase<TLevelInitData>[] _controllers;
+
         #region Development - InitializeOnEnterPlayMode
     #if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
@@ -104,15 +109,7 @@ namespace HexGames
             Time.timeScale = _Config.DefaultTimeScale;
         }
 
-        #region Public API
-
-        public override bool IsPlaying => _isPlaying;
-
-        protected TLevelHelper LevelHelper => _levelHelper;
-
-        public SceneLevelManager LevelManager => _SceneLevelManager;
-
-        public override void StartGame()
+        private protected override void OnStartGame()
         {
             if (_isPlaying)
             {
@@ -120,10 +117,10 @@ namespace HexGames
                 return;
             }
         
-    #if ENABLE_ANALYTICS
+#if ENABLE_ANALYTICS
             Elephant.LevelStarted(_SceneLevelManager.CurrentLevelIndex);
             GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, _SceneLevelManager.CurrentLevelIndex.ToString());
-    #endif
+#endif
             
             _isPlaying = true;
 
@@ -131,26 +128,30 @@ namespace HexGames
             _SceneLevelManager.LoadCurrentLevelScene(() =>
             {
                 if(_GameEvents) _GameEvents.Trigger(true);
+                
                 if(_FakeScene) _FakeScene.SetActive(false);
                 
                 _levelHelper = FindObjectOfType<TLevelHelper>();
+                
                 if (!LevelHelper)
-                {
-                    Debug.Log("No LevelHelper found in the scene.");
-                }
+                    Debug.LogError($"No LevelHelper found in the scene: {SceneLevelManager.LoadedScene}!");
 
                 if (_TutorialManager)
-                {
                     _TutorialManager.ShowTutorial(_SceneLevelManager.CurrentLevelIndex);
-                }
-                
-                
+
+                // Invoke controller methods
+                if(_controllers != null)
+                    foreach (var controller in _controllers)
+                        controller.InternalOnLevelStart(_LevelInitData);
+                if(_levelHelper.Controllers != null)
+                    foreach (var controller in _levelHelper.Controllers)
+                        controller.InternalOnLevelStart(_LevelInitData);
                 
                 DidStartGame(LevelHelper);
             });
         }
 
-        public override void StopGame(bool isSuccess)
+        private protected override void OnStopGame(bool isSuccess)
         {
             if (!_isPlaying)
             {
@@ -158,7 +159,7 @@ namespace HexGames
                 return;
             }
 
-    #if ENABLE_ANALYTICS
+#if ENABLE_ANALYTICS
             if(isSuccess)
             {
                 Elephant.LevelCompleted(_SceneLevelManager.CurrentLevelIndex);
@@ -169,7 +170,7 @@ namespace HexGames
                 Elephant.LevelFailed(_SceneLevelManager.CurrentLevelIndex);
                 GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, _SceneLevelManager.CurrentLevelIndex.ToString());
             }
-    #endif
+#endif
             
             if(isSuccess) _SceneLevelManager.IterateLevel();
             
@@ -189,6 +190,14 @@ namespace HexGames
                 });
             }
         }
+        
+        #region Public API
+
+        public override bool IsPlaying => _isPlaying;
+
+        private TLevelHelper LevelHelper => _levelHelper;
+
+        public SceneLevelManager LevelManager => _SceneLevelManager;
 
         #endregion
 
@@ -218,6 +227,7 @@ namespace HexGames
                     ? "Can't find Config for game. Please create one."
                     : $"Found a Config at {UnityEditor.AssetDatabase.GetAssetPath(_Config)}");
             }
+            
             if (!_SceneLevelManager)
             {
                 Debug.Log("SceneLevelManager is empty. Trying to find it in Assets.");
@@ -227,8 +237,11 @@ namespace HexGames
                     ? "Can't find SceneLevelManager for game. Create one."
                     : $"Found a SceneLevelManager at {UnityEditor.AssetDatabase.GetAssetPath(_SceneLevelManager)}");
             }
-        }
 
+            _controllers = FindAllObjects.InScene<ControllerGenericBase<TLevelInitData>>().ToArray();
+        }
+        
+        // ReSharper disable once UnusedMember.Local
         private void SelectOrCreateGameEvents()
         {
             if (_GameEvents)
@@ -257,6 +270,7 @@ namespace HexGames
             }
         }
         
+        // ReSharper disable once UnusedMember.Local
         private void SelectOrCreateTutorialManager()
         {
             if (_TutorialManager)
@@ -288,5 +302,7 @@ namespace HexGames
     #endif
 
         #endregion
+        
+        
     }
 }

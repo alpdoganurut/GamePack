@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Boilerplate.GameSystem;
 using GamePack;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
@@ -19,12 +20,18 @@ namespace HexGames
     [Title("@\"Game Name: \" + PlayerSettings.productName")]
     public partial class GameWindow: OdinEditorWindow
     {
+        private const int OrderTop = -20;
+        private const int OrderTopMid = -10;
+        private const int Default = 0;
+        private const int OrderBottomMid = 10;
+        private const int OrderBottom = 20;
+        
         private const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
         private const string NotSetProductName = "notset";
         private const string BuildIdentifierPrefix = "com.hex.";
         
         [InfoBox("GameName is not set!", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
-        [PropertyOrderAttribute(-1)]
+        [PropertyOrderAttribute(OrderTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
         private string GameName
         {
@@ -33,7 +40,7 @@ namespace HexGames
         }
         
         [InfoBox("GameIdentifier is empty. Set this to name of the game, eg. \"Lonely Soccer\"", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
-        [PropertyOrderAttribute(-1)]
+        [PropertyOrderAttribute(OrderTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
         private string GameIdentifier
         {
@@ -51,16 +58,10 @@ namespace HexGames
             }
         }
 
-        #region ProjectConfig
-
-        
-
-        #endregion
-        
         #region Test Level
 
         [PropertySpace]
-        [PropertyOrderAttribute(-1)]
+        [PropertyOrderAttribute(OrderTop)]
         [ShowInInspector, HorizontalGroup("Test Level"),
          ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
         private SceneAsset TestLevel
@@ -69,8 +70,9 @@ namespace HexGames
             set { if(_levelManager) _levelManager._TestLevel = value; }
         }
         
+        [PropertySpace]
         [Button("Test"),
-         HorizontalGroup("Test Level", width: 50)/* ResponsiveButtonGroup("Editor Actions", AnimateVisibility = false)*/,
+         HorizontalGroup("Test Level", width: 70)/* ResponsiveButtonGroup("Editor Actions", AnimateVisibility = false)*/,
          ShowIf("@DisableReloadDomain && !EditorApplication.isPlaying && IsValidGameScene")]
         private void RunTestLevel()
         {
@@ -90,13 +92,14 @@ namespace HexGames
 
         #region Game
 
-        [PropertyOrderAttribute(-2)]
+        [PropertyOrderAttribute(OrderTop)]
         [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene")]
         private void OpenMainScene()
         {
             EditorSceneManager.OpenScene(MainSceneAssetPath);
         }
         
+        [PropertyOrderAttribute(OrderTopMid)]
         [TabGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private GameBase _game;
@@ -111,6 +114,7 @@ namespace HexGames
         
         #region Config
 
+        [PropertyOrderAttribute(OrderTopMid)]
         [TabGroup("Config")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private ConfigBase _config;

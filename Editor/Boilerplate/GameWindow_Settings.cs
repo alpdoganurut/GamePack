@@ -19,7 +19,7 @@ namespace HexGames
         private const string PackagesDirectoryName = "Packages";
 
         [TabGroup("Settings")]
-        [ShowInInspector, PropertyOrder(-1)] private string Version
+        [ShowInInspector, PropertyOrder(OrderBottom + 1)] private string Version
         {
             get
             {
@@ -67,9 +67,8 @@ namespace HexGames
 
         [TabGroup("Settings")]
         [Button]
-        private void Refresh()
+        private void RefreshWindow()
         {
-            
             Init();
         }
         
