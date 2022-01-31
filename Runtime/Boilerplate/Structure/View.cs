@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace Boilerplate.Structure
 {
-    public class View: StructureMonoBehaviour
+    public class View: StructureMonoBehaviourBase
     {
         public void DestroyView()
         {

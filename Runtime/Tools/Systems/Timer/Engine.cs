@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -196,7 +197,7 @@ namespace GamePack.Timer
                 }
             }
 
-            removalIndexArray.Sort((int i1, int i2) => i2 - i1);
+            removalIndexArray.Sort((i1, i2) => i2 - i1);
             
             // Remove from all arrays
             foreach (var i in removalIndexArray)

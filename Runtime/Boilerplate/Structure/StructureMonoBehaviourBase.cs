@@ -3,7 +3,7 @@ using UnityEngine.Assertions;
 
 namespace Boilerplate.Structure
 {
-    public class StructureMonoBehaviour: MonoBehaviour
+    public abstract class StructureMonoBehaviourBase: MonoBehaviour
     {
         #region Access Restriction
 

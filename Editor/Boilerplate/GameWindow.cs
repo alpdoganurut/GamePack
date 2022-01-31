@@ -9,6 +9,7 @@ using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
+using UnityEditor.iOS;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -27,19 +28,22 @@ namespace HexGames
         private const int OrderBottom = 20;
         
         private const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
-        private const string NotSetProductName = "notset";
+        private const string NotSetProductName = "GAME_NAME_NOT_SET";
         private const string BuildIdentifierPrefix = "com.hex.";
-        
-        [InfoBox("GameName is not set!", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
+        private const string NotSetGameIdentifier = "IDENTIFIERNOTSET"; // Don't use _ or " ". Unity BuildSettings removes whitespaces.
+
+        [InfoBox("GameName is not set.", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
+        [VerticalGroup("row1/left")]
         [PropertyOrderAttribute(OrderTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
         private string GameName
         {
-            get => PlayerSettings.productName;
+            get => PlayerSettings.productName == NotSetProductName ? "" : PlayerSettings.productName;
             set => PlayerSettings.productName = string.IsNullOrEmpty(value) ? NotSetProductName : value;
         }
         
-        [InfoBox("GameIdentifier is empty. Set this to name of the game, eg. \"Lonely Soccer\"", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
+        [InfoBox("GameIdentifier is not set.", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
+        [VerticalGroup("row1/left")]
         [PropertyOrderAttribute(OrderTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
         private string GameIdentifier
@@ -47,14 +51,29 @@ namespace HexGames
             get
             {
                 var applicationIdentifier = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
-                return applicationIdentifier.Contains(BuildIdentifierPrefix) ? applicationIdentifier.Replace(BuildIdentifierPrefix, "") : "";
+                var gameIdentifier = applicationIdentifier.Contains(BuildIdentifierPrefix) ? applicationIdentifier.Replace(BuildIdentifierPrefix, "") : "";
+                
+                if (gameIdentifier == NotSetGameIdentifier) return "";
+                return gameIdentifier;
             }
             set
             {
-                if(string.IsNullOrWhiteSpace(PlayerSettings.productName))
-                    PlayerSettings.productName = value;
-                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, BuildIdentifierPrefix + value.ToLower().Replace(" ", string.Empty));
-                EditorSettings.projectGenerationRootNamespace = value.Replace(" ", string.Empty);
+                if (string.IsNullOrEmpty(value)) value = NotSetGameIdentifier;
+                else value = value.ToLower().Replace(" ", string.Empty);
+                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, BuildIdentifierPrefix + value);
+                EditorSettings.projectGenerationRootNamespace = value;
+            }
+        }
+
+        [InfoBox("Icon is empty", InfoMessageType.Error, VisibleIf = "@GameIcon == null")]
+        [HideLabel, HorizontalGroup("row1", 50), VerticalGroup("row1/right")]
+        [ShowInInspector, PreviewField(50, ObjectFieldAlignment.Right)]
+        private Texture2D GameIcon
+        {
+            get => PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown)[0];
+            set
+            {
+                PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new []{value});
             }
         }
 

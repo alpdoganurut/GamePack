@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using Boilerplate.Structure;
 using UnityEditor; 
 #endif
 
@@ -14,6 +13,7 @@ using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
+using Boilerplate.Structure;
 using Scene = UnityEngine.SceneManagement.Scene;
 
 namespace HexGames
