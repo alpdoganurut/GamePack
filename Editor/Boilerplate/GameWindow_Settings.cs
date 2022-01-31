@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace HexGames
+namespace GamePack.Editor.Boilerplate
 {
     public partial class GameWindow
     {
@@ -19,7 +19,7 @@ namespace HexGames
         private const string PackagesDirectoryName = "Packages";
 
         [TabGroup("Settings")]
-        [ShowInInspector, PropertyOrder(OrderBottom + 1)] private string Version
+        [ShowInInspector, PropertyOrder(GameWindow.OrderTabsBottom)] private string BoilerplateVersion
         {
             get
             {
@@ -31,6 +31,7 @@ namespace HexGames
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
+                    
                 }
 
                 try
@@ -40,8 +41,9 @@ namespace HexGames
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
-                    throw;
+                    // throw;
                 }
+                return null;
             }
         }
 

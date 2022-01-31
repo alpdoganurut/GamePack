@@ -1,24 +1,25 @@
 using System;
 using Boilerplate.GameSystem;
-using GamePack;
 using GamePack.UnityUtilities;
+using HexGames;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
-namespace HexGames
+namespace GamePack.Editor.Boilerplate
 {
     public partial class GameWindow
     {
         #region Initilization
 
-        private static GameWindow _instance;
+        private static global::GamePack.Editor.Boilerplate.GameWindow _instance;
         private static bool _isInit;
         
         private static bool _isListening;
 
-        private bool IsValidGameScene => _game && SceneManager.GetActiveScene().path == MainSceneAssetPath;
+        private bool IsValidGameScene => _game && SceneManager.GetActiveScene().path == GameWindow.MainSceneAssetPath;
         private Scene _scene;
 
         private event Action EnterPlayCallback;
@@ -26,7 +27,7 @@ namespace HexGames
         [MenuItem("Window/Game Window")]
         public static void ShowWindow()
         {
-            GetWindow<GameWindow>();
+            GetWindow<global::GamePack.Editor.Boilerplate.GameWindow>();
         }
 
         private void Awake()
@@ -37,13 +38,13 @@ namespace HexGames
 
         private void Init()
         {
-            Log("Initializing Game Window.");
+            GameWindow.Log("Initializing Game Window.");
             if(!_isListening)
             {
                 ListenSceneChange();
             }
             else
-                Log("Skipped event subscribing.");
+                GameWindow.Log("Skipped event subscribing.");
             
             _isInit = true;
 
@@ -54,12 +55,12 @@ namespace HexGames
 
         private void InitScene(Scene scene)
         {
-            Log($"Initializing scene {scene.name}");
+            GameWindow.Log($"Initializing scene {scene.name}");
 
             _scene = scene;
             
-            _game = FindObjectOfType<GameBase>();
-            _levelHelper = FindObjectOfType<LevelHelperBase>();
+            _game = Object.FindObjectOfType<GameBase>();
+            _levelHelper = Object.FindObjectOfType<LevelHelperBase>();
 
             // Check if valid Scene
             if (IsValidGameScene)
@@ -67,11 +68,11 @@ namespace HexGames
                 _config = ReflectionHelper.GetPropertyOrField(_game, "_Config") as ConfigBase;
                 _levelManager = ReflectionHelper.GetPropertyOrField(_game, "_SceneLevelManager") as SceneLevelManager;
                 _gameEvents = ReflectionHelper.GetPropertyOrField(_game, "_GameEvents") as GameEvents;
-                Log($"{scene.name} is valid Game scene.");
+                GameWindow.Log($"{scene.name} is valid Game scene.");
             }
             else if (_levelHelper)
             {
-                Log($"{scene.name} Is valid Level scene.");
+                GameWindow.Log($"{scene.name} Is valid Level scene.");
             }
 
         }
@@ -79,7 +80,7 @@ namespace HexGames
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
-            Log($"OnEnterPlaymodeInEditor: {options}");
+            GameWindow.Log($"OnEnterPlaymodeInEditor: {options}");
 
             _isInit = false;
             
@@ -90,7 +91,7 @@ namespace HexGames
 
         private void EditorSceneManagerOnSceneLoaded(Scene arg1, Scene scene)
         {
-            Log($"Scene opened: {scene.name}");
+            GameWindow.Log($"Scene opened: {scene.name}");
             InitScene(scene);
         }
 
@@ -103,7 +104,7 @@ namespace HexGames
         protected override void OnDestroy()
         {
             StopListeningSceneChange();
-            Log("Window closed.");
+            GameWindow.Log("Window closed.");
         }
 
         private void ListenSceneChange()
@@ -114,7 +115,7 @@ namespace HexGames
         
         public void StopListeningSceneChange()
         {
-            Log("Stopping listening.");
+            GameWindow.Log("Stopping listening.");
             EditorSceneManager.activeSceneChangedInEditMode -= EditorSceneManagerOnSceneLoaded;
             _isListening = false;
         }

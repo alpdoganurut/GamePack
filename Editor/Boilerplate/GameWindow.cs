@@ -1,29 +1,22 @@
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
 using Boilerplate.GameSystem;
-using GamePack;
-using GamePack.UnityUtilities;
+using HexGames;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
-using UnityEditor.iOS;
-using UnityEditor.SceneManagement;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
-namespace HexGames
+namespace GamePack.Editor.Boilerplate
 {
     [Title("@\"Game Name: \" + PlayerSettings.productName")]
     public partial class GameWindow: OdinEditorWindow
     {
         private const int OrderTop = -20;
         private const int OrderTopMid = -10;
-        private const int Default = 0;
+        private const int OrderTabsTop = -3;
+        private const int OrderTabsMid = -2;
+        private const int OrderTabsBottom = -1;
+        private const int OrderDefault = 0;
         private const int OrderBottomMid = 10;
         private const int OrderBottom = 20;
         
@@ -32,55 +25,10 @@ namespace HexGames
         private const string BuildIdentifierPrefix = "com.hex.";
         private const string NotSetGameIdentifier = "IDENTIFIERNOTSET"; // Don't use _ or " ". Unity BuildSettings removes whitespaces.
 
-        [InfoBox("GameName is not set.", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
-        [VerticalGroup("row1/left")]
-        [PropertyOrderAttribute(OrderTop)]
-        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
-        private string GameName
-        {
-            get => PlayerSettings.productName == NotSetProductName ? "" : PlayerSettings.productName;
-            set => PlayerSettings.productName = string.IsNullOrEmpty(value) ? NotSetProductName : value;
-        }
-        
-        [InfoBox("GameIdentifier is not set.", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
-        [VerticalGroup("row1/left")]
-        [PropertyOrderAttribute(OrderTop)]
-        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
-        private string GameIdentifier
-        {
-            get
-            {
-                var applicationIdentifier = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
-                var gameIdentifier = applicationIdentifier.Contains(BuildIdentifierPrefix) ? applicationIdentifier.Replace(BuildIdentifierPrefix, "") : "";
-                
-                if (gameIdentifier == NotSetGameIdentifier) return "";
-                return gameIdentifier;
-            }
-            set
-            {
-                if (string.IsNullOrEmpty(value)) value = NotSetGameIdentifier;
-                else value = value.ToLower().Replace(" ", string.Empty);
-                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, BuildIdentifierPrefix + value);
-                EditorSettings.projectGenerationRootNamespace = value;
-            }
-        }
-
-        [InfoBox("Icon is empty", InfoMessageType.Error, VisibleIf = "@GameIcon == null")]
-        [HideLabel, HorizontalGroup("row1", 50), VerticalGroup("row1/right")]
-        [ShowInInspector, PreviewField(50, ObjectFieldAlignment.Right)]
-        private Texture2D GameIcon
-        {
-            get => PlayerSettings.GetIconsForTargetGroup(BuildTargetGroup.Unknown)[0];
-            set
-            {
-                PlayerSettings.SetIconsForTargetGroup(BuildTargetGroup.Unknown, new []{value});
-            }
-        }
-
         #region Test Level
 
         [PropertySpace]
-        [PropertyOrderAttribute(OrderTop)]
+        [PropertyOrder(OrderBottom)]
         [ShowInInspector, HorizontalGroup("Test Level"),
          ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
         private SceneAsset TestLevel
@@ -110,15 +58,8 @@ namespace HexGames
         #endregion
 
         #region Game
-
-        [PropertyOrderAttribute(OrderTop)]
-        [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene")]
-        private void OpenMainScene()
-        {
-            EditorSceneManager.OpenScene(MainSceneAssetPath);
-        }
         
-        [PropertyOrderAttribute(OrderTopMid)]
+        [PropertyOrder(OrderTabsTop)]
         [TabGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private GameBase _game;
@@ -127,13 +68,14 @@ namespace HexGames
 
         #region Events & UI
 
+        // ReSharper disable once NotAccessedField.Local
         private GameEvents _gameEvents;
 
         #endregion
         
         #region Config
 
-        [PropertyOrderAttribute(OrderTopMid)]
+        [PropertyOrder(OrderTabsMid)]
         [TabGroup("Config")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
         private ConfigBase _config;
