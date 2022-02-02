@@ -1,3 +1,7 @@
+#if UNITY_EDITOR_OSX
+using UnityEditor.iOS;  // TODO: Why is this necessary, check code between compiler directives
+#endif
+
 using System;
 using System.Diagnostics;
 using System.IO;
@@ -9,7 +13,6 @@ using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
-using UnityEditor.iOS;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
