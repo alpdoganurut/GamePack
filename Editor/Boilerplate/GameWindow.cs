@@ -1,7 +1,3 @@
-#if UNITY_EDITOR_OSX
-using UnityEditor.iOS;  // TODO: Why is this necessary, check code between compiler directives
-#endif
-
 using System;
 using System.Diagnostics;
 using System.IO;
