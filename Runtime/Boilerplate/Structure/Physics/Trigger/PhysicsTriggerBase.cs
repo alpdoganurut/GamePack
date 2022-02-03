@@ -2,13 +2,12 @@ using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.Boilerplate.Structure.Physics
+namespace GamePack.Boilerplate.Structure.Physics.Trigger
 {
     public abstract class PhysicsTriggerBase: StructureMonoBehaviourBase
     {
         [SerializeField, ReadOnly] private PhysicsObject _PhysicsObject;
 
-        
         private void Awake()
         {
             _PhysicsObject.DidTrigger += PhysicsObjectOnDidTrigger;

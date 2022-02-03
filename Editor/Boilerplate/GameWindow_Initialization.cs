@@ -1,7 +1,7 @@
 using System;
+using GamePack.Boilerplate;
 using GamePack.Boilerplate.GameSystem;
 using GamePack.UnityUtilities;
-using HexGames;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

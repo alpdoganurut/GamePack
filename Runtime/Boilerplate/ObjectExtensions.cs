@@ -1,10 +1,10 @@
 using GamePack.Boilerplate.GameSystem;
-using HexGames;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace SeesawCatapult
+namespace GamePack.Boilerplate
 {
+    // ReSharper disable once UnusedType.Global
     public static class ObjectExtensions
     {
         // public static T Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T : Object => (T) Object.Instantiate((Object) original, position, rotation);

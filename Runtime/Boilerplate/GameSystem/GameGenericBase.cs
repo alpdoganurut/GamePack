@@ -8,8 +8,8 @@ using GameAnalyticsSDK;
 #endif
 using System.Linq;
 using GamePack.Boilerplate.Structure;
+using GamePack.Boilerplate.Tutorial;
 using GamePack.UnityUtilities;
-using HexGames;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;

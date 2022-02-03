@@ -1,6 +1,6 @@
 using System.Diagnostics;
+using GamePack.Boilerplate;
 using GamePack.Boilerplate.GameSystem;
-using HexGames;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
