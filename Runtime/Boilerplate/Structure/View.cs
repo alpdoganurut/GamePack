@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace Boilerplate.Structure
+namespace GamePack.Boilerplate.Structure
 {
     public class View: StructureMonoBehaviourBase
     {

@@ -27,7 +27,6 @@ namespace GamePack.UnityUtilities
             // return obj.GetType().GetField(field, BindingFlags)?.GetValue(obj) as Object;
         }
 
-        
         private static void SetPropertyOrField(object obj, string field, object value)
         {
             var fieldInfo = obj.GetType().GetField(field, BindingFlags);

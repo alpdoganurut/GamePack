@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Boilerplate.GameSystem
+namespace GamePack.Boilerplate.GameSystem
 {
     public class LevelHelperBase: MonoBehaviour
     {

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace HexGames
+namespace GamePack.Boilerplate.GameSystem
 {
     public class ConfigBase : ScriptableObject
     {

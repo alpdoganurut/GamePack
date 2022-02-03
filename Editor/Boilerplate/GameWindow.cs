@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using Boilerplate.GameSystem;
+using GamePack.Boilerplate.GameSystem;
 using HexGames;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;

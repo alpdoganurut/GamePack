@@ -1,6 +1,6 @@
-using HexGames;
+using GamePack.Boilerplate.GameSystem;
 
-namespace Boilerplate.Structure
+namespace GamePack.Boilerplate.Structure
 {
     public abstract class ControllerGenericBase<TLevelInitData> : ControllerBase where TLevelInitData: LevelInitDataBase
     {

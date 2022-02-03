@@ -1,6 +1,6 @@
-namespace HexGames
+namespace GamePack.Boilerplate.GameSystem
 {
-    public abstract class LevelInitDataBase
+    public partial class LevelInitDataBase
     {
     }
 }

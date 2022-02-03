@@ -6,17 +6,15 @@ using UnityEditor;
 using ElephantSDK;
 using GameAnalyticsSDK;
 #endif
-
 using System.Linq;
-using GamePack;
+using GamePack.Boilerplate.Structure;
 using GamePack.UnityUtilities;
+using HexGames;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
-using Boilerplate.Structure;
-using Scene = UnityEngine.SceneManagement.Scene;
 
-namespace HexGames
+namespace GamePack.Boilerplate.GameSystem
 {
     public abstract class GameGenericBase<TConfig, TLevelHelper, TLevelInitData> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperGenericBase<TLevelInitData> where TLevelInitData: LevelInitDataBase
     {

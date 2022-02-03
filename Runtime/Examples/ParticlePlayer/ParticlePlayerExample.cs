@@ -1,4 +1,4 @@
-using GamePack.UnityUtilities.Vendor;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
@@ -11,7 +11,7 @@ namespace GamePack.Examples.ParticlePlayer
         [Button, HideInEditorMode]
         private void SpawnParticle()
         {
-            global::GamePack.ParticlePlayer.Play(_Ids.GetRandom(), Random.insideUnitSphere * 5);
+            global::GamePack.Tools.Systems.ParticlePlayerSystem.ParticlePlayer.Play(_Ids.GetRandom(), Random.insideUnitSphere * 5);
         }
     }
 }

@@ -19,6 +19,7 @@ namespace GamePack.TimerExample
                 {
                     _Cube.transform.position = Vector3.Lerp(startPos, endPos, tVal);
                 }).Start();
+            
             op.RepeatInfinite();
         }
     }

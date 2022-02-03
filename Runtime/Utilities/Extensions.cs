@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace GamePack.UnityUtilities.Vendor
+namespace GamePack.Utilities
 {
     public static class Extensions
     {
@@ -11,7 +11,8 @@ namespace GamePack.UnityUtilities.Vendor
         public static void SetGlobalScale (this Transform transform, Vector3 globalScale)
         {
             transform.localScale = Vector3.one;
-            transform.localScale = new Vector3 (globalScale.x/transform.lossyScale.x, globalScale.y/transform.lossyScale.y, globalScale.z/transform.lossyScale.z);
+            var lossyScale = transform.lossyScale;
+            transform.localScale = new Vector3 (globalScale.x/lossyScale.x, globalScale.y/lossyScale.y, globalScale.z/lossyScale.z);
         }
         
         // Range (Vector2)
@@ -74,6 +75,23 @@ namespace GamePack.UnityUtilities.Vendor
         public static T GetRandom<T>(this T[] array)
         {
             return array[Random.Range(0, array.Length)];
+        }
+
+        public static string GetScenePath(this Component component)
+        {
+            return GetGameObjectPath(component.gameObject);
+        }
+
+        private static string GetGameObjectPath(GameObject obj)
+        {
+            var s = "/";
+            var path = s + obj.name;
+            while (obj.transform.parent != null)
+            {
+                obj = obj.transform.parent.gameObject;
+                path = s + obj.name + path;
+            }
+            return path;
         }
     }
 }

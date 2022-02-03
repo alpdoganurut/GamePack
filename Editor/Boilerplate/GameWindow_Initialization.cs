@@ -1,5 +1,5 @@
 using System;
-using Boilerplate.GameSystem;
+using GamePack.Boilerplate.GameSystem;
 using GamePack.UnityUtilities;
 using HexGames;
 using UnityEditor;

@@ -26,16 +26,13 @@ namespace GamePack.Timer
             float? moveSpeed = null,
             Vector3? targetPos = null, [CanBeNull] Transform targetPosRef = null,
             Quaternion? targetRot = null, [CanBeNull] Transform targetRotRef = null,
-            EasingFunction.Ease? ease = null,
-            AnimationCurve easeCurve = null,
+            EasingFunction.Ease? ease = null, AnimationCurve easeCurve = null,
             string name = null)
         {
             _isMove = targetPos != null || targetPosRef;
             _isRotate = targetRot != null || targetRotRef;
             
             Assert.IsTrue(_isMove || _isRotate, "Operation is neither Move nor Rotate, supply one of the targets for either of them.");
-            // Assert.IsTrue(targetPos != null || targetPosRef, "targetPos or targetPosRef must have value!");
-            // Assert.IsTrue(targetRot != null || targetRotRef, "targetPos or targetPosRef must have value!");
             Assert.IsTrue(moveSpeed > 0 || duration > 0, "Either speed or duration must have value and bigger than zero!");
 
             // Cache initialization parameters to calculate initial movement values OnStart.

@@ -1,8 +1,7 @@
-using GamePack;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace HexGames
+namespace GamePack.Boilerplate.GameSystem
 {
     public abstract class GameBase : MonoBehaviour
     {

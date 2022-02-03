@@ -1,9 +1,10 @@
+using System;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
 namespace GamePack.UnityUtilities
 {
-    public static class DebugDraw
+    [Obsolete]public static class ObsoleteDebugDraw
     {
         public static void Arrow(Vector3 pos, Color color, float size = .2f)
         {

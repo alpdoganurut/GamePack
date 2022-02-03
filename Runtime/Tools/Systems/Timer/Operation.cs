@@ -241,7 +241,7 @@ namespace GamePack.Timer
             }
         }
         
-        private OperationTreeDescription GetDescription()
+        private OperationTreeDescription GetDescription()   // TODO: Move this to OperationTreeDescription constructor
         {
             var root = GetRoot();
             var operations = new List<Operation>();

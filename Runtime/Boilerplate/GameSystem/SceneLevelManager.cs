@@ -1,15 +1,16 @@
-#if UNITY_EDITOR
-using UnityEditor; 
-#endif
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
+#if UNITY_EDITOR
+#endif
 
-namespace GamePack
+namespace GamePack.Boilerplate.GameSystem
 {
     [CreateAssetMenu(fileName = "Level Manager", menuName = "Hex/Scene Level Manager", order = 0)]
     public class SceneLevelManager: ScriptableObject

@@ -98,7 +98,7 @@ namespace GamePack.Tools.Helper
             {
                 _testPos = value;
                 var pos = GetWorldPosAtPathPos(_testPos, out _);
-                DebugDraw.Pointer(pos, Color.red, 1, time: .1f);
+                ObsoleteDebugDraw.Pointer(pos, Color.red, 1, time: .1f);
             }
         }
 

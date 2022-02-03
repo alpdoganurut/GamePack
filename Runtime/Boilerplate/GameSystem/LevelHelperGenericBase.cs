@@ -1,10 +1,9 @@
-using Boilerplate.GameSystem;
-using Boilerplate.Structure;
+using GamePack.Boilerplate.Structure;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace HexGames
+namespace GamePack.Boilerplate.GameSystem
 {
     public abstract class LevelHelperGenericBase<TLevelInitData>: LevelHelperBase where TLevelInitData: LevelInitDataBase
     {

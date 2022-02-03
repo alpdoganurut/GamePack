@@ -1,7 +1,10 @@
+using System;
+using GamePack.Logging;
+using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Assertions;
+using Object = UnityEngine.Object;
 
-namespace Boilerplate.Structure
+namespace GamePack.Boilerplate.Structure
 {
     public abstract class StructureMonoBehaviourBase: MonoBehaviour
     {
@@ -35,5 +38,10 @@ namespace Boilerplate.Structure
         } 
 
         #endregion
+
+        protected static void Log(object obj, [CanBeNull] ManagedLog.Type? type = null, Object context = null)
+        {
+            ManagedLog.Log(obj, type, context);
+        }
     }
 }
