@@ -50,7 +50,11 @@ namespace GamePack.Boilerplate.Structure.Physics
         private void OnValidate()
         {
             if (!_rigidbody) _rigidbody = GetComponent<Rigidbody>();
-            if (!_rigidbody) _rigidbody = gameObject.AddComponent<Rigidbody>();
+            if (!_rigidbody)
+            {
+                _rigidbody = gameObject.AddComponent<Rigidbody>();
+                _rigidbody.isKinematic = true;
+            }
         }
     }
 }

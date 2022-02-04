@@ -1,6 +1,6 @@
 using System;
 using GamePack.Boilerplate;
-using GamePack.Boilerplate.GameSystem;
+using GamePack.Boilerplate.Main;
 using GamePack.UnityUtilities;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -14,7 +14,7 @@ namespace GamePack.Editor.Boilerplate
     {
         #region Initilization
 
-        private static global::GamePack.Editor.Boilerplate.GameWindow _instance;
+        private static GameWindow _instance;
         private static bool _isInit;
         
         private static bool _isListening;
@@ -27,7 +27,7 @@ namespace GamePack.Editor.Boilerplate
         [MenuItem("Window/Game Window")]
         public static void ShowWindow()
         {
-            GetWindow<global::GamePack.Editor.Boilerplate.GameWindow>();
+            GetWindow<GameWindow>();
         }
 
         private void Awake()

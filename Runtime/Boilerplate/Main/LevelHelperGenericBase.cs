@@ -3,7 +3,7 @@ using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.Boilerplate.GameSystem
+namespace GamePack.Boilerplate.Main
 {
     public abstract class LevelHelperGenericBase<TLevelInitData>: LevelHelperBase where TLevelInitData: LevelInitDataBase
     {

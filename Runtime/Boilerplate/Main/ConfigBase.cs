@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GamePack.Boilerplate.GameSystem
+namespace GamePack.Boilerplate.Main
 {
     public class ConfigBase : ScriptableObject
     {

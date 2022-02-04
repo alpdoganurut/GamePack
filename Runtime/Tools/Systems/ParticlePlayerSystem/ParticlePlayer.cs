@@ -1,23 +1,20 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using GamePack.Logging;
 using GamePack.Poolable;
 using GamePack.UnityUtilities;
 using GamePack.Utilities;
-using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.SceneManagement;
 
 namespace GamePack.Tools.Systems.ParticlePlayerSystem
 {
     public static class ParticlePlayer
     {
-        private static ParticlePlayerConfig _instance;
+        private static readonly Color LogColor = Colors.Aqua;
         
-        // [SerializeField, Required] private ParticleConfig[] _Configs;
+        private static ParticlePlayerConfig _config;
         
         private static readonly Dictionary<int, PoolController> PoolControllers = new Dictionary<int, PoolController>();
         private static GameObject _managedGameObject;
@@ -30,36 +27,38 @@ namespace GamePack.Tools.Systems.ParticlePlayerSystem
 
         private static void SceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            InitializeOnEnterPlayMode();
+            if(arg1 != LoadSceneMode.Additive)
+                Initialize();
         }
 
-        // [InitializeOnEnterPlayMode]
-        private static void InitializeOnEnterPlayMode()
+        private static void Initialize()
         {
-            ManagedLog.Log($"{nameof(ParticlePlayerConfig)}.{nameof(InitializeOnLoad)}", ManagedLog.Type.Structure);
+            ManagedLog.Log($"{nameof(ParticlePlayerConfig)}.{nameof(InitializeOnLoad)}",
+                ManagedLog.Type.Structure, color: LogColor);
             
-            // Assert.IsNull(_instance);
-            _instance = FindAllObjects.InScene<ParticlePlayerConfig>().FirstOrDefault();
+            _config = FindAllObjects.InScene<ParticlePlayerConfig>().FirstOrDefault();
             _managedGameObject = new GameObject($"{nameof(ParticlePlayer)} Helper");
 
-            if (!_instance)
+            if (!_config)
             {
-                ManagedLog.LogError("Can't find ParticlePlayerConfig in scene, ParticlePlayer is inactive.");
+                ManagedLog.Log("Can't find ParticlePlayerConfig in scene, ParticlePlayer is inactive.",
+                    ManagedLog.Type.Verbose, color:LogColor);
             }
             else
             {
-                ManagedLog.Log($"Found {nameof(ParticlePlayerConfig)} object in scene. {_instance.GetScenePath()}");
+                ManagedLog.Log($"Found {nameof(ParticlePlayerConfig)} object in scene. {_config.GetScenePath()}",
+                    color:LogColor);
             }
             
-            if(_instance)
+            if(_config)
                 InitiateConfigs();
         }
 
         private static void InitiateConfigs()
         {
-            for (var index = 0; index < _instance.Configs.Length; index++)
+            for (var index = 0; index < _config.Configs.Length; index++)
             {
-                var particleConfig = _instance.Configs[index];
+                var particleConfig = _config.Configs[index];
                 var newPoolController = _managedGameObject.AddComponent<PoolController>();
                 newPoolController.Init(particleConfig.Prefab, particleConfig.PrefillCount);
                 PoolControllers[index] = newPoolController;
@@ -69,11 +68,12 @@ namespace GamePack.Tools.Systems.ParticlePlayerSystem
             }
         }
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public static void Play(int hashedId, Vector3 position)
         {
-            if (!_instance)
+            if (!_config)
             {
-                Debug.LogError($"Create {nameof(ParticlePlayer)} instance in scene before using!");
+                Debug.LogError($"Create {nameof(ParticlePlayerConfig)} instance in scene before using!");
                 return;
             }
             
@@ -88,6 +88,7 @@ namespace GamePack.Tools.Systems.ParticlePlayerSystem
             Play(HashId(id), position);
         }
         
+        // ReSharper disable once MemberCanBePrivate.Global
         public static int HashId(string id)
         {
             return Animator.StringToHash(id);

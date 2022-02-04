@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +9,7 @@ using UnityEngine.SceneManagement;
 #if UNITY_EDITOR
 #endif
 
-namespace GamePack.Boilerplate.GameSystem
+namespace GamePack.Boilerplate
 {
     [CreateAssetMenu(fileName = "Level Manager", menuName = "Hex/Scene Level Manager", order = 0)]
     public class SceneLevelManager: ScriptableObject
@@ -24,13 +23,13 @@ namespace GamePack.Boilerplate.GameSystem
         [ShowInInspector, ReadOnly, TabGroup("Info")]
         private static Scene? _loadedScene;
         
-        [SerializeField, TabGroup("Setup")]
+        [SerializeField, TabGroup("Options")]
         private bool _IsLoop = true;
         
-        [SerializeField, TabGroup("Setup"), ShowIf("_IsLoop"), Min(0), MaxValue("@Mathf.Max(_LevelSceneNames != null ? (_LevelSceneNames.Length - 1) : 0, 0)")]
+        [SerializeField, TabGroup("Options"), ShowIf("_IsLoop"), Min(0), MaxValue("@Mathf.Max(_LevelSceneNames != null ? (_LevelSceneNames.Length - 1) : 0, 0)")]
         private int _LoopIndex;
 
-        [SerializeField, TabGroup("Setup"), InfoBox(ActivateSceneNamesInfo)]
+        [SerializeField, TabGroup("Options"), InfoBox(ActivateSceneNamesInfo)]
         private bool _ActivateAfterLoad;
 
         [SerializeField, ReadOnly, TabGroup("Info")]
@@ -41,7 +40,7 @@ namespace GamePack.Boilerplate.GameSystem
         [SerializeField, ReadOnly, TabGroup("Info")]
         private string _LevelKey;
 
-        [ShowInInspector, TabGroup("Info"), InlineButton("IterateLevel", "+")]
+        [ShowInInspector/*, TabGroup("Info")*/, InlineButton("IterateLevel", "+"), PropertyOrder(-2)]
         public int CurrentLevelIndex
         {
             get => PlayerPrefs.GetInt(_LevelKey, 0);
@@ -172,7 +171,7 @@ namespace GamePack.Boilerplate.GameSystem
         #region Development
 #if UNITY_EDITOR
         
-        [SerializeField, Required, TabGroup("Setup")] 
+        [SerializeField, Required, TabGroup("Setup"), PropertyOrder(-1)] 
         private SceneAsset[] _SceneAssets; 
         
         public SceneAsset[] SceneAssets
@@ -234,7 +233,7 @@ namespace GamePack.Boilerplate.GameSystem
          TabGroup("Setup")] 
         public SceneAsset _TestLevel;
 
-        [SerializeField, InfoBox("Disable to cancel scene loading for testing."), TabGroup("Setup")] 
+        [SerializeField, InfoBox("Disable to cancel scene loading for testing."), TabGroup("Options")] 
         private bool _LoadLevelScene = true;
 #endif
 

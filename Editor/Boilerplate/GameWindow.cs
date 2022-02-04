@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using GamePack.Boilerplate;
-using GamePack.Boilerplate.GameSystem;
+using GamePack.Boilerplate.Main;
+using GamePack.Logging;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
@@ -8,7 +9,7 @@ using Debug = UnityEngine.Debug;
 
 namespace GamePack.Editor.Boilerplate
 {
-    [Title("@\"Game Name: \" + PlayerSettings.productName")]
+    // [Title("@\"Game Name: \" + PlayerSettings.productName")]
     public partial class GameWindow: OdinEditorWindow
     {
         private const int OrderTop = -20;
@@ -24,38 +25,6 @@ namespace GamePack.Editor.Boilerplate
         private const string NotSetProductName = "GAME_NAME_NOT_SET";
         private const string BuildIdentifierPrefix = "com.hex.";
         private const string NotSetGameIdentifier = "IDENTIFIERNOTSET"; // Don't use _ or " ". Unity BuildSettings removes whitespaces.
-
-        #region Test Level
-
-        [PropertySpace]
-        [PropertyOrder(OrderBottom)]
-        [ShowInInspector, HorizontalGroup("Test Level"),
-         ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
-        private SceneAsset TestLevel
-        {
-            get => _levelManager ? _levelManager._TestLevel : null;
-            set { if(_levelManager) _levelManager._TestLevel = value; }
-        }
-        
-        [PropertySpace]
-        [Button("Test"),
-         HorizontalGroup("Test Level", width: 70)/* ResponsiveButtonGroup("Editor Actions", AnimateVisibility = false)*/,
-         ShowIf("@DisableReloadDomain && !EditorApplication.isPlaying && IsValidGameScene")]
-        private void RunTestLevel()
-        {
-            EditorApplication.isPlaying = true;
-
-            void Callback()
-            {
-                _game.StartGame();
-                EnterPlayCallback -= Callback;
-            }
-
-            EnterPlayCallback += Callback;
-
-        }
-        
-        #endregion
 
         #region Game
         
@@ -85,7 +54,7 @@ namespace GamePack.Editor.Boilerplate
         #region Levels
 
         [TabGroup("Levels")]
-        [ShowInInspector,
+        [ShowInInspector, PropertyOrder(GameWindow.OrderTabsMid),
          ShowIf("IsValidGameScene"),
          InlineEditor(InlineEditorObjectFieldModes.Hidden)]
         private SceneLevelManager _levelManager;
@@ -117,6 +86,7 @@ namespace GamePack.Editor.Boilerplate
 
         #endregion
         
+        /*
         #region Level Helper
 
         [Title("Level Helper")]
@@ -124,11 +94,12 @@ namespace GamePack.Editor.Boilerplate
         private LevelHelperBase _levelHelper;
 
         #endregion
+        */
 
         [Conditional("GAME_WINDOW_LOGGING")]
         private static void Log(object msg)
         {
-            Debug.Log(msg);
+            ManagedLog.Log(msg, color: Colors.PowderBlue);
         }
     }
 }

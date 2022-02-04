@@ -1,6 +1,7 @@
 using System;
 using Sirenix.OdinInspector;
 using UnityEngine;
+// ReSharper disable NotAccessedField.Local
 
 namespace GamePack
 {

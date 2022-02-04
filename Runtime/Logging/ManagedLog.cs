@@ -18,6 +18,8 @@ namespace GamePack.Logging
         private static int _lastLogFrameCount;
         private static ManagedLogConfig _config;
 
+        public static ManagedLogConfig Config => _config;
+
         [InitializeOnLoadMethod]
         private static void InitializeOnLoad()
         {
@@ -35,7 +37,7 @@ namespace GamePack.Logging
                 _config = AssetDatabase.LoadAssetAtPath<ManagedLogConfig>(assetPath);
             }
             
-            if (!_config)
+            if (!Config)
             {
                 Debug.LogError($"Can't find config file for {typeof(ManagedLog)}, creating one!");
                 var asset = ScriptableObject.CreateInstance<ManagedLogConfig>();
@@ -61,21 +63,28 @@ namespace GamePack.Logging
             _frameCount++;
         }
         
-        public static void Log(object obj, Type? type = null, Object context = null)
+        public static void Log(object obj, Type? type = null, Object context = null, Color? color = null)
         {
-            if(type != null && !_config.LogTypes.Contains(type.Value)) return;
+            if(type != null && !Config.LogTypes.Contains(type.Value)) return;
             
-            if(_config.ShowFrameCount && _frameCount > _lastLogFrameCount)
+            if(Config.ShowFrameCount && _frameCount > _lastLogFrameCount)
             {
                 Debug.Log($"Frame {_frameCount}");
                 _lastLogFrameCount = _frameCount;
             }
-            Debug.Log(obj, context);
+
+            if (color.HasValue)
+            {
+                var colorHex = ColorUtility.ToHtmlStringRGB(color.Value);
+                var msg = $"<color=#{colorHex}>{obj}</color>";
+                Debug.Log(msg);
+            }
+            else Debug.Log(obj, context);
         }
         
         public static void LogError(object obj, Object context = null)
         {
-            Log(obj, Type.Error, context);
+            Log(obj, Type.Error, context, Colors.MediumVioletRed);
         }
     }
 }

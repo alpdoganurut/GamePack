@@ -1,4 +1,4 @@
-using GamePack.Boilerplate.GameSystem;
+using GamePack.Boilerplate.Main;
 
 namespace GamePack.Boilerplate.Structure
 {
@@ -6,9 +6,10 @@ namespace GamePack.Boilerplate.Structure
     {
         internal void InternalOnLevelStart(LevelInitDataBase levelData)
         {
-            OnLevelStart(levelData as TLevelInitData);
+            OnLevelDidStart(levelData as TLevelInitData);
         }
 
-        protected virtual void OnLevelStart(TLevelInitData levelInitData) { }
+        protected virtual void OnLevelDidStart(TLevelInitData levelInitData) { }
+        protected virtual void OnLevelDidStop(TLevelInitData levelInitData) { }
     }
 }

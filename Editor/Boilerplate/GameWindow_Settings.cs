@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -103,14 +104,6 @@ namespace GamePack.Editor.Boilerplate
             set => SetDefineSymbol(value, LoggingDefineSymbol);
         }
         
-        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
-        private bool Logging
-        {
-            get =>
-                IsDefineSymbolEnabled(LoggingDefineSymbol);
-            set => SetDefineSymbol(value, LoggingDefineSymbol);
-        }
-        
         [TabGroup("Settings"), ShowInInspector, ShowIf("@_game != null")]
         private bool GameVisible
         {
@@ -133,6 +126,16 @@ namespace GamePack.Editor.Boilerplate
 
                 if(!Application.isPlaying)
                     EditorSceneManager.MarkSceneDirty(_scene);
+            }
+        }
+
+        [ShowInInspector, TabGroup("Settings")]
+        [InlineEditor(InlineEditorObjectFieldModes.Foldout)]
+        private ManagedLogConfig ManagedLogConfig
+        {
+            get => ManagedLog.Config;
+            set
+            {
             }
         }
 

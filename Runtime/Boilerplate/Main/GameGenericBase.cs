@@ -1,23 +1,30 @@
+
+using System.Linq;
+using GamePack.Boilerplate.Structure;
+using GamePack.Boilerplate.Tutorial;
+using GamePack.UnityUtilities;
+using Sirenix.OdinInspector;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
+using UnityEngine.UI;
 #if UNITY_EDITOR
-using UnityEditor; 
 #endif
 
 #if ENABLE_ANALYTICS
 using ElephantSDK;
 using GameAnalyticsSDK;
 #endif
-using System.Linq;
-using GamePack.Boilerplate.Structure;
-using GamePack.Boilerplate.Tutorial;
-using GamePack.UnityUtilities;
-using Sirenix.OdinInspector;
-using UnityEngine;
-using UnityEngine.UI;
 
-namespace GamePack.Boilerplate.GameSystem
+// ReSharper disable VirtualMemberNeverOverridden.Global
+// ReSharper disable UnusedParameter.Global
+
+namespace GamePack.Boilerplate.Main
 {
     public abstract class GameGenericBase<TConfig, TLevelHelper, TLevelInitData> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperGenericBase<TLevelInitData> where TLevelInitData: LevelInitDataBase
     {
+        private const string LevelTextPrefix = "Level ";
+        
         private static TConfig _staticConfig;
 
         public static TConfig Config
@@ -67,17 +74,21 @@ namespace GamePack.Boilerplate.GameSystem
         [SerializeField, Required, FoldoutGroup("Default")]
         private Button _StartGameButton;
         
+        [SerializeField, Required, FoldoutGroup("Default")]
+        private TMP_Text _LevelNumberText;
+
         [Space]
         
         [SerializeField, Required, FoldoutGroup("Default")]
         private bool _UnloadSceneAfterStop = true;
         private TLevelHelper _levelHelper;
         
+        
         [ShowInInspector, ReadOnly, PropertyOrder(-1)] private bool _isPlaying;
 
         [SerializeField, Required] private TLevelInitData _LevelInitData;
         
-        [ShowInInspector, ReadOnly] private ControllerGenericBase<TLevelInitData>[] _controllers;
+        // [ShowInInspector, ReadOnly] private ControllerGenericBase<TLevelInitData>[] _controllers;
 
         #region Development - InitializeOnEnterPlayMode
     #if UNITY_EDITOR
@@ -101,13 +112,15 @@ namespace GamePack.Boilerplate.GameSystem
             _staticConfig = _Config;
             
             if(_StartGameButton) _StartGameButton.onClick.AddListener(StartGame);
+            RefreshLevelNumberText();
             if(_FakeScene) _FakeScene.SetActive(true);
 
             Application.targetFrameRate = 60;
             Time.timeScale = _Config.DefaultTimeScale;
         }
 
-        private protected override void OnStartGame()
+
+        private protected override void InternalStartGame()
         {
             if (_isPlaying)
             {
@@ -119,10 +132,9 @@ namespace GamePack.Boilerplate.GameSystem
             Elephant.LevelStarted(_SceneLevelManager.CurrentLevelIndex);
             GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, _SceneLevelManager.CurrentLevelIndex.ToString());
 #endif
-            
             _isPlaying = true;
 
-            WillStartGame();
+            WillStartLevel();
             _SceneLevelManager.LoadCurrentLevelScene(() =>
             {
                 if(_GameEvents) _GameEvents.Trigger(true);
@@ -138,18 +150,21 @@ namespace GamePack.Boilerplate.GameSystem
                     _TutorialManager.ShowTutorial(_SceneLevelManager.CurrentLevelIndex);
 
                 // Invoke controller methods
-                if(_controllers != null)
-                    foreach (var controller in _controllers)
-                        controller.InternalOnLevelStart(_LevelInitData);
+                if(StructureInfo.Controllers != null)
+                    foreach (var controller in StructureInfo.Controllers)
+                    {
+                        (controller as ControllerGenericBase<TLevelInitData>)?.InternalOnLevelStart(_LevelInitData);
+                    }
+                
                 if(_levelHelper.Controllers != null)
                     foreach (var controller in _levelHelper.Controllers)
                         controller.InternalOnLevelStart(_LevelInitData);
                 
-                DidStartGame(LevelHelper);
+                DidStartLevel(LevelHelper);
             });
         }
 
-        private protected override void OnStopGame(bool isSuccess)
+        private protected override void InternalStopGame(bool isSuccess)
         {
             if (!_isPlaying)
             {
@@ -174,19 +189,24 @@ namespace GamePack.Boilerplate.GameSystem
             
             _isPlaying = false;
 
-            WillStopGame(LevelHelper, isSuccess);
+            WillStopLevel(LevelHelper, isSuccess);
             
             if(_GameEvents) _GameEvents.Trigger(false, isSuccess);
             if(_TutorialManager) _TutorialManager.Cancel();
             if(_FakeScene) _FakeScene.SetActive(true);
-            
+            RefreshLevelNumberText();
             if (_UnloadSceneAfterStop)
             {
                 _SceneLevelManager.UnloadCurrentLevel(() =>
                 {
-                    DidStopGame(isSuccess);
+                    DidStopLevel(isSuccess);
                 });
             }
+        }
+        
+        private void RefreshLevelNumberText()
+        {
+            if (_LevelNumberText) _LevelNumberText.text = $"{LevelTextPrefix} {_SceneLevelManager.CurrentLevelIndex}";
         }
         
         #region Public API
@@ -195,19 +215,20 @@ namespace GamePack.Boilerplate.GameSystem
 
         private TLevelHelper LevelHelper => _levelHelper;
 
+        // ReSharper disable once UnusedMember.Global
         public SceneLevelManager LevelManager => _SceneLevelManager;
 
         #endregion
 
         #region Virtual Game State Callbacks
 
-        protected virtual void WillStartGame(){}
+        protected virtual void WillStartLevel(){}
 
-        protected  virtual void DidStartGame(TLevelHelper levelHelper){}
+        protected virtual void DidStartLevel(TLevelHelper levelHelper){}
 
-        protected  virtual void WillStopGame(TLevelHelper levelHelper, bool isSuccess){}
+        protected virtual void WillStopLevel(TLevelHelper levelHelper, bool isSuccess){}
 
-        protected  virtual void DidStopGame(bool isSuccess){}
+        protected virtual void DidStopLevel(bool isSuccess){}
 
         #endregion
 
@@ -236,7 +257,7 @@ namespace GamePack.Boilerplate.GameSystem
                     : $"Found a SceneLevelManager at {UnityEditor.AssetDatabase.GetAssetPath(_SceneLevelManager)}");
             }
 
-            _controllers = FindAllObjects.InScene<ControllerGenericBase<TLevelInitData>>().ToArray();
+            // _controllers = FindAllObjects.InScene<ControllerGenericBase<TLevelInitData>>().ToArray();
         }
         
         // ReSharper disable once UnusedMember.Local
