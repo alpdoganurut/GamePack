@@ -10,7 +10,6 @@ namespace GamePack.Editor.Boilerplate
         [Title("Level Helper")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("@_levelHelper")]
         private LevelHelperBase _levelHelper;
-
         
         #endregion
 

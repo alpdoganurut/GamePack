@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using GamePack.Boilerplate;
 using GamePack.Boilerplate.Main;
@@ -5,6 +6,7 @@ using GamePack.Logging;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
+using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 
 namespace GamePack.Editor.Boilerplate
@@ -12,6 +14,10 @@ namespace GamePack.Editor.Boilerplate
     // [Title("@\"Game Name: \" + PlayerSettings.productName")]
     public partial class GameWindow: OdinEditorWindow
     {
+        // Shared among class parts
+        private event Action EnterPlayCallback;
+        private Scene _scene;
+        
         private const int OrderTop = -20;
         private const int OrderTopMid = -10;
         private const int OrderTabsTop = -3;
@@ -44,19 +50,19 @@ namespace GamePack.Editor.Boilerplate
         
         #region Config
 
-        [PropertyOrder(OrderTabsMid)]
+        /*[PropertyOrder(OrderTabsMid)]
         [TabGroup("Config")]
-        [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
+        [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]*/
         private ConfigBase _config;
 
         #endregion
 
         #region Levels
 
-        [TabGroup("Levels")]
+        /*[TabGroup("Levels")]
         [ShowInInspector, PropertyOrder(GameWindow.OrderTabsMid),
          ShowIf("IsValidGameScene"),
-         InlineEditor(InlineEditorObjectFieldModes.Hidden)]
+         InlineEditor(InlineEditorObjectFieldModes.Hidden)]*/
         private SceneLevelManager _levelManager;
 
         #endregion

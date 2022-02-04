@@ -16,7 +16,7 @@ namespace GamePack.Editor.Boilerplate
         }
         
         [PropertyOrder(GameWindow.OrderTop)]
-        [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene")]
+        [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene"), ShowIf("@_levelHelper")]
         private void TestThisLevel()
         {
             var sceneAssetPath = SceneManager.GetActiveScene().path;

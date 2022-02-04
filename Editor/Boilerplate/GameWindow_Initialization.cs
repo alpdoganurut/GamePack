@@ -2,6 +2,7 @@ using System;
 using GamePack.Boilerplate;
 using GamePack.Boilerplate.Main;
 using GamePack.UnityUtilities;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -16,14 +17,21 @@ namespace GamePack.Editor.Boilerplate
 
         private static GameWindow _instance;
         private static bool _isInit;
-        
         private static bool _isListening;
-
-        private bool IsValidGameScene => _game && SceneManager.GetActiveScene().path == GameWindow.MainSceneAssetPath;
-        private Scene _scene;
-
-        private event Action EnterPlayCallback;
         
+        [PropertyOrder(OrderTabsMid)]
+        [TabGroup("Config")]
+        [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden)]
+        private static ConfigBase _staticConfig;
+        
+        [TabGroup("Levels")]
+        [ShowInInspector, PropertyOrder(GameWindow.OrderTabsMid),
+         InlineEditor(InlineEditorObjectFieldModes.Hidden)]
+        private static SceneLevelManager _staticLevelManager;
+        
+        
+        private bool IsValidGameScene => _game && SceneManager.GetActiveScene().path == GameWindow.MainSceneAssetPath;
+
         [MenuItem("Window/Game Window")]
         public static void ShowWindow()
         {
@@ -68,6 +76,10 @@ namespace GamePack.Editor.Boilerplate
                 _config = ReflectionHelper.GetPropertyOrField(_game, "_Config") as ConfigBase;
                 _levelManager = ReflectionHelper.GetPropertyOrField(_game, "_SceneLevelManager") as SceneLevelManager;
                 _gameEvents = ReflectionHelper.GetPropertyOrField(_game, "_GameEvents") as GameEvents;
+                
+                _staticConfig = _config;
+                _staticLevelManager = _levelManager;
+                
                 GameWindow.Log($"{scene.name} is valid Game scene.");
             }
             else if (_levelHelper)
