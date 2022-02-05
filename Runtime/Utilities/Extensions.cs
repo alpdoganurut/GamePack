@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = System.Object;
 using Random = UnityEngine.Random;
 
 namespace GamePack.Utilities
@@ -77,6 +78,11 @@ namespace GamePack.Utilities
             return array[Random.Range(0, array.Length)];
         }
 
+        public static string GetScenePath(this UnityEngine.Object component)
+        {
+            return GetScenePath(component as Component);
+        }
+        
         public static string GetScenePath(this Component component)
         {
             return GetGameObjectPath(component.gameObject);
@@ -84,6 +90,8 @@ namespace GamePack.Utilities
 
         private static string GetGameObjectPath(GameObject obj)
         {
+            if (!obj) return "NULL";
+            
             var s = "/";
             var path = s + obj.name;
             while (obj.transform.parent != null)

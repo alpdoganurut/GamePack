@@ -2,7 +2,7 @@ using GamePack.Timer;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.TimerExample
+namespace Examples.TimerExample
 {
     public class TimerExample: MonoBehaviour
     {

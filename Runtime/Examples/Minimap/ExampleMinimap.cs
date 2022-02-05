@@ -1,15 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using GamePack.Minimap;
+﻿using GamePack.Minimap;
 using GamePack.Poolable;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-public class ExampleMinimap : MinimapBase
+namespace Examples.Minimap
 {
-    [SerializeField, Required] private PoolController _IndicatorPool;
-    protected override PoolableIndicator GetPoolable(MinimapObject minimapObject)
+    public class CustomMinimap : MinimapBase
     {
-        return _IndicatorPool.Get() as PoolableIndicator;
+        [SerializeField, Required] private PoolController _IndicatorPool;
+        protected override PoolableIndicator GetPoolable(MinimapObject minimapObject)
+        {
+            return _IndicatorPool.Get() as PoolableIndicator;
+        }
     }
 }

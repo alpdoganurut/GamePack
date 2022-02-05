@@ -1,4 +1,3 @@
-using System;
 using GamePack.Logging;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -43,5 +42,6 @@ namespace GamePack.Boilerplate.Structure
         {
             ManagedLog.Log(obj, type, context);
         }
+        
     }
 }

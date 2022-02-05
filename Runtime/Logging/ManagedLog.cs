@@ -67,7 +67,9 @@ namespace GamePack.Logging
         {
             if(type != null && !Config.LogTypes.Contains(type.Value)) return;
             
-            if(Config.ShowFrameCount && _frameCount > _lastLogFrameCount)
+            if(Application.isPlaying
+               && Config.ShowFrameCount
+               && _frameCount > _lastLogFrameCount)
             {
                 Debug.Log($"Frame {_frameCount}");
                 _lastLogFrameCount = _frameCount;
@@ -84,7 +86,8 @@ namespace GamePack.Logging
         
         public static void LogError(object obj, Object context = null)
         {
-            Log(obj, Type.Error, context, Colors.MediumVioletRed);
+            // Log(obj, Type.Error, context, Colors.Tomato);
+            Log( "[ERROR] " + obj.ToString(), Type.Error, context);
         }
     }
 }
