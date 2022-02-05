@@ -63,9 +63,10 @@ namespace GamePack.Logging
             _frameCount++;
         }
         
-        public static void Log(object obj, Type? type = null, Object context = null, Color? color = null)
+        public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null)
         {
-            if(type != null && !Config.LogTypes.Contains(type.Value)) return;
+            var msg = obj.ToString();
+            if(!Config.LogTypes.Contains(type)) return;
             
             if(Application.isPlaying
                && Config.ShowFrameCount
@@ -75,13 +76,18 @@ namespace GamePack.Logging
                 _lastLogFrameCount = _frameCount;
             }
 
+            if (_config.ShowLogType && type != Type.Default)
+            {
+                msg = $"[{type.ToString()}]\t{msg}";
+            }
+            
             if (color.HasValue)
             {
                 var colorHex = ColorUtility.ToHtmlStringRGB(color.Value);
-                var msg = $"<color=#{colorHex}>{obj}</color>";
+                msg = $"<color=#{colorHex}>{msg}</color>";
                 Debug.Log(msg);
             }
-            else Debug.Log(obj, context);
+            else Debug.Log(msg, context);
         }
         
         public static void LogError(object obj, Object context = null)

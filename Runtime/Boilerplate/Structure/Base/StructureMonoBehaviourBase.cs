@@ -38,7 +38,7 @@ namespace GamePack.Boilerplate.Structure
 
         #endregion
 
-        protected static void Log(object obj, [CanBeNull] ManagedLog.Type? type = null, Object context = null)
+        protected static void Log(object obj, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null)
         {
             ManagedLog.Log(obj, type, context);
         }

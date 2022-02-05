@@ -11,9 +11,12 @@ namespace GamePack.Logging
         [SerializeField, Required] private ManagedLog.Type[] _LogTypes;
 
         [SerializeField, Required] private bool _ShowFrameCount = true;
+        [SerializeField, Required] private bool _ShowLogType = true;
         public ManagedLog.Type[] LogTypes => _LogTypes;
 
         public bool ShowFrameCount => _ShowFrameCount;
+
+        public bool ShowLogType => _ShowLogType;
 
         private void OnValidate()
         {

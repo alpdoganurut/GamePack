@@ -10,7 +10,7 @@ namespace GamePack.Logging
         private const float Offset = 1;
         private const float Duration = 1f;
         private static readonly Color DefaultColor = Colors.Orangered;
-        private static readonly EasingFunction.Ease Easing = EasingFunction.Ease.EaseInOutSine;
+        private static EasingFunction.Ease Easing = EasingFunction.Ease.EaseInOutSine;
 
         public static void Log(object msg, Transform transform = null, Vector3? pos = null,  Color? color = null)
         {

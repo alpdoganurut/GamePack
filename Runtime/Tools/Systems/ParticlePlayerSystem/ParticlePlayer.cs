@@ -34,7 +34,7 @@ namespace GamePack.Tools.Systems.ParticlePlayerSystem
         private static void Initialize()
         {
             ManagedLog.Log($"{nameof(ParticlePlayerConfig)}.{nameof(InitializeOnLoad)}",
-                ManagedLog.Type.Structure, color: LogColor);
+                ManagedLog.Type.Verbose, color: LogColor);
             
             _config = FindAllObjects.InScene<ParticlePlayerConfig>().FirstOrDefault();
             _managedGameObject = new GameObject($"{nameof(ParticlePlayer)} Helper");
