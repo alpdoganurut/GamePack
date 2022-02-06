@@ -150,8 +150,8 @@ namespace GamePack.Boilerplate.Main
                     _TutorialManager.ShowTutorial(_SceneLevelManager.CurrentLevelIndex);
 
                 // Invoke controller methods
-                if(StructureInfo.Controllers != null)
-                    foreach (var controller in StructureInfo.Controllers)
+                if(StructureManager.Controllers != null)
+                    foreach (var controller in StructureManager.Controllers)
                     {
                         (controller as ControllerGenericBase<TLevelInitData>)?.InternalOnLevelStart(_LevelInitData);
                     }

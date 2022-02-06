@@ -32,6 +32,18 @@ namespace GamePack.Utilities.DebugDrawSystem
             }
         }
         
+        private struct OwnedDrawing
+        {
+            public IDrawing Drawing { get; }
+            public Object Owner { get; }
+
+            public OwnedDrawing(IDrawing drawing, Object owner)
+            {
+                Drawing = drawing;
+                Owner = owner;
+            }
+        }
+        
 #pragma warning disable CS0414
         [ReadOnly] private static bool _isInit;
 #pragma warning restore CS0414
@@ -48,22 +60,25 @@ namespace GamePack.Utilities.DebugDrawSystem
         private static bool _showInfo = false;
 
         private static readonly List<IDrawing> DefaultDrawings = new List<IDrawing>();
-        private static readonly List<IDrawing> WaitingFrameDrawings = new List<IDrawing>();
-        private static readonly List<IDrawing> FrameDrawings = new List<IDrawing>();
         private static readonly List<TimedDrawing> TimedDrawings = new List<TimedDrawing>();
+        private static readonly List<OwnedDrawing> OwnedDrawings = new List<OwnedDrawing>();
+        private static readonly List<IDrawing> FrameDrawingsBuffer = new List<IDrawing>();
+        private static readonly List<IDrawing> FrameDrawings = new List<IDrawing>();
 
         private static DebugDrawSceneHelper _helper;
         private static string _infoText;
+        
+        internal static Camera PlayModMainCamera { get; private set; }
 
-        internal static void NewDrawing(IDrawing drawing, float duration = -1)
+        internal static void NewDrawing(IDrawing drawing, float duration = -1, Object owner = null)
         {
-            if(duration < 0) WaitingFrameDrawings.Add(drawing);
+            if(owner) OwnedDrawings.Add(new OwnedDrawing(drawing, owner));
+            else if(duration < 0) FrameDrawingsBuffer.Add(drawing);
             else TimedDrawings.Add(new TimedDrawing(drawing, duration));
         }
         
         #region Initialization
 
-        
         [InitializeOnLoadMethod]
         private static void InitializeOnLoad()
         {
@@ -76,6 +91,7 @@ namespace GamePack.Utilities.DebugDrawSystem
             _isInit = true;
             LogEvent($"{nameof(DebugDraw)}.InitializeOnLoadMethod");
             EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
+            SceneManager.sceneLoaded += OnEditorSceneManagerOnSceneLoaded;
             ListenCamera();
 
             PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(DebugDraw), CustomLateUpdate);
@@ -86,9 +102,14 @@ namespace GamePack.Utilities.DebugDrawSystem
             {
                 DefaultDrawings.Add(new TextDrawing(new Vector3(.02f, .01f), nameof(DebugDraw),
                     new Color(1f, 0.84f, 0.2f), fontSize: .5f,
-                    textAlign: TextAlign.BottomLeft)); // Not working consistently, maybe just in edit mode
+                    textAlign: TextAlign.BottomLeft, lookAtCamera: false)); // Not working consistently, maybe just in edit mode
                 DefaultDrawings.Add(new PointDrawing(Vector3.zero, .5f, 0.02f, new Color(1f, 0.84f, 0.2f, .5f)));
             }
+        }
+
+        private static void OnEditorSceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode mode)
+        {
+            PlayModMainCamera = Camera.main;
         }
 
         private static void ListenCamera()
@@ -219,23 +240,28 @@ namespace GamePack.Utilities.DebugDrawSystem
 
         private static void DrawShapes(Camera cam)
         {
-            LogUpdate($"{nameof(DebugDraw)}.DrawShapes cam: {cam.name} waiting: {WaitingFrameDrawings.Count} frame: {FrameDrawings.Count} timed: {TimedDrawings.Count}");
+            LogUpdate($"{nameof(DebugDraw)}.DrawShapes cam: {cam.name} waiting: {FrameDrawingsBuffer.Count} frame: {FrameDrawings.Count} timed: {TimedDrawings.Count}");
             
             using (Draw.Command(cam, _drawOrder))
             {
                 foreach (var drawing in DefaultDrawings)
                 {
-                    drawing.Draw();
+                    drawing.Draw(cam);
                 }
 
                 foreach (var drawing in FrameDrawings)
                 {
-                    drawing.Draw();
+                    drawing.Draw(cam);
                 }
 
                 foreach (var timedDrawing in TimedDrawings)
                 {
-                    timedDrawing.Drawing.Draw();
+                    timedDrawing.Drawing.Draw(cam);
+                }
+
+                foreach (var ownedDrawing in OwnedDrawings)
+                {
+                    ownedDrawing.Drawing.Draw(cam);
                 }
             }
         }
@@ -253,6 +279,7 @@ namespace GamePack.Utilities.DebugDrawSystem
             
             FrameUpdate();
             TimedDrawings.RemoveAll(timedDrawing => timedDrawing.EndTime < Time.time);
+            OwnedDrawings.RemoveAll(drawing => !drawing.Owner);
         }
 
         internal static void OnHelperDrawGizmos()
@@ -272,8 +299,8 @@ namespace GamePack.Utilities.DebugDrawSystem
 
             LogUpdate($"{nameof(DebugDraw)}.{nameof(FrameUpdate)}");
             FrameDrawings.Clear();
-            FrameDrawings.InsertRange(0, WaitingFrameDrawings);
-            WaitingFrameDrawings.Clear();
+            FrameDrawings.InsertRange(0, FrameDrawingsBuffer);
+            FrameDrawingsBuffer.Clear();
         }
 
         #endregion

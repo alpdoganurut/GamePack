@@ -27,18 +27,19 @@ namespace GamePack.Logging
             
             ManagedLog.Log(msg, ManagedLog.Type.Default, transform ? transform.gameObject : null, color);
             
-            new Operation("World Log", duration: Duration,  ease: Easing, updateAction: val =>
-            {
-                var pX = isFollowing ? transform.position.x :   Mathf.Lerp(startPos.x, finalPos.x, val);
-                var pY = Mathf.Lerp(startPos.y,  isFollowing ? transform.position.y + posOffset.y : finalPos.y, val);
-                var pZ = isFollowing ? transform.position.z : Mathf.Lerp(startPos.z, finalPos.z, val);
-                var p = new Vector3(pX, pY, pZ);
-                
-                var c = Color.Lerp(startColor, endColor, val);
-                
-                Draw.Text(p, msg.ToString(), c);
-                
-            }).Start(true);
+            new Operation("World Log", duration: Duration, ease: Easing,
+                updateAction: val =>
+                {
+                    var pX = isFollowing ? transform.position.x :   Mathf.Lerp(startPos.x, finalPos.x, val);
+                    var pY = Mathf.Lerp(startPos.y,  isFollowing ? transform.position.y + posOffset.y : finalPos.y, val);
+                    var pZ = isFollowing ? transform.position.z : Mathf.Lerp(startPos.z, finalPos.z, val);
+                    var p = new Vector3(pX, pY, pZ);
+                    
+                    var c = Color.Lerp(startColor, endColor, val);
+                    
+                    Draw.Text(p, msg.ToString(), c);
+                    
+                }).Start(true);
         }
 
     }
