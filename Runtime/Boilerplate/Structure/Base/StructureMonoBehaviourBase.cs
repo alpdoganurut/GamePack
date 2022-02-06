@@ -42,6 +42,19 @@ namespace GamePack.Boilerplate.Structure
         {
             ManagedLog.Log(obj, type, context);
         }
+
+        public new static void Instantiate<T>(T original) where T: Object
+        {
+           var n = MonoBehaviour.Instantiate(original);
+           StructureManager.RegisterViewOrController(n);
+        }
         
+        public new static void Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T: Object
+        {
+            var n = MonoBehaviour.Instantiate(original, position, rotation);
+            StructureManager.RegisterViewOrController(n);
+        }
+        
+        // TODO: Add other Instantiation methods 
     }
 }

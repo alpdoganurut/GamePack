@@ -1,4 +1,6 @@
 using GamePack.Boilerplate.Main;
+using GamePack.Logging;
+using GamePack.Utilities;
 
 namespace GamePack.Boilerplate.Structure
 {
@@ -6,10 +8,17 @@ namespace GamePack.Boilerplate.Structure
     {
         internal void InternalOnLevelStart(LevelInitDataBase levelData)
         {
+            ManagedLog.Log($"{GetType().Name}.{nameof(InternalOnLevelStart)} ({this.GetScenePath()})", ManagedLog.Type.Verbose);
             OnLevelDidStart(levelData as TLevelInitData);
+        }
+        
+        internal void InternalOnLevelStop()
+        {
+            ManagedLog.Log($"{GetType().Name}.{nameof(InternalOnLevelStop)} ({this.GetScenePath()})", ManagedLog.Type.Verbose);
+            OnLevelDidStop();
         }
 
         protected virtual void OnLevelDidStart(TLevelInitData levelInitData) { }
-        protected virtual void OnLevelDidStop(TLevelInitData levelInitData) { }
+        protected virtual void OnLevelDidStop() { }
     }
 }

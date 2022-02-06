@@ -2,6 +2,7 @@
 using System.Linq;
 using GamePack.Boilerplate.Structure;
 using GamePack.Boilerplate.Tutorial;
+using GamePack.Logging;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using TMPro;
@@ -137,6 +138,8 @@ namespace GamePack.Boilerplate.Main
             WillStartLevel();
             _SceneLevelManager.LoadCurrentLevelScene(() =>
             {
+                ManagedLog.Log($"Level Scene is loaded.", ManagedLog.Type.Verbose);
+                
                 if(_GameEvents) _GameEvents.Trigger(true);
                 
                 if(_FakeScene) _FakeScene.SetActive(false);
@@ -156,9 +159,9 @@ namespace GamePack.Boilerplate.Main
                         (controller as ControllerGenericBase<TLevelInitData>)?.InternalOnLevelStart(_LevelInitData);
                     }
                 
-                if(_levelHelper.Controllers != null)
+                /*if(_levelHelper.Controllers != null)
                     foreach (var controller in _levelHelper.Controllers)
-                        controller.InternalOnLevelStart(_LevelInitData);
+                        controller.InternalOnLevelStart(_LevelInitData);*/
                 
                 DidStartLevel(LevelHelper);
             });
@@ -202,6 +205,12 @@ namespace GamePack.Boilerplate.Main
                     DidStopLevel(isSuccess);
                 });
             }
+            
+            if(StructureManager.Controllers != null)
+                foreach (var controller in StructureManager.Controllers)
+                {
+                    (controller as ControllerGenericBase<TLevelInitData>)?.InternalOnLevelStop();
+                }
         }
         
         private void RefreshLevelNumberText()

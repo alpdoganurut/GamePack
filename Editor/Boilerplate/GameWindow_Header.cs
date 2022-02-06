@@ -9,7 +9,7 @@ namespace GamePack.Editor.Boilerplate
     public partial class GameWindow
     {
         [PropertyOrder(GameWindow.OrderTop)]
-        [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene")]
+        [Button(size: ButtonSizes.Large), HideIf("IsValidGameSceneAndMain")]
         private void OpenMainScene()
         {
             EditorSceneManager.OpenScene(MainSceneAssetPath);
@@ -53,7 +53,7 @@ namespace GamePack.Editor.Boilerplate
         [InfoBox("GameName is not set.", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
         [VerticalGroup("row1/left")]
         [PropertyOrder(GameWindow.OrderTop)]
-        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
+        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain")]
         private string GameName
         {
             get => PlayerSettings.productName == GameWindow.NotSetProductName ? "" : PlayerSettings.productName;
@@ -63,7 +63,7 @@ namespace GamePack.Editor.Boilerplate
         [InfoBox("GameIdentifier is not set.", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
         [VerticalGroup("row1/left")]
         [PropertyOrder(GameWindow.OrderTop)]
-        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene")]
+        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain")]
         private string GameIdentifier
         {
             get
@@ -86,7 +86,7 @@ namespace GamePack.Editor.Boilerplate
         // [InfoBox("Icon is empty", InfoMessageType.Error, VisibleIf = "@GameIcon == null")]
         [HideLabel, HorizontalGroup("row1", 50), VerticalGroup("row1/right")]
         [PropertyOrder(GameWindow.OrderTop)]
-        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameScene"), PreviewField(50, ObjectFieldAlignment.Right)]
+        [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain"), PreviewField(50, ObjectFieldAlignment.Right)]
         private Texture2D GameIcon
         {
             get

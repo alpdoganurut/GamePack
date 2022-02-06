@@ -7,18 +7,8 @@ namespace GamePack.Boilerplate.Main
 {
     public abstract class LevelHelperGenericBase<TLevelInitData>: LevelHelperBase where TLevelInitData: LevelInitDataBase
     {
-        [ShowInInspector, ReadOnly] private ControllerGenericBase<TLevelInitData>[] _controllers;
+        // [ShowInInspector, ReadOnly] private ControllerGenericBase<TLevelInitData>[] _controllers;
 
-        internal ControllerGenericBase<TLevelInitData>[] Controllers => _controllers;
-
-        protected virtual void EditorAutoFill() {}
-
-        private void OnValidate()
-        {
-            if(Application.isPlaying) return;
-            
-            EditorAutoFill();
-            _controllers = FindAllObjects.InScene<ControllerGenericBase<TLevelInitData>>().ToArray();
-        }
+        // internal ControllerGenericBase<TLevelInitData>[] Controllers => _controllers;
     }
 }

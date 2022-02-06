@@ -1,9 +1,11 @@
+using System.Diagnostics;
 using System.Linq;
 using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
+using Debug = UnityEngine.Debug;
 
 namespace GamePack.Logging
 {
@@ -63,6 +65,7 @@ namespace GamePack.Logging
             _frameCount++;
         }
         
+        // [Conditional("UNITY_EDITOR")]
         public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null)
         {
             var msg = obj.ToString();

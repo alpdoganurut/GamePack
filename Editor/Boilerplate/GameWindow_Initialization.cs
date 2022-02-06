@@ -30,7 +30,8 @@ namespace GamePack.Editor.Boilerplate
         private static SceneLevelManager _staticLevelManager;
         
         
-        private bool IsValidGameScene => _game && SceneManager.GetActiveScene().path == GameWindow.MainSceneAssetPath;
+        private bool IsValidGameSceneAndMain => _game && SceneManager.GetActiveScene().path == GameWindow.MainSceneAssetPath;
+        private bool IsValidGameScene => _game;
 
         [MenuItem("Window/Game Window")]
         public static void ShowWindow()
