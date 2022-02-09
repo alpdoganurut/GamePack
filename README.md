@@ -1,5 +1,3 @@
-Initial state of the package.
+# GamePack
 
-# GAMEPACK
-
-Various tools to help producing games.
+Various tools to streamline producing basic games.
