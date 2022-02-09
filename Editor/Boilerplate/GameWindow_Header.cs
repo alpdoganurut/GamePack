@@ -76,10 +76,15 @@ namespace GamePack.Editor.Boilerplate
             }
             set
             {
-                if (string.IsNullOrEmpty(value)) value = GameWindow.NotSetGameIdentifier;
+                var namespaceValue = value.Replace(" ", string.Empty);
+                if (string.IsNullOrEmpty(value))
+                {
+                    value = GameWindow.NotSetGameIdentifier;
+                    namespaceValue = GameWindow.NotSetGameIdentifier;
+                }
                 else value = value.ToLower().Replace(" ", string.Empty);
                 PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, GameWindow.BuildIdentifierPrefix + value);
-                EditorSettings.projectGenerationRootNamespace = value;
+                EditorSettings.projectGenerationRootNamespace = namespaceValue;
             }
         }
 
