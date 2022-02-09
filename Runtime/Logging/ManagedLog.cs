@@ -75,7 +75,7 @@ namespace GamePack.Logging
                && Config.ShowFrameCount
                && _frameCount > _lastLogFrameCount)
             {
-                Debug.Log($"Frame {_frameCount}");
+                Debug.Log($"# Frame {_frameCount}");
                 _lastLogFrameCount = _frameCount;
             }
 

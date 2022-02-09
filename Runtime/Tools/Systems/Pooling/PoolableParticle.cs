@@ -9,7 +9,7 @@ namespace GamePack.Poolable
         private ParticleSystem _particleSystem;
 
         public ParticleSystem ParticleSystem
-        {
+        {   
             get
             {
                 if (_particleSystem == null) _particleSystem = GetComponent<ParticleSystem>();

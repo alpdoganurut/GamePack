@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -35,6 +36,9 @@ namespace GamePack.Timer
         private readonly List<float> _runningOperationStartTimes = new List<float>();
         private readonly List<float?> _runningOperationEndTimes = new List<float?>();
         
+        // Optimization
+        private readonly List<Operation> _operationsToResolveImmediately = new List<Operation>();
+
         public void AddOperation(Operation operation)
         {
             Log($"Adding operation {operation.Name}, delay: {operation.Delay}, ignoreTimeScale: {operation.IsIgnoreTimeScale}");
@@ -45,19 +49,20 @@ namespace GamePack.Timer
 
         private void Update()
         {
-            #if TIMER_ENABLE_LOG
+            // #if TIMER_ENABLE_LOG
             // Logging all operations to remove
             var toRemove = _rootOperations.Where(operation => operation.State != OperationState.Waiting);
             foreach (var operation in toRemove)
             {
-                Debug.Log($"Will remove {operation.Name}");
+                Debug.Log($"Will remove from {nameof(_rootOperations)}. Op: {operation.Name}, state: {operation.State}");
             }
-            #endif
+            // #endif
             
             // Remove root operations if they are no longer waiting -- Operations that are cancelled before started is removed at this stage
             SyncRemove(operation => operation.State != OperationState.Waiting, _rootOperations, _rootOperationTimes);
-            
-            // Start operations if ready
+
+            // Run Operations
+            _operationsToResolveImmediately.Clear();
             for (var index = 0; index < _rootOperations.Count; index++)
             {
                 var rootOperation = _rootOperations[index];
@@ -66,7 +71,7 @@ namespace GamePack.Timer
 
                 if (rootOperation.ShouldSkip())
                 {
-                    Resolve(rootOperation);
+                    _operationsToResolveImmediately.Add(rootOperation);
                     continue;
                 }
 
@@ -75,9 +80,14 @@ namespace GamePack.Timer
                 )
                 {
                     RunOperation(rootOperation);
-                    if(rootOperation.ShouldResolveImmediately()) Resolve(rootOperation);
+                    if(rootOperation.ShouldResolveImmediately())
+                    {
+                        _operationsToResolveImmediately.Add(rootOperation);
+                    }
                 }
             }
+            // Delete 
+            foreach (var operation in _operationsToResolveImmediately) Resolve(operation);
 
             // Catch cancelled operations and run their end actions if set to true
             foreach (var runningOperation in _runningOperations)
@@ -89,6 +99,14 @@ namespace GamePack.Timer
                 }
             }
             
+            // #if TIMER_ENABLE_LOG
+            // Logging all operations to remove
+            var toRemoveFromRunning = _rootOperations.Where(operation => operation.State != OperationState.Running);
+            foreach (var operation in toRemoveFromRunning)
+            {
+                Debug.Log($"Will remove from {nameof(_runningOperations)}. Op: {operation.Name}, state: {operation.State}");
+            }
+            // #endif
             // Remove operations if they are no longer running
             SyncRemove(operation => operation.State != OperationState.Running, _runningOperations, _runningOperationEndTimes, _runningOperationStartTimes);
             
@@ -165,7 +183,7 @@ namespace GamePack.Timer
         [Conditional("TIMER_ENABLE_LOG")]
         private void Log(object obj)
         {
-            Debug.Log(obj + $"\t Time: {Time.time}");
+            ManagedLog.Log(obj + $"\t Time: {Time.time}");
         }
 
         private float GetTimeForOperation(Operation operation)
