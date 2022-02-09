@@ -6,10 +6,11 @@ using GamePack.Logging;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using TMPro;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+
 #if UNITY_EDITOR
+using UnityEditor;
 #endif
 
 #if ENABLE_ANALYTICS
@@ -22,7 +23,7 @@ using GameAnalyticsSDK;
 
 namespace GamePack.Boilerplate.Main
 {
-    public abstract class GameGenericBase<TConfig, TLevelHelper, TLevelInitData> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperGenericBase<TLevelInitData> where TLevelInitData: LevelInitDataBase
+    public abstract class GameGenericBase<TConfig, TLevelHelper, TLevelInitData> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperBase where TLevelInitData: LevelInitDataBase
     {
         private const string LevelTextPrefix = "Level ";
         

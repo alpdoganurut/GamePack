@@ -50,10 +50,12 @@ namespace GamePack.Boilerplate.Structure
            return n;
         }
         
-        public new static void Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T: Object
+        public new static T Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T: Object
         {
             var n = MonoBehaviour.Instantiate(original, position, rotation);
             StructureManager.RegisterViewOrController(n);
+
+            return n;
         }
         
         // TODO: Add other Instantiation methods 
