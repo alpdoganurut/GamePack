@@ -13,7 +13,11 @@ namespace GamePack.Logging
     {
         public enum Type
         {
-            Default, Verbose, Structure, Error
+            Default, 
+            Verbose, 
+            Structure, 
+            Error,
+            Info
         }
         
         private static int _frameCount;
@@ -69,7 +73,7 @@ namespace GamePack.Logging
         public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null)
         {
             var msg = obj.ToString();
-            if(!Config.LogTypes.Contains(type)) return;
+            if(!Config || !Config.LogTypes.Contains(type)) return;  // Log everything if config is not found.
             
             if(Application.isPlaying
                && Config.ShowFrameCount

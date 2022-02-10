@@ -1,10 +1,7 @@
 using System.Collections.Generic;
-using System.Linq;
 using GamePack.Logging;
-using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using Shapes;
-using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
@@ -22,10 +19,10 @@ namespace GamePack.Boilerplate.Structure
         public static bool ShowViewNames = false;
         public static bool ShowViewAxes = false;
 
-        [InitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod, InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Verbose);
+            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
             SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
             SceneManager.sceneUnloaded += SceneManagerOnSceneUnloaded;
             
@@ -63,14 +60,14 @@ namespace GamePack.Boilerplate.Structure
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode()
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnEnterPlayMode)}", ManagedLog.Type.Verbose);
+            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnEnterPlayMode)}", ManagedLog.Type.Structure);
             Controllers.Clear();
             Views.Clear();
         }
         
         private static void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode arg1)
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneLoaded)}", ManagedLog.Type.Verbose);
+            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneLoaded)}", ManagedLog.Type.Structure);
             AddAllComponentsInScene<View>(scene);
             AddAllComponentsInScene<ControllerBase>(scene);
             // TODO: We need to keep track of newly instantiated views and destroyed ones
@@ -105,7 +102,7 @@ namespace GamePack.Boilerplate.Structure
 
         private static void SceneManagerOnSceneUnloaded(Scene arg0)
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneUnloaded)}", ManagedLog.Type.Verbose);
+            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneUnloaded)}", ManagedLog.Type.Structure);
             Views.RemoveAll(view => !view);
             Controllers.RemoveAll(controllerBase => !controllerBase);
         }

@@ -6,17 +6,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using GamePack.Logging;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
+using UnityEngine.PlayerLoop;
 using Debug = UnityEngine.Debug;
 
 namespace GamePack.Timer
 {
-    public class Engine: MonoBehaviour
+    public static class Engine
     {
-        private static Engine _instance;
-        public static Engine Instance
+        // private static Engine _instance;
+        /*public static Engine Instance
         {
             get
             {
@@ -27,51 +30,67 @@ namespace GamePack.Timer
 
                 return _instance;
             }
-        }
+        }*/
         
-        [ShowInInspector] private readonly List<Operation> _rootOperations = new List<Operation>();
-        private readonly List<float?> _rootOperationTimes = new List<float?>();
+        [ShowInInspector] private static readonly List<Operation> RootOperations = new List<Operation>();
+        private static readonly List<float?> RootOperationTimes = new List<float?>();
         
-        [ShowInInspector] private readonly List<Operation> _runningOperations = new List<Operation>();
-        private readonly List<float> _runningOperationStartTimes = new List<float>();
-        private readonly List<float?> _runningOperationEndTimes = new List<float?>();
+        [ShowInInspector] private static readonly List<Operation> RunningOperations = new List<Operation>();
+        private static readonly List<float> RunningOperationStartTimes = new List<float>();
+        private static readonly List<float?> RunningOperationEndTimes = new List<float?>();
         
         // Optimization
-        private readonly List<Operation> _operationsToResolveImmediately = new List<Operation>();
+        private static readonly List<Operation> OperationsToResolveImmediately = new List<Operation>();
 
-        public void AddOperation(Operation operation)
+        public static void AddOperation(Operation operation)
         {
             Log($"Adding operation {operation.Name}, delay: {operation.Delay}, ignoreTimeScale: {operation.IsIgnoreTimeScale}");
             
-            _rootOperations.Add(operation);
-            _rootOperationTimes.Add(GetTimeForOperation(operation) + operation.Delay);
+            RootOperations.Add(operation);
+            RootOperationTimes.Add(GetTimeForOperation(operation) + operation.Delay);
         }
 
-        private void Update()
+        [RuntimeInitializeOnLoadMethod, InitializeOnLoadMethod]
+        private static void InitializeOnLoad()
         {
-            // #if TIMER_ENABLE_LOG
+            ManagedLog.Log($"{nameof(Engine)}.{nameof(InitializeOnLoad)}", ManagedLog.Type.Structure);
+            PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), Update);
+            
+            // Clear all lists
+            RootOperations.Clear();
+            RootOperationTimes.Clear();
+            RunningOperations.Clear();
+            RunningOperationStartTimes.Clear();
+            RunningOperationEndTimes.Clear();
+        }
+    
+        private static void Update()
+        {
+            if(!Application.isPlaying) return;
+
+            #if TIMER_ENABLE_LOG
             // Logging all operations to remove
-            var toRemove = _rootOperations.Where(operation => operation.State != OperationState.Waiting);
+            var toRemove = RootOperations.Where(operation => operation.State != OperationState.Waiting);
             foreach (var operation in toRemove)
             {
-                Debug.Log($"Will remove from {nameof(_rootOperations)}. Op: {operation.Name}, state: {operation.State}");
+                Log($"Will remove from {nameof(RootOperations)}. Op: {operation.Name}, state: {operation.State}");
             }
-            // #endif
+            #endif
             
             // Remove root operations if they are no longer waiting -- Operations that are cancelled before started is removed at this stage
-            SyncRemove(operation => operation.State != OperationState.Waiting, _rootOperations, _rootOperationTimes);
+            SyncRemove(operation => operation.State != OperationState.Waiting, RootOperations, RootOperationTimes);
 
             // Run Operations
-            _operationsToResolveImmediately.Clear();
-            for (var index = 0; index < _rootOperations.Count; index++)
+            OperationsToResolveImmediately.Clear();
+            for (var index = 0; index < RootOperations.Count; index++)
             {
-                var rootOperation = _rootOperations[index];
-                var rootOperationTime = _rootOperationTimes[index];
+                var rootOperation = RootOperations[index];
+                var rootOperationTime = RootOperationTimes[index];
                 var timeForOperation = GetTimeForOperation(rootOperation);
 
                 if (rootOperation.ShouldSkip())
                 {
-                    _operationsToResolveImmediately.Add(rootOperation);
+                    OperationsToResolveImmediately.Add(rootOperation);
                     continue;
                 }
 
@@ -82,15 +101,15 @@ namespace GamePack.Timer
                     RunOperation(rootOperation);
                     if(rootOperation.ShouldResolveImmediately())
                     {
-                        _operationsToResolveImmediately.Add(rootOperation);
+                        OperationsToResolveImmediately.Add(rootOperation);
                     }
                 }
             }
             // Delete 
-            foreach (var operation in _operationsToResolveImmediately) Resolve(operation);
+            foreach (var operation in OperationsToResolveImmediately) Resolve(operation);
 
             // Catch cancelled operations and run their end actions if set to true
-            foreach (var runningOperation in _runningOperations)
+            foreach (var runningOperation in RunningOperations)
             {
                 if (runningOperation.State == OperationState.Cancelled &&
                     runningOperation.IsRunEndActionBeforeCancel)
@@ -99,22 +118,22 @@ namespace GamePack.Timer
                 }
             }
             
-            // #if TIMER_ENABLE_LOG
+            #if TIMER_ENABLE_LOG
             // Logging all operations to remove
-            var toRemoveFromRunning = _rootOperations.Where(operation => operation.State != OperationState.Running);
+            var toRemoveFromRunning = RootOperations.Where(operation => operation.State != OperationState.Running);
             foreach (var operation in toRemoveFromRunning)
             {
-                Debug.Log($"Will remove from {nameof(_runningOperations)}. Op: {operation.Name}, state: {operation.State}");
+                Debug.Log($"Will remove from {nameof(RunningOperations)}. Op: {operation.Name}, state: {operation.State}");
             }
-            // #endif
+            #endif
             // Remove operations if they are no longer running
-            SyncRemove(operation => operation.State != OperationState.Running, _runningOperations, _runningOperationEndTimes, _runningOperationStartTimes);
+            SyncRemove(operation => operation.State != OperationState.Running, RunningOperations, RunningOperationEndTimes, RunningOperationStartTimes);
             
             // Update, resolve or cancel operations based on conditions
-            for (var index = 0; index < _runningOperations.Count; index++)
+            for (var index = 0; index < RunningOperations.Count; index++)
             {
-                var runningOperation = _runningOperations[index];
-                var endTime = _runningOperationEndTimes[index];
+                var runningOperation = RunningOperations[index];
+                var endTime = RunningOperationEndTimes[index];
                 var hasUpdateTime = runningOperation.Duration != null;
                 var timeForOperation = GetTimeForOperation(runningOperation);
                 
@@ -129,7 +148,7 @@ namespace GamePack.Timer
                 }
                 else if(hasUpdateTime)
                 {
-                    var startTime = _runningOperationStartTimes[index];
+                    var startTime = RunningOperationStartTimes[index];
                     var duration = endTime - startTime;
                     var time = timeForOperation - startTime;
                     var t = time / duration;
@@ -147,23 +166,23 @@ namespace GamePack.Timer
             }
         }
 
-        private void RunOperation(Operation operation)
+        private static void RunOperation(Operation operation)
         {
             var timeForOperation = GetTimeForOperation(operation);
             Log($"Running {operation.Name}");
             
             operation.Run();
             
-            _runningOperations.Add(operation);
-            _runningOperationStartTimes.Add(timeForOperation);
-            _runningOperationEndTimes.Add(timeForOperation + operation.Duration);
+            RunningOperations.Add(operation);
+            RunningOperationStartTimes.Add(timeForOperation);
+            RunningOperationEndTimes.Add(timeForOperation + operation.Duration);
         }
 
-        private void Resolve(Operation operation)
+        private static void Resolve(Operation operation)
         {
             Log($"Resolving {operation.Name}");
             
-            SyncRemove(op => op == operation, _rootOperations, _rootOperationTimes);
+            SyncRemove(op => op == operation, RootOperations, RootOperationTimes);
             
             operation.Finish();
             
@@ -181,12 +200,12 @@ namespace GamePack.Timer
         }
 
         [Conditional("TIMER_ENABLE_LOG")]
-        private void Log(object obj)
+        private static void Log(object obj)
         {
             ManagedLog.Log(obj + $"\t Time: {Time.time}");
         }
 
-        private float GetTimeForOperation(Operation operation)
+        private static float GetTimeForOperation(Operation operation)
         {
             return operation.IsIgnoreTimeScale ? Time.unscaledTime : Time.time;
         }

@@ -18,14 +18,7 @@ namespace GamePack.Boilerplate.Structure
 
         public void Internal_OnUpdate()
         {
-            /*if(StructureManager.ShowViewAxes)
-                Draw.Text(Vector3.zero, $"{this.GetScenePath()} ({GetType().Name})", 
-                    color: IsVisible ? Color.white : Colors.DimGray, 
-                    textAlign: TextAlign.Bottom, 
-                    fontSize: .5f,
-                    localTransform: transform);
-            if(StructureManager.ShowViewNames)
-                Draw.Axis(Vector3.zero, transform);*/
+            // TODO: Utilize this if necessary
         }
         
         public void DestroyView()

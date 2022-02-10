@@ -1,3 +1,4 @@
+using GamePack.Logging;
 using UnityEngine;
 
 namespace GamePack.Boilerplate.Structure.Physics
@@ -54,6 +55,7 @@ namespace GamePack.Boilerplate.Structure.Physics
             {
                 _rigidbody = gameObject.AddComponent<Rigidbody>();
                 _rigidbody.isKinematic = true;
+                ManagedLog.Log($"Added Rigidbody to {name}.", ManagedLog.Type.Info);
             }
         }
     }

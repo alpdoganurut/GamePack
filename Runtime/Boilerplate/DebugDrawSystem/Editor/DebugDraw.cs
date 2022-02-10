@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using GamePack.Logging;
 using Shapes;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -287,7 +288,8 @@ namespace GamePack.Utilities.DebugDrawSystem
             LogUpdate($"{nameof(DebugDraw)}.OnDrawGizmos");
             
             // Return if play mode and not paused
-            if (Application.isPlaying && !EditorApplication.isPaused) return;
+            // if (Application.isPlaying && !EditorApplication.isPaused) return;
+            if (Application.isPlaying) return;
             
             FrameUpdate();
         }
@@ -310,13 +312,13 @@ namespace GamePack.Utilities.DebugDrawSystem
         private static void LogEvent(object msg)
         {
             if(!_logEvents) return;
-            Debug.Log(msg);
+            ManagedLog.Log(msg, ManagedLog.Type.Structure);
         }
         
         private static void LogUpdate(object msg)
         {
             if(!_logDrawUpdates) return;
-            Debug.Log(msg);
+            ManagedLog.Log(msg);
         }
 
         #endregion
