@@ -1,7 +1,7 @@
 using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 using UnityEngine;
 
-namespace Examples.DebugDraw
+namespace GamePack.Examples.DebugDraw
 {
     public class DebugDrawExample : MonoBehaviour
     {

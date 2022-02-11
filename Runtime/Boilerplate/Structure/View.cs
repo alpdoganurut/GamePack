@@ -9,26 +9,26 @@ namespace GamePack.Boilerplate.Structure
 {
     public class View: StructureMonoBehaviourBase
     {
-        public bool IsVisible => InternalGameObject.activeInHierarchy;
+        public bool IsVisible => Internal_GameObject.activeInHierarchy;
 
         internal void Internal_OnLoad()
         {
             // TODO: Utilize this if necessary
         }
 
-        public void Internal_OnUpdate()
+        internal virtual void Internal_OnUpdate()
         {
             // TODO: Utilize this if necessary
         }
         
         public void DestroyView()
         {
-            Destroy(InternalGameObject);
+            Destroy(Internal_GameObject);
         }
 
         public void SetIsVisible(bool isVisible)
         {
-            InternalGameObject.SetActive(isVisible);
+            Internal_GameObject.SetActive(isVisible);
         }
 
         public void LogInWorld(object msg)

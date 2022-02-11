@@ -19,7 +19,15 @@ namespace GamePack.Boilerplate.Structure
         public static bool ShowViewNames = false;
         public static bool ShowViewAxes = false;
 
-        [RuntimeInitializeOnLoadMethod, InitializeOnLoadMethod]
+#if !UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void RuntimeInitializeOnLoadMethod()
+        {
+            InitializeOnLoadMethod();
+        }
+#endif
+        
+        [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
             ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
@@ -27,34 +35,6 @@ namespace GamePack.Boilerplate.Structure
             SceneManager.sceneUnloaded += SceneManagerOnSceneUnloaded;
             
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), OnUpdate);
-        }
-
-        private static void OnUpdate()
-        {
-            if(!Application.isPlaying) return;
-            
-            // Update views, and draw 
-            foreach (var view in Views)
-            {
-                if(view)
-                {
-                    // TODO: This is hacky, manage destroyed views and controllers (but this must stay probably)
-                    view.Internal_OnUpdate();
-                    DrawView(view);
-                }
-            }
-        }
-
-        private static void DrawView(View view)
-        {
-            if (ShowViewAxes)
-                Draw.Axis(Vector3.zero, view.transform);
-            if (ShowViewNames)
-                Draw.Text(Vector3.zero, $"{view.GetScenePath()} ({view.GetType().Name})",
-                    color: view.IsVisible ? Color.white : Colors.DimGray,
-                    textAlign: TextAlign.Bottom,
-                    fontSize: .5f,
-                    localTransform: view.transform);
         }
 
         [InitializeOnEnterPlayMode]
@@ -65,6 +45,19 @@ namespace GamePack.Boilerplate.Structure
             Views.Clear();
         }
         
+        private static void OnUpdate()
+        {
+            if(!Application.isPlaying) return;
+            
+            // Update views, and draw 
+            foreach (var view in Views)
+            {
+                if (!view) continue; // TODO: This is hacky, manage destroyed views and controllers (but this must stay probably)
+                view.Internal_OnUpdate();
+                DrawView(view);
+            }
+        }
+        
         private static void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode arg1)
         {
             ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneLoaded)}", ManagedLog.Type.Structure);
@@ -73,6 +66,27 @@ namespace GamePack.Boilerplate.Structure
             // TODO: We need to keep track of newly instantiated views and destroyed ones
         }
 
+        private static void SceneManagerOnSceneUnloaded(Scene arg0)
+        {
+            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneUnloaded)}", ManagedLog.Type.Structure);
+            Views.RemoveAll(view => !view);
+            Controllers.RemoveAll(controllerBase => !controllerBase);
+        }
+
+        internal static void RegisterViewOrController(Object obj)
+        {
+            ManagedLog.Log($"Registered new {obj.GetType().Name} ({obj.GetScenePath()})", ManagedLog.Type.Structure);
+            switch (obj)
+            {
+                case View view:
+                    Views.Add(view);
+                    break;
+                case ControllerBase controllerBase:
+                    Controllers.Add(controllerBase);
+                    break;
+            }
+        }
+        
         private static void AddAllComponentsInScene<T>(Scene arg0) where T: Component
         {
             var addedCount = 0;
@@ -97,28 +111,19 @@ namespace GamePack.Boilerplate.Structure
             }
             
             if(addedCount > 0)
-                ManagedLog.Log($"Added {addedCount} {typeof(T).Name}", ManagedLog.Type.Verbose);
+                ManagedLog.Log($"Added {addedCount} {typeof(T).Name}", ManagedLog.Type.Structure);
         }
-
-        private static void SceneManagerOnSceneUnloaded(Scene arg0)
+        
+        private static void DrawView(View view)
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneUnloaded)}", ManagedLog.Type.Structure);
-            Views.RemoveAll(view => !view);
-            Controllers.RemoveAll(controllerBase => !controllerBase);
-        }
-
-        internal static void RegisterViewOrController(Object obj)
-        {
-            ManagedLog.Log($"Registered new {obj.GetType().Name} ({obj.GetScenePath()})", ManagedLog.Type.Verbose);
-            switch (obj)
-            {
-                case View view:
-                    Views.Add(view);
-                    break;
-                case ControllerBase controllerBase:
-                    Controllers.Add(controllerBase);
-                    break;
-            }
+            if (ShowViewAxes)
+                Draw.Axis(Vector3.zero, view.transform);
+            if (ShowViewNames)
+                Draw.Text(Vector3.zero, $"{view.GetScenePath()} ({view.GetType().Name})",
+                    color: view.IsVisible ? Color.white : Colors.DimGray,
+                    textAlign: TextAlign.Bottom,
+                    fontSize: .5f,
+                    localTransform: view.transform);
         }
         
         /*private static void RefreshLists()

@@ -16,7 +16,7 @@ namespace GamePack.Timer
                 operation.SetWaiting();
             }
             
-            Engine.AddOperation(Root);
+            TimerEngine.AddOperation(Root);
             if(ignoreTimeScale) SetIgnoreTimeScale(true);
         }
 

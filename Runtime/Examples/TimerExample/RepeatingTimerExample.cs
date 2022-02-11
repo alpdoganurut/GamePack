@@ -1,7 +1,7 @@
 using GamePack.Timer;
 using UnityEngine;
 
-namespace Examples.TimerExample
+namespace GamePack.Examples.TimerExample
 {
     public class RepeatingTimerExample: MonoBehaviour
     {

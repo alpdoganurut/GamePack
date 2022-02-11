@@ -20,7 +20,7 @@ namespace GamePack.Boilerplate.Structure.Physics.Trigger
             var col = GetComponent<Collider>();
             if (!col)
             {
-                ManagedLog.LogError($"{InternalGameObject.name} doesn't have any Collider component!");
+                ManagedLog.LogError($"{Internal_GameObject.name} doesn't have any Collider component!");
             }
             if (col && !col.isTrigger
                     #region Editor

@@ -1,9 +1,8 @@
-using System;
 using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Examples.Logging
+namespace GamePack.Examples.Logging
 {
     public class LoggingExample: MonoBehaviour
     {

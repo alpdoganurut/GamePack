@@ -3,7 +3,7 @@ using GamePack.Poolable;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Examples.Minimap
+namespace GamePack.Examples.Minimap
 {
     public class CustomMinimap : MinimapBase
     {

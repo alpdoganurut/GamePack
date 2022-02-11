@@ -19,21 +19,32 @@ namespace GamePack.Tools.Systems.ParticlePlayerSystem
         private static readonly Dictionary<int, PoolController> PoolControllers = new Dictionary<int, PoolController>();
         private static GameObject _managedGameObject;
 
-        [RuntimeInitializeOnLoadMethod, InitializeOnLoadMethod]
-        private static void InitializeOnLoad()
+#if !UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void RuntimeInitializeOnLoadMethod()
         {
+            InitializeOnLoadMethod();
+        }
+#endif
+        
+        [InitializeOnLoadMethod]
+        private static void InitializeOnLoadMethod()
+        {
+            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+
             SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
         }
 
         private static void SceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
+            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(SceneManagerOnSceneLoaded)}", ManagedLog.Type.Structure);
             if(arg1 != LoadSceneMode.Additive)
                 Initialize();
         }
 
         private static void Initialize()
         {
-            ManagedLog.Log($"{nameof(ParticlePlayerConfig)}.{nameof(InitializeOnLoad)}",
+            ManagedLog.Log($"{nameof(ParticlePlayerConfig)}.{nameof(InitializeOnLoadMethod)}",
                 ManagedLog.Type.Structure, color: LogColor);
             
             _config = FindAllObjects.InScene<ParticlePlayerConfig>().FirstOrDefault();

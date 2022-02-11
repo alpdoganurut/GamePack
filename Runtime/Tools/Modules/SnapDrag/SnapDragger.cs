@@ -73,9 +73,7 @@ namespace GamePack.SnapDrag
             {
                 if (!_wasSnapping)
                 {
-#if UNITY_IOS
-                    TapticPlugin.TapticManager.Impact(TapticPlugin.ImpactFeedback.Medium);
-#endif
+                    // Haptic feedback
                 }
                 
                 var fullSnapForce = _dropPoint.transform.position - currentPosition;

@@ -16,7 +16,7 @@ using Debug = UnityEngine.Debug;
 
 namespace GamePack.Timer
 {
-    public static class Engine
+    public static class TimerEngine
     {
         // private static Engine _instance;
         /*public static Engine Instance
@@ -49,13 +49,28 @@ namespace GamePack.Timer
             RootOperations.Add(operation);
             RootOperationTimes.Add(GetTimeForOperation(operation) + operation.Delay);
         }
-
-        [RuntimeInitializeOnLoadMethod, InitializeOnLoadMethod]
-        private static void InitializeOnLoad()
+        
+#if !UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void RuntimeInitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(Engine)}.{nameof(InitializeOnLoad)}", ManagedLog.Type.Structure);
+            InitializeOnLoadMethod();
+        }
+#endif
+
+        [InitializeOnLoadMethod]
+        private static void InitializeOnLoadMethod()
+        {
+            ManagedLog.Log($"{nameof(TimerEngine)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), Update);
             
+        }
+    
+        [InitializeOnEnterPlayMode]
+        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
+        {
+            ManagedLog.Log($"{nameof(TimerEngine)}.{nameof(InitializeOnEnterPlayMode)}", ManagedLog.Type.Structure);
+
             // Clear all lists
             RootOperations.Clear();
             RootOperationTimes.Clear();
@@ -63,7 +78,7 @@ namespace GamePack.Timer
             RunningOperationStartTimes.Clear();
             RunningOperationEndTimes.Clear();
         }
-    
+
         private static void Update()
         {
             if(!Application.isPlaying) return;

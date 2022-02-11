@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using System.Linq;
 using GamePack.UnityUtilities;
 using GamePack.Utilities;
@@ -27,8 +26,10 @@ namespace GamePack.Logging
         public static ManagedLogConfig Config => _config;
 
         [InitializeOnLoadMethod]
-        private static void InitializeOnLoad()
+        private static void InitializeOnLoadMethod()
         {
+            Log($"{nameof(ManagedLog)}.{nameof(InitializeOnLoadMethod)}", Type.Structure);
+            
             PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(ManagedLog), LateUpdate);
 
             var managedLogConfigs = FindAllObjects.InEditor<ManagedLogConfig>();
@@ -49,9 +50,6 @@ namespace GamePack.Logging
                 var asset = ScriptableObject.CreateInstance<ManagedLogConfig>();
                 AssetDatabase.CreateAsset(asset, assetPath);
                 AssetDatabase.SaveAssets();
-                
-                // Selection.activeObject = asset;
-                return;
             }
             
         }
@@ -59,9 +57,10 @@ namespace GamePack.Logging
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
+            Log($"{nameof(ManagedLog)}.{nameof(InitializeOnEnterPlayMode)}", Type.Structure);
+            
             _frameCount = 0;
             _lastLogFrameCount = 0;
-            Log($"ManagedLog.InitializeOnEnterPlayMode: {options}", Type.Structure);
         }
         
         private static void LateUpdate()

@@ -9,7 +9,7 @@ namespace GamePack.Boilerplate.Structure
     {
         #region Access Restriction
 
-        private protected GameObject InternalGameObject => base.gameObject;
+        private protected GameObject Internal_GameObject => base.gameObject;
         
         // ReSharper disable once InconsistentNaming
         public new GameObject gameObject
