@@ -4,7 +4,7 @@ using UnityEngine;
 namespace GamePack.CustomAttribute.Attributes
 {
     [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public class AutoFillChildrenAttribute: PropertyAttribute
+    public class RenameInHierarchyAttribute: PropertyAttribute
     {
         
     }

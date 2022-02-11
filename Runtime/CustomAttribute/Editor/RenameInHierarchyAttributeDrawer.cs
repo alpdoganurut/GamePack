@@ -4,20 +4,17 @@ using UnityEngine;
 
 namespace GamePack.CustomAttribute.Editor
 {
-    [CustomPropertyDrawer(typeof(AutoFillChildrenAttribute))]
-    public class AutoFillChildrenAttributeDrawer: PropertyDrawer
+    [CustomPropertyDrawer(typeof(RenameInHierarchyAttribute))]
+    public class RenameInHierarchyAttributeDrawer: PropertyDrawer
     {
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            label.text = $"{property.displayName} (AutoFillChildren)";
+            label.text = $"{property.displayName} (Renamed)";
             PropertyDrawerTools.DrawProperty(position, property, label);
             PropertyDrawerTools.RenamePropertyReference(property);
 
-            if (property.objectReferenceValue) return;
-            
             property.objectReferenceValue =
                 PropertyDrawerTools.FindComponentOfSerializedField(property, PropertyDrawerTools.GetComponentPlace.Children);
-            
         }
     }
 }

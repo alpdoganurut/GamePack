@@ -139,8 +139,6 @@ namespace GamePack.Boilerplate.Main
             WillStartLevel();
             _SceneLevelManager.LoadCurrentLevelScene(() =>
             {
-                ManagedLog.Log($"Level Scene is loaded.", ManagedLog.Type.Verbose);
-                
                 if(_GameEvents) _GameEvents.Trigger(true);
                 
                 if(_FakeScene) _FakeScene.SetActive(false);

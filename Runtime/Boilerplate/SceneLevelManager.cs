@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -107,7 +108,7 @@ namespace GamePack.Boilerplate
             
             void LoadScene()
             {
-                Debug.Log("Scene unload complete");
+                ManagedLog.Log($"Scene unload complete", ManagedLog.Type.Verbose);
                 Assert.IsTrue(_asyncOperation == null || _asyncOperation.isDone);
                 
                 // Load TestLevel if it is set and in Editor environment 
@@ -128,6 +129,8 @@ namespace GamePack.Boilerplate
 
             void OnloadComplete(AsyncOperation asyncOperation)
             {
+                ManagedLog.Log($"Level Scene is loaded.", ManagedLog.Type.Verbose);
+
                 _loadedScene = SceneManager.GetSceneByName(levelSceneName);
                 if(_ActivateAfterLoad)
                     SceneManager.SetActiveScene(_loadedScene.Value);

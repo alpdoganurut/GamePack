@@ -40,8 +40,6 @@ namespace GamePack.Tools.BasicStateMachineSystem
         {
             ManagedLog.Log($"{nameof(BasicStateMachineEngine)}.{nameof(OnEditorApplicationOnPlayModeStateChanged)}", ManagedLog.Type.Structure);
             if (change != PlayModeStateChange.ExitingPlayMode) return;
-            
-            Debug.Log("PlayModeStateChange.ExitingPlayMode");
             StateMachines.Clear();
         }
         

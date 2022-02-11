@@ -10,14 +10,13 @@ namespace GamePack.CustomAttribute.Editor
     [CustomPropertyDrawer(typeof(AutoFillSelfAttribute))]
     public class AutoFillSelfAttributeDrawer: PropertyDrawer
     {
-
-        private static List<string> _sentErrorPropertyPathList = new List<string>();
+        private static readonly List<string> SentErrorPropertyPathList = new List<string>();
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             label.text = $"{property.displayName} (AutoFillSelf)";
             PropertyDrawerTools.DrawProperty(position, property, label);
-
+            
             // var handledArrayProperties = new List<SerializedProperty>();
             if (property.name == "data")
             {
@@ -52,9 +51,9 @@ namespace GamePack.CustomAttribute.Editor
                     arrayProp.GetArrayElementAtIndex(index).objectReferenceValue = component;
                 }*/
                 
-                if(!_sentErrorPropertyPathList.Contains(property.propertyPath))
+                if(!SentErrorPropertyPathList.Contains(property.propertyPath))
                 {
-                    _sentErrorPropertyPathList.Add(property.propertyPath);
+                    SentErrorPropertyPathList.Add(property.propertyPath);
                     ManagedLog.LogError($"Can't use AutoFill with array or lists! Type: {property.serializedObject.targetObject.GetType().Name} property: {property.propertyPath.Split('.').FirstOrDefault()}");
                 }
                 
@@ -64,7 +63,7 @@ namespace GamePack.CustomAttribute.Editor
             if (property.objectReferenceValue) return;
 
             property.objectReferenceValue =
-                PropertyDrawerTools.FindComponentOfType(property, PropertyDrawerTools.GetComponentPlace.Self);
+                PropertyDrawerTools.FindComponentOfSerializedField(property, PropertyDrawerTools.GetComponentPlace.Self);
         }
     }
 }

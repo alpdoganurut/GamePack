@@ -42,7 +42,7 @@ namespace GamePack.CustomAttribute.Editor
             // SceneMulti, ChildrenMulti
         }
         
-        internal static Component FindComponentOfType(SerializedProperty property, GetComponentPlace place)
+        internal static Component FindComponentOfSerializedField(SerializedProperty property, GetComponentPlace place)
         {
             var serializedObjectTargetObject = property.serializedObject.targetObject;
             var rootTargetObject = serializedObjectTargetObject;
@@ -102,6 +102,18 @@ namespace GamePack.CustomAttribute.Editor
                     return rootComponent.GetComponentsInChildren(type);*/
                 default:
                     throw new ArgumentOutOfRangeException(nameof(place), place, null);
+            }
+        }
+        
+        internal static void RenamePropertyReference(SerializedProperty property)
+        {
+            if (!property.objectReferenceValue) return;
+
+            var name = $"[SF] {property.displayName}";
+            if (property.objectReferenceValue.name != name)
+            {
+                property.objectReferenceValue.name = name;
+                EditorUtility.SetDirty(property.objectReferenceValue);
             }
         }
     }
