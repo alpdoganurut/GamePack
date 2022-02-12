@@ -23,7 +23,14 @@ namespace GamePack.Logging
         private static int _lastLogFrameCount;
         private static ManagedLogConfig _config;
 
-        public static ManagedLogConfig Config => _config;
+        public static ManagedLogConfig Config
+        {
+            get
+            {
+                if(!_config) FindConfig();
+                return _config;
+            }
+        }
 
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
@@ -31,9 +38,12 @@ namespace GamePack.Logging
             Log($"{nameof(ManagedLog)}.{nameof(InitializeOnLoadMethod)}", Type.Structure);
             
             PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(ManagedLog), LateUpdate);
+        }
 
+        private static void FindConfig()
+        {
             var managedLogConfigs = FindAllObjects.InEditor<ManagedLogConfig>();
-            
+
             var assetPath = $"Assets/{nameof(ManagedLogConfig)}.asset";
             if (managedLogConfigs.Count > 0)
             {
@@ -43,7 +53,7 @@ namespace GamePack.Logging
             {
                 _config = AssetDatabase.LoadAssetAtPath<ManagedLogConfig>(assetPath);
             }
-            
+
             if (!Config)
             {
                 Debug.LogError($"Can't find config file for {typeof(ManagedLog)}, creating one!");
@@ -51,9 +61,8 @@ namespace GamePack.Logging
                 AssetDatabase.CreateAsset(asset, assetPath);
                 AssetDatabase.SaveAssets();
             }
-            
         }
-        
+
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
@@ -72,7 +81,7 @@ namespace GamePack.Logging
         public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null)
         {
             var msg = obj.ToString();
-            if(!Config || !Config.LogTypes.Contains(type)) return;  // Log everything if config is not found.
+            if(Config && !Config.LogTypes.Contains(type)) return;  // Log everything if config is not found.
             
             if(Application.isPlaying
                && Config.ShowFrameCount
@@ -82,7 +91,7 @@ namespace GamePack.Logging
                 _lastLogFrameCount = _frameCount;
             }
 
-            if (_config.ShowLogType && type != Type.Default)
+            if ((!Config || Config.ShowLogType) && type != Type.Default)
             {
                 msg = $"[{type.ToString()}]\t{msg}";
             }

@@ -29,7 +29,8 @@ namespace GamePack.UnityUtilities
 
         public static void Stop(Coroutine coroutine)
         {
-            _runner.StopCoroutine(coroutine);
+            if(_runner)
+                _runner.StopCoroutine(coroutine);
         }
         
         private static IEnumerator RunMultipleRoutine(Action callback, params IEnumerator[] coroutines)

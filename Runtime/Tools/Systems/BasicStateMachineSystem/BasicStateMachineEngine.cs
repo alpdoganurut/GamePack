@@ -38,8 +38,8 @@ namespace GamePack.Tools.BasicStateMachineSystem
         
         private static void OnEditorApplicationOnPlayModeStateChanged(PlayModeStateChange change)
         {
-            ManagedLog.Log($"{nameof(BasicStateMachineEngine)}.{nameof(OnEditorApplicationOnPlayModeStateChanged)}", ManagedLog.Type.Structure);
             if (change != PlayModeStateChange.ExitingPlayMode) return;
+            ManagedLog.Log($"{nameof(BasicStateMachineEngine)}.{nameof(OnEditorApplicationOnPlayModeStateChanged)} {PlayModeStateChange.ExitingPlayMode}", ManagedLog.Type.Structure);
             StateMachines.Clear();
         }
         

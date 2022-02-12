@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using GamePack.Logging;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
@@ -12,7 +11,6 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.PlayerLoop;
-using Debug = UnityEngine.Debug;
 
 namespace GamePack.Timer
 {

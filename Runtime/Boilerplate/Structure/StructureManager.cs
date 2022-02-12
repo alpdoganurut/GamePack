@@ -4,6 +4,7 @@ using GamePack.Utilities;
 using Shapes;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Assertions;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 using Draw = GamePack.Utilities.DebugDrawSystem.DrawingMethods.Draw;
@@ -83,6 +84,9 @@ namespace GamePack.Boilerplate.Structure
                     break;
                 case ControllerBase controllerBase:
                     Controllers.Add(controllerBase);
+                    break;
+                default:
+                    Assert.IsTrue(false, "Can only register View or Controller!");
                     break;
             }
         }

@@ -30,7 +30,7 @@ namespace GamePack.Editor.Boilerplate
         [ShowInInspector, InlineEditor(InlineEditorModes.GUIAndPreview), HideInEditorMode] 
         private static List<View> Views => StructureManager.Views;
 
-        [MenuItem("Window/Controller Info Window")]
+        [MenuItem("Window/Structure Info Window")]
         public static void ShowWindow()
         {
             GetWindow<StructureInfoWindow>();
