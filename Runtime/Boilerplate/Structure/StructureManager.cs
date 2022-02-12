@@ -27,8 +27,10 @@ namespace GamePack.Boilerplate.Structure
             InitializeOnLoadMethod();
         }
 #endif
-        
+
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
         private static void InitializeOnLoadMethod()
         {
             ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
@@ -38,6 +40,7 @@ namespace GamePack.Boilerplate.Structure
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), OnUpdate);
         }
 
+#if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode()
         {
@@ -45,6 +48,7 @@ namespace GamePack.Boilerplate.Structure
             Controllers.Clear();
             Views.Clear();
         }
+#endif
         
         private static void OnUpdate()
         {

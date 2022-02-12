@@ -1,4 +1,4 @@
-using GamePack.Timer;
+using GamePack.TimerSystem;
 using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 using UnityEngine;
 using UnityEngine.Assertions;

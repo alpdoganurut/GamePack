@@ -1,9 +1,9 @@
 using System;
-using GamePack.Poolable;
+using GamePack.PoolingSystem;
 using Sirenix.OdinInspector;
 
 // ReSharper disable InconsistentNaming
-namespace GamePack.Tools.Systems.ParticlePlayerSystem
+namespace GamePack.ParticlePlayerSystem
 {
     [Serializable]
     public struct ParticleConfig

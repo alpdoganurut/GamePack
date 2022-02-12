@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
+
 // ReSharper disable InconsistentNaming
 
-namespace GamePack.Timer
+namespace GamePack.TimerSystem
 {
     public class Operation
     {

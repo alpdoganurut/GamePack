@@ -2,7 +2,7 @@ using System;
 using GamePack.Boilerplate.Structure;
 using Sirenix.OdinInspector;
 
-namespace GamePack.Tools.BasicStateMachineSystem
+namespace GamePack.BasicStateMachineSystem
 {
     public abstract class StateMachineControllerBase<T>: ControllerBase where T: Enum
     {

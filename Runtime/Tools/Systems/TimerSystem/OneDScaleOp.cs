@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GamePack.Timer
+namespace GamePack.TimerSystem
 {
     public class OneDScaleOp: Operation
     {

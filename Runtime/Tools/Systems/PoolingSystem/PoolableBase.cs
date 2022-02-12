@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace GamePack.Poolable
+namespace GamePack.PoolingSystem
 {
     public abstract class PoolableBase: MonoBehaviour 
     {

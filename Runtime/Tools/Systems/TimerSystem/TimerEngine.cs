@@ -1,5 +1,9 @@
 // Use #define TIMER_ENABLE_LOG to enable logs for Engine
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,12 +11,11 @@ using System.Diagnostics;
 using GamePack.Logging;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.PlayerLoop;
 
-namespace GamePack.Timer
+namespace GamePack.TimerSystem
 {
     public static class TimerEngine
     {
@@ -56,14 +59,17 @@ namespace GamePack.Timer
         }
 #endif
 
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
         private static void InitializeOnLoadMethod()
         {
             ManagedLog.Log($"{nameof(TimerEngine)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), Update);
             
         }
-    
+
+#if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
@@ -76,6 +82,7 @@ namespace GamePack.Timer
             RunningOperationStartTimes.Clear();
             RunningOperationEndTimes.Clear();
         }
+#endif
 
         private static void Update()
         {

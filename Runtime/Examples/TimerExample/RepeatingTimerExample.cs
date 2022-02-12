@@ -1,4 +1,4 @@
-using GamePack.Timer;
+using GamePack.TimerSystem;
 using UnityEngine;
 
 namespace GamePack.Examples.TimerExample

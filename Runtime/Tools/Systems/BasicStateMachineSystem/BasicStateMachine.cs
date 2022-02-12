@@ -1,7 +1,7 @@
 using System;
 using Sirenix.OdinInspector;
 
-namespace GamePack.Tools.BasicStateMachineSystem
+namespace GamePack.BasicStateMachineSystem
 {
     public delegate void StateMachineChange<T>(T currentState, T oldState, BasicStateMachine<T> stateMachine) where T : Enum;
 

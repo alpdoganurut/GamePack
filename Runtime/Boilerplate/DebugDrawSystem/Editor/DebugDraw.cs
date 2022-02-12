@@ -1,13 +1,17 @@
 #define DEBUG_DRAW
 
+
+#if UNITY_EDITOR
+using UnityEditor;
+using UnityEditor.SceneManagement;
+#endif
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using GamePack.Logging;
 using Shapes;
 using Sirenix.OdinInspector;
-using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Rendering;
@@ -80,7 +84,9 @@ namespace GamePack.Utilities.DebugDrawSystem
         
         #region Initialization
 
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
         private static void InitializeOnLoad()
         {
             Initialize();
@@ -91,7 +97,9 @@ namespace GamePack.Utilities.DebugDrawSystem
         {
             _isInit = true;
             LogEvent($"{nameof(DebugDraw)}.InitializeOnLoadMethod");
+#if UNITY_EDITOR
             EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
+#endif
             SceneManager.sceneLoaded += OnEditorSceneManagerOnSceneLoaded;
             ListenCamera();
 
@@ -205,9 +213,11 @@ namespace GamePack.Utilities.DebugDrawSystem
             {
                 _helper = new GameObject($"{nameof(DebugDrawSceneHelper)} {Random.Range(0, 10000)}")
                     .AddComponent<DebugDrawSceneHelper>();
+#if UNITY_EDITOR
                 _helper.gameObject.hideFlags = HideFlags.NotEditable | HideFlags.DontSaveInBuild | HideFlags.DontSaveInEditor;
                 EditorApplication.RepaintHierarchyWindow();
                 EditorApplication.DirtyHierarchyWindowSorting();
+#endif
 
                 LogEvent($"Created {nameof(DebugDrawSceneHelper)}");
             }
@@ -225,7 +235,9 @@ namespace GamePack.Utilities.DebugDrawSystem
                 case CameraType.Reflection:
                     return; // Don't render in preview windows or in reflection probes in case we run this script in the editor
                 case CameraType.SceneView:
+#if UNITY_EDITOR
                     if(!SceneView.lastActiveSceneView.drawGizmos) return;
+#endif
                     break;
                 case CameraType.Game:
                     if(!_showInGameViewWhenNotPlaying && !Application.isPlaying) return;
@@ -326,7 +338,9 @@ namespace GamePack.Utilities.DebugDrawSystem
         private static void CreateInfoTextDrawing()
         {
             _infoText = "";
+#if UNITY_EDITOR
             _infoText += SceneView.lastActiveSceneView.sceneViewState.alwaysRefreshEnabled ? "Animating" : "Not Animating";
+#endif
             // _infoText += "\n";
             // _infoText += _drawOrder == CameraEvent.BeforeImageEffects ? "Not AlwaysOnTop" : "AlwaysOnTop";   // TODO: Need to determine exact values causes to be always on top.
             NewDrawing(new TextDrawing(new Vector3(-.02f, -.01f), _infoText, new Color(1f, 0.84f, 0.2f), .5f, TextAlign.TopRight));  // Not working consistently, maybe just in edit mode

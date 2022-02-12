@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace GamePack.Poolable
+namespace GamePack.PoolingSystem
 {
     [RequireComponent(typeof(ParticleSystem))] 
     public class PoolableParticle : PoolableBase

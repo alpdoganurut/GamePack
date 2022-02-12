@@ -1,4 +1,4 @@
-namespace GamePack.Timer
+namespace GamePack.TimerSystem
 {
     public enum OperationState
     {

@@ -1,4 +1,4 @@
-using GamePack.Tools.BasicStateMachineSystem;
+using GamePack.BasicStateMachineSystem;
 using UnityEngine;
 
 namespace GamePack.Examples.BasicStateMachine

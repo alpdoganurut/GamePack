@@ -2,7 +2,7 @@ using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Assertions;
 
-namespace GamePack.Timer
+namespace GamePack.TimerSystem
 {
     public class TransformChangeOperation: Operation
     {

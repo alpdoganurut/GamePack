@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.Tools.Systems.ParticlePlayerSystem
+namespace GamePack.ParticlePlayerSystem
 {
     // [CreateAssetMenu(fileName = "Particle Player Config", menuName = "GamePack/ParticlePlayerConfig", order = 0)]
     public class ParticlePlayerConfig: MonoBehaviour

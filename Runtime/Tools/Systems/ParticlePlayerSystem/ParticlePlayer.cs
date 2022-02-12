@@ -1,14 +1,17 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 using System.Collections.Generic;
 using System.Linq;
 using GamePack.Logging;
-using GamePack.Poolable;
+using GamePack.PoolingSystem;
 using GamePack.UnityUtilities;
 using GamePack.Utilities;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace GamePack.Tools.Systems.ParticlePlayerSystem
+namespace GamePack.ParticlePlayerSystem
 {
     public static class ParticlePlayer
     {
@@ -26,8 +29,10 @@ namespace GamePack.Tools.Systems.ParticlePlayerSystem
             InitializeOnLoadMethod();
         }
 #endif
-        
+
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
         private static void InitializeOnLoadMethod()
         {
             ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);

@@ -1,8 +1,11 @@
+using System.Diagnostics;
+using UnityEditor;
+
+using UnityEngine;
 using System.Linq;
 using GamePack.UnityUtilities;
 using GamePack.Utilities;
-using UnityEditor;
-using UnityEngine;
+
 using UnityEngine.PlayerLoop;
 using Debug = UnityEngine.Debug;
 
@@ -32,7 +35,9 @@ namespace GamePack.Logging
             }
         }
 
+#if UNITY_EDITOR
         [InitializeOnLoadMethod]
+#endif
         private static void InitializeOnLoadMethod()
         {
             Log($"{nameof(ManagedLog)}.{nameof(InitializeOnLoadMethod)}", Type.Structure);
@@ -40,8 +45,10 @@ namespace GamePack.Logging
             PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(ManagedLog), LateUpdate);
         }
 
+        [Conditional("UNITY_EDITOR")]
         private static void FindConfig()
         {
+#if UNITY_EDITOR
             var managedLogConfigs = FindAllObjects.InEditor<ManagedLogConfig>();
 
             var assetPath = $"Assets/{nameof(ManagedLogConfig)}.asset";
@@ -61,8 +68,10 @@ namespace GamePack.Logging
                 AssetDatabase.CreateAsset(asset, assetPath);
                 AssetDatabase.SaveAssets();
             }
+#endif
         }
 
+#if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
@@ -71,6 +80,7 @@ namespace GamePack.Logging
             _frameCount = 0;
             _lastLogFrameCount = 0;
         }
+#endif
         
         private static void LateUpdate()
         {

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine.Assertions;
 
-namespace GamePack.Timer
+namespace GamePack.TimerSystem
 {
     public struct OperationTreeDescription
     {
