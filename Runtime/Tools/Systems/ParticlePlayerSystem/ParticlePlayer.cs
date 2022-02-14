@@ -35,14 +35,16 @@ namespace GamePack.ParticlePlayerSystem
 #endif
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(InitializeOnLoadMethod)}",
+                ManagedLog.Type.Structure, color: LogColor);
 
             SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
         }
 
         private static void SceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(SceneManagerOnSceneLoaded)}", ManagedLog.Type.Structure);
+            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(SceneManagerOnSceneLoaded)}",
+                ManagedLog.Type.Structure, color: LogColor);
             if(arg1 != LoadSceneMode.Additive)
                 Initialize();
         }

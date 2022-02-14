@@ -129,7 +129,7 @@ namespace GamePack.Boilerplate
 
             void OnloadComplete(AsyncOperation asyncOperation)
             {
-                ManagedLog.Log($"Level Scene is loaded.", ManagedLog.Type.Verbose);
+                ManagedLog.Log($"Level Scene '{levelSceneName}' is loaded.", ManagedLog.Type.Verbose);
 
                 _loadedScene = SceneManager.GetSceneByName(levelSceneName);
                 if(_ActivateAfterLoad)

@@ -1,4 +1,5 @@
 using GamePack.Boilerplate.Main;
+using GamePack.Boilerplate.Structure;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -16,7 +17,7 @@ namespace GamePack.Boilerplate
                 return null;
             }
 
-            var newObj = Object.Instantiate(obj, position ?? Vector3.zero, rotation ?? Quaternion.identity);
+            var newObj = StructureMonoBehaviourBase.Instantiate(obj, position ?? Vector3.zero, rotation ?? Quaternion.identity);
             
             var go = GetGameObject(newObj);
 

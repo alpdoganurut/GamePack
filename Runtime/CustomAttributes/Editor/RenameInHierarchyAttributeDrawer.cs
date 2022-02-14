@@ -12,9 +12,6 @@ namespace GamePack.CustomAttribute.Editor
             label.text = $"{property.displayName} (Renamed)";
             PropertyDrawerTools.DrawProperty(position, property, label);
             PropertyDrawerTools.RenamePropertyReference(property);
-
-            property.objectReferenceValue =
-                PropertyDrawerTools.FindComponentOfSerializedField(property, PropertyDrawerTools.GetComponentPlace.Children);
         }
     }
 }
