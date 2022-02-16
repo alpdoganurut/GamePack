@@ -1,3 +1,5 @@
+#if USING_SHAPES
+
 using Shapes;
 using UnityEngine;
 
@@ -178,7 +180,7 @@ namespace GamePack.Utilities.DebugDrawSystem
         void IDrawing.Draw(Camera camera)
         {
             var pos = _localTransform ? _localTransform.TransformPoint(_pos) : _pos;
-            Draw.Ring(pos, Quaternion.LookRotation(_normal), radius: _radius, thickness: _thickness, color: _color);
+            Draw.Ring(pos, Quaternion.LookRotation(_normal), radius: _radius, thickness: _thickness, colors: _color);
         }
     }
     
@@ -244,3 +246,5 @@ namespace GamePack.Utilities.DebugDrawSystem
     
     
 }
+
+#endif

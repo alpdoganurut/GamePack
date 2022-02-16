@@ -1,3 +1,5 @@
+#if USING_SHAPES
+
 using GamePack.TimerSystem;
 using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 using UnityEngine;
@@ -44,3 +46,5 @@ namespace GamePack.Logging
 
     }
 }
+
+#endif

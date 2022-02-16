@@ -1,13 +1,17 @@
+
+#if USING_SHAPES
+using Shapes;
+using Draw = GamePack.Utilities.DebugDrawSystem.DrawingMethods.Draw;
+#endif
+
 using System.Collections.Generic;
 using GamePack.Logging;
 using GamePack.Utilities;
-using Shapes;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
-using Draw = GamePack.Utilities.DebugDrawSystem.DrawingMethods.Draw;
 
 namespace GamePack.Boilerplate.Structure
 {
@@ -89,9 +93,9 @@ namespace GamePack.Boilerplate.Structure
                 case ControllerBase controllerBase:
                     Controllers.Add(controllerBase);
                     break;
-                default:
-                    Assert.IsTrue(false, "Can only register View or Controller!");
-                    break;
+                // default:
+                    // Assert.IsTrue(false, "Can only register View or Controller!"); // This causes an error and not necessary, but wanted to keep it here to show that other types can enter here
+                    // break;
             }
         }
         
@@ -124,6 +128,7 @@ namespace GamePack.Boilerplate.Structure
         
         private static void DrawView(View view)
         {
+#if USING_SHAPES
             if (ShowViewAxes)
                 Draw.Axis(Vector3.zero, view.transform);
             if (ShowViewNames)
@@ -132,6 +137,7 @@ namespace GamePack.Boilerplate.Structure
                     textAlign: TextAlign.Bottom,
                     fontSize: .5f,
                     localTransform: view.transform);
+#endif
         }
         
         /*private static void RefreshLists()

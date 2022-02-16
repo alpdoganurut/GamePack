@@ -1,9 +1,4 @@
-using System;
 using GamePack.Logging;
-using GamePack.Utilities;
-using Shapes;
-using UnityEngine;
-using Draw = GamePack.Utilities.DebugDrawSystem.DrawingMethods.Draw;
 
 namespace GamePack.Boilerplate.Structure
 {
@@ -31,9 +26,11 @@ namespace GamePack.Boilerplate.Structure
             Internal_GameObject.SetActive(isVisible);
         }
 
+#if USING_SHAPES
         public void LogInWorld(object msg)
         {
             WorldLog.Log(msg, transform);
         }
+#endif
     }
 }

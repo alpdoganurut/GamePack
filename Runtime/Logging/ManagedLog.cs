@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using UnityEditor;
 
@@ -8,6 +9,7 @@ using GamePack.Utilities;
 
 using UnityEngine.PlayerLoop;
 using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 namespace GamePack.Logging
 {
@@ -61,7 +63,7 @@ namespace GamePack.Logging
                 _config = AssetDatabase.LoadAssetAtPath<ManagedLogConfig>(assetPath);
             }
 
-            if (!Config)
+            if (!_config)
             {
                 Debug.LogError($"Can't find config file for {typeof(ManagedLog)}, creating one!");
                 var asset = ScriptableObject.CreateInstance<ManagedLogConfig>();
@@ -88,12 +90,13 @@ namespace GamePack.Logging
         }
         
         // [Conditional("UNITY_EDITOR")]
-        public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null)
+        public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null, bool avoidFrameCount = false)
         {
             var msg = obj.ToString();
-            if(Config && !Config.LogTypes.Contains(type)) return;  // Log everything if config is not found.
+            if(Config && Config.LogTypes != null && !Config.LogTypes.Contains(type)) return;  // Log everything if config is not found.
             
             if(Application.isPlaying
+               && !avoidFrameCount
                && Config.ShowFrameCount
                && _frameCount > _lastLogFrameCount)
             {
@@ -101,7 +104,7 @@ namespace GamePack.Logging
                 _lastLogFrameCount = _frameCount;
             }
 
-            if ((!Config || Config.ShowLogType) && type != Type.Default)
+            if ((!Config || Config.ShowLogType) && type != Type.Default && type != Type.Error)
             {
                 msg = $"[{type.ToString()}]\t{msg}";
             }
@@ -117,8 +120,22 @@ namespace GamePack.Logging
         
         public static void LogError(object obj, Object context = null)
         {
+            var msg = "<color=\"red\">[ERROR]</color>\t" + obj;
+            try
+            {
+                var frame = new StackFrame(1);
+                var method = frame.GetMethod();
+                var type = method.DeclaringType;
+                msg += $" ( {type}.{method.Name} )";
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("Failed to get stacktrace.");
+                Console.WriteLine(e);
+            }
+            
             // Log(obj, Type.Error, context, Colors.Tomato);
-            Log( "[ERROR] " + obj.ToString(), Type.Error, context);
+            Log(msg, Type.Error, context);
         }
     }
 }

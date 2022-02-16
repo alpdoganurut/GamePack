@@ -115,8 +115,7 @@ namespace GamePack.Boilerplate
 #if UNITY_EDITOR
                 if (_TestLevel)
                 {
-                    var guid = AssetDatabase.FindAssets($"{_TestLevel.name} t:scene")[0];
-                    var path = AssetDatabase.GUIDToAssetPath(guid);
+                    var path = AssetDatabase.GetAssetPath(_TestLevel);
                     _asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(path,
                         new LoadSceneParameters(LoadSceneMode.Additive));
                     _asyncOperation.completed += OnloadComplete;

@@ -1,3 +1,4 @@
+#if USING_SHAPES
 using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -26,3 +27,4 @@ namespace GamePack.Examples.Logging
         }
     }
 }
+#endif

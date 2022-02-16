@@ -1,3 +1,5 @@
+#if USING_SHAPES
+
 using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 using UnityEngine;
 
@@ -25,3 +27,5 @@ namespace GamePack.Examples.DebugDraw
         }
     }
 }
+
+#endif

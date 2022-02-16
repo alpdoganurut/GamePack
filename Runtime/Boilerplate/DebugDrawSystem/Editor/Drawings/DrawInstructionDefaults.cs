@@ -9,6 +9,6 @@ namespace GamePack.Utilities.DebugDrawSystem
         public const float DefaultPointSize = .1f;
         public const float ArrowRadiusToLength = 1.4f;
         public const float DefaultTextSize = 1f;
-        public const float DefaultAxisSize = .3f;
+        public const float DefaultAxisSize = 1f;
     }
 }

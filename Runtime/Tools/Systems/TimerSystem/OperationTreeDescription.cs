@@ -28,7 +28,7 @@ namespace GamePack.TimerSystem
             }
         }
 
-        public void RepeatInfinite()
+        public OperationTreeDescription RepeatInfinite()
         {
             Assert.IsTrue(Tips.Count == 1, "Can't repeat operation tree with branches. (Has more than 1 tip)");
             
@@ -45,6 +45,8 @@ namespace GamePack.TimerSystem
             thisDescription.Operations.Add(controlOperation);
             
             tip.Add(controlOperation);
+
+            return this;
         }
         
         private void SetIgnoreTimeScale(bool isIgnore)

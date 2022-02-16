@@ -1,5 +1,6 @@
 #define DEBUG_DRAW
 
+#if USING_SHAPES
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -10,6 +11,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using GamePack.Logging;
+using GamePack.Utilities;
+using GamePack.Utilities.DebugDrawSystem;
 using Shapes;
 using Sirenix.OdinInspector;
 using UnityEngine;
@@ -96,10 +99,10 @@ namespace GamePack.Utilities.DebugDrawSystem
         private static void Initialize()
         {
             _isInit = true;
-            LogEvent($"{nameof(DebugDraw)}.InitializeOnLoadMethod");
-#if UNITY_EDITOR
+            // LogEvent($"{nameof(DebugDraw)}.InitializeOnLoadMethod");
+// #if UNITY_EDITOR
             EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
-#endif
+// #endif
             SceneManager.sceneLoaded += OnEditorSceneManagerOnSceneLoaded;
             ListenCamera();
 
@@ -124,18 +127,13 @@ namespace GamePack.Utilities.DebugDrawSystem
         private static void ListenCamera()
         {
 #if (SHAPES_URP || SHAPES_HDRP)
-#if UNITY_2019_1_OR_NEWER
         RenderPipelineManager.beginCameraRendering += DrawShapesSrp;
         void DrawShapesSrp( ScriptableRenderContext ctx, Camera cam ) => OnCameraPreRender( cam );
-#else
-				public virtual void OnEnable() => Debug.LogWarning( "URP/HDRP immediate mode doesn't really work pre-Unity 2019.1, as there is no OnPreRender or beginCameraRendering callback" );
 #endif
-#else
-		public virtual void OnEnable() => Camera.onPreRender += OnCameraPreRender;
-		public virtual void OnDisable() => Camera.onPreRender -= OnCameraPreRender;
-#endif   
-            // Camera.onPreRender += OnCameraPreRender;
         }
+		// public static void OnEnable() => Camera.onPreRender += OnCameraPreRender;
+		// public static void OnDisable() => Camera.onPreRender -= OnCameraPreRender;
+// #endif   
 
         /*
         private static void AppendToPlayerLoop()
@@ -347,3 +345,5 @@ namespace GamePack.Utilities.DebugDrawSystem
         }
     }
 }
+
+#endif

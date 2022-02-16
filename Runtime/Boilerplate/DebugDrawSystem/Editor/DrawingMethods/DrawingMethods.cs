@@ -1,3 +1,5 @@
+#if USING_SHAPES
+
 using Shapes;
 using UnityEngine;
 using Object = System.Object;
@@ -65,3 +67,5 @@ namespace GamePack.Utilities.DebugDrawSystem.DrawingMethods
         }
     }
 }
+
+#endif
