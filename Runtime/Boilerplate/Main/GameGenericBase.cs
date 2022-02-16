@@ -155,7 +155,7 @@ namespace GamePack.Boilerplate.Main
                 if(StructureManager.Controllers != null)
                     foreach (var controller in StructureManager.Controllers)
                     {
-                        (controller as ControllerGenericBase<TLevelInitData>)?.InternalOnLevelStart(_LevelInitData);
+                        (controller as ControllerGenericBase<TLevelInitData, TLevelHelper>)?.InternalOnLevelStart(_LevelInitData, _levelHelper);
                     }
                 
                 /*if(_levelHelper.Controllers != null)
@@ -208,7 +208,7 @@ namespace GamePack.Boilerplate.Main
             if(StructureManager.Controllers != null)
                 foreach (var controller in StructureManager.Controllers)
                 {
-                    (controller as ControllerGenericBase<TLevelInitData>)?.InternalOnLevelStop();
+                    (controller as ControllerGenericBase<TLevelInitData, TLevelHelper>)?.InternalOnLevelStop();
                 }
         }
         
