@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace GamePack.Boilerplate.Structure.Physics.Trigger
 {
-    public class GenericPhysicsTrigger<T> : PhysicsTriggerBase where T: Component
+    public class GenericPhysicsTriggerListener<T> : PhysicsTriggerBase where T: Component
     {
-        public delegate void EventDelegate(T component);
+        public delegate void EventDelegate(T component, Collider other);
         public event EventDelegate DidEnter;
 
         protected override void PhysicsObjectOnDidTrigger(PhysicsObject.PhysicsEventPhase phase, Collider other)
@@ -16,7 +16,7 @@ namespace GamePack.Boilerplate.Structure.Physics.Trigger
             if(component)
             {
                 Log($"TriggerDidEnter, other:{other}, component: {component}");
-                DidEnter?.Invoke(component);
+                DidEnter?.Invoke(component, other);
             }
         }
     }

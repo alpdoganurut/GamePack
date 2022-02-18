@@ -1,13 +1,12 @@
-using System;
 using GamePack.Boilerplate;
 using GamePack.Boilerplate.Main;
+using GamePack.Logging;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Object = UnityEngine.Object;
 
 namespace GamePack.Editor.Boilerplate
 {
@@ -16,8 +15,6 @@ namespace GamePack.Editor.Boilerplate
         #region Initilization
 
         private static GameWindow _instance;
-        private static bool _isInit;
-        private static bool _isListening;
         
         [PropertyOrder(OrderTabsMid)]
         [TabGroup("Config")]
@@ -29,9 +26,9 @@ namespace GamePack.Editor.Boilerplate
          InlineEditor(InlineEditorObjectFieldModes.Hidden)]
         private static SceneLevelManager _staticLevelManager;
         
-        
-        private bool IsValidGameSceneAndMain => _game && SceneManager.GetActiveScene().path == GameWindow.MainSceneAssetPath;
-        private bool IsValidGameScene => _game;
+        // ReSharper disable once UnusedMember.Local
+        private bool IsValidGameSceneAndMain => _game && SceneManager.GetActiveScene().path == MainSceneAssetPath;
+        private static bool IsValidGameScene => _game;
 
         [MenuItem("Window/Game Window")]
         public static void ShowWindow()
@@ -48,28 +45,64 @@ namespace GamePack.Editor.Boilerplate
         private void Init()
         {
             GameWindow.Log("Initializing Game Window.");
+            /*
             if(!_isListening)
             {
                 ListenSceneChange();
             }
             else
                 GameWindow.Log("Skipped event subscribing.");
+                */
             
-            _isInit = true;
 
             InitScene(SceneManager.GetActiveScene());
             if(Application.isPlaying)
                 EnterPlayCallback?.Invoke();
         }
 
-        private void InitScene(Scene scene)
+
+        [InitializeOnLoadMethod]
+        private static void InitializeOnLoadMethod()
+        {
+            ManagedLog.Log($"{nameof(GameWindow)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+            EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
+            SceneManager.sceneLoaded += OnSceneManagerOnSceneLoaded;
+        }
+
+
+        /*
+        [InitializeOnEnterPlayMode]
+        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
+        {
+            GameWindow.Log($"OnEnterPlaymodeInEditor: {options}");
+            
+            // if (!_instance || !options.HasFlag(EnterPlayModeOptions.DisableDomainReload)) return;
+            
+            // _instance.StopListeningSceneChange();
+            // CheckTestLevelPlayModeEnter();
+            
+        }
+        */
+
+        private static void OnSceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode mode)
+        {
+            CheckLevelEnterPlayModeForLoadingMainScene();
+        }
+        
+        private static void EditorSceneManagerOnSceneLoaded(Scene arg1, Scene scene)
+        {
+            GameWindow.Log($"Scene opened: {scene.name}");
+            InitScene(scene);
+        }
+        
+        private static void InitScene(Scene scene)
         {
             GameWindow.Log($"Initializing scene {scene.name}");
 
             _scene = scene;
             
-            _game = Object.FindObjectOfType<GameBase>();
-            _levelHelper = Object.FindObjectOfType<LevelHelperBase>();
+            _game = FindObjectOfType<GameBase>();
+            _levelHelper = FindObjectOfType<LevelHelperBase>();
 
             // Check if valid Scene
             if (IsValidGameScene)
@@ -90,48 +123,30 @@ namespace GamePack.Editor.Boilerplate
 
         }
 
-        [InitializeOnEnterPlayMode]
-        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
-        {
-            GameWindow.Log($"OnEnterPlaymodeInEditor: {options}");
-
-            _isInit = false;
-            
-            if (!_instance || !options.HasFlag(EnterPlayModeOptions.DisableDomainReload)) return;
-            
-            _instance.StopListeningSceneChange();
-        }
-
-        private void EditorSceneManagerOnSceneLoaded(Scene arg1, Scene scene)
-        {
-            GameWindow.Log($"Scene opened: {scene.name}");
-            InitScene(scene);
-        }
-
+        /*
         private void OnInspectorUpdate()
         {
             // if(_isInit) base.OnGUI();
             if (!_isInit) Init();
         }
+        */
 
+        /*
         protected override void OnDestroy()
         {
             StopListeningSceneChange();
             GameWindow.Log("Window closed.");
         }
+        */
 
-        private void ListenSceneChange()
-        {
-            EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
-            _isListening = true;
-        }
-        
+        /*
         public void StopListeningSceneChange()
         {
             GameWindow.Log("Stopping listening.");
             EditorSceneManager.activeSceneChangedInEditMode -= EditorSceneManagerOnSceneLoaded;
             _isListening = false;
         }
+        */
         
         #endregion
     }

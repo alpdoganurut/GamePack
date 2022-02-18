@@ -8,31 +8,19 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using GamePack.Logging;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.PlayerLoop;
+using Debug = UnityEngine.Debug;
 
 namespace GamePack.TimerSystem
 {
     public static class TimerEngine
     {
-        // private static Engine _instance;
-        /*public static Engine Instance
-        {
-            get
-            {
-                if (!_instance)
-                {
-                    _instance = new GameObject("TimerEngine").AddComponent<Engine>();
-                }
-
-                return _instance;
-            }
-        }*/
-        
         [ShowInInspector] private static readonly List<Operation> RootOperations = new List<Operation>();
         private static readonly List<float?> RootOperationTimes = new List<float?>();
         
@@ -143,7 +131,7 @@ namespace GamePack.TimerSystem
             var toRemoveFromRunning = RootOperations.Where(operation => operation.State != OperationState.Running);
             foreach (var operation in toRemoveFromRunning)
             {
-                Debug.Log($"Will remove from {nameof(RunningOperations)}. Op: {operation.Name}, state: {operation.State}");
+                Log($"Will remove from {nameof(RunningOperations)}. Op: {operation.Name}, state: {operation.State}");
             }
             #endif
             // Remove operations if they are no longer running

@@ -5,7 +5,6 @@ using GamePack.Boilerplate.Main;
 using GamePack.Logging;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
-using UnityEditor;
 using UnityEngine.SceneManagement;
 using Debug = UnityEngine.Debug;
 
@@ -15,8 +14,8 @@ namespace GamePack.Editor.Boilerplate
     public partial class GameWindow: OdinEditorWindow
     {
         // Shared among class parts
-        private event Action EnterPlayCallback;
-        private Scene _scene;
+        private static event Action EnterPlayCallback;
+        private static Scene _scene;
         
         private const int OrderTop = -20;
         private const int OrderTopMid = -10;
@@ -27,7 +26,7 @@ namespace GamePack.Editor.Boilerplate
         private const int OrderBottomMid = 10;
         private const int OrderBottom = 20;
         
-        private const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
+        public const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
         private const string NotSetProductName = "GAME_NAME_NOT_SET";
         private const string BuildIdentifierPrefix = "com.hex.";
         private const string NotSetGameIdentifier = "IDENTIFIERNOTSET"; // Don't use _ or " ". Unity BuildSettings removes whitespaces.
@@ -37,14 +36,14 @@ namespace GamePack.Editor.Boilerplate
         [PropertyOrder(OrderTabsTop)]
         [TabGroup("Game")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]
-        private GameBase _game;
+        private static GameBase _game;
 
         #endregion
 
         #region Events & UI
 
         // ReSharper disable once NotAccessedField.Local
-        private GameEvents _gameEvents;
+        private static GameEvents _gameEvents;
 
         #endregion
         
@@ -53,7 +52,7 @@ namespace GamePack.Editor.Boilerplate
         /*[PropertyOrder(OrderTabsMid)]
         [TabGroup("Config")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]*/
-        private ConfigBase _config;
+        private static ConfigBase _config;
 
         #endregion
 
@@ -63,7 +62,7 @@ namespace GamePack.Editor.Boilerplate
         [ShowInInspector, PropertyOrder(GameWindow.OrderTabsMid),
          ShowIf("IsValidGameScene"),
          InlineEditor(InlineEditorObjectFieldModes.Hidden)]*/
-        private SceneLevelManager _levelManager;
+        private static SceneLevelManager _levelManager;
 
         #endregion
         
@@ -105,7 +104,7 @@ namespace GamePack.Editor.Boilerplate
         [Conditional("GAME_WINDOW_LOGGING")]
         private static void Log(object msg)
         {
-            ManagedLog.Log(msg, color: Colors.PowderBlue);
+            ManagedLog.Log(msg, color: Colors.PowderBlue, type: ManagedLog.Type.Structure);
         }
     }
 }

@@ -7,9 +7,8 @@ namespace GamePack.Boilerplate.Structure.Physics.Trigger
     [RequireComponent(typeof(PhysicsObject))]
     public abstract class PhysicsTrigger: PhysicsTriggerBase
     {
-        public delegate void EventDelegate(Component component);
+        public delegate void EventDelegate(Component component, Collider other);
         public event EventDelegate DidEnter;
-
         
         protected abstract Type[] Types { get;}
 
@@ -25,8 +24,7 @@ namespace GamePack.Boilerplate.Structure.Physics.Trigger
                 foreach (var component in validComponents)
                 {
                     Log($"TriggerDidEnter, other:{other}, component: {component}");
-                    
-                    DidEnter?.Invoke(component);
+                    DidEnter?.Invoke(component, other);
                 }
             }
         }

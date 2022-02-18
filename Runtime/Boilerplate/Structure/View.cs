@@ -29,7 +29,7 @@ namespace GamePack.Boilerplate.Structure
 #if USING_SHAPES
         public void LogInWorld(object msg)
         {
-            WorldLog.Log(msg, transform);
+            WorldLog.Log(msg, localTransform: transform);
         }
 #endif
     }

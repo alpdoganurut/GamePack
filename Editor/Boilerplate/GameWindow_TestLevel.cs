@@ -11,7 +11,7 @@ namespace GamePack.Editor.Boilerplate
         [PropertyOrder(OrderBottom)]
         [ShowInInspector, HorizontalGroup("Test Level"),
          ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
-        private SceneAsset TestLevel
+        public static SceneAsset TestLevel
         {
             get => _levelManager ? _levelManager._TestLevel : null;
             set { if(_levelManager) _levelManager._TestLevel = value; }

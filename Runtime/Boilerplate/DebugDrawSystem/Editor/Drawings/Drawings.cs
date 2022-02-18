@@ -1,6 +1,7 @@
 #if USING_SHAPES
 
 using Shapes;
+using TMPro;
 using UnityEngine;
 
 // Debug.DrawLine();    *
@@ -101,8 +102,8 @@ namespace GamePack.Utilities.DebugDrawSystem
                 ? _localTransform.TransformPoint(_pos)
                 : _pos);
             Draw.Matrix = rotationMatrix;
-            
-            Draw.Text(pos, _text, _textAlign, _fontSize, _color);
+
+            Draw.Text(pos, _text, align: _textAlign, fontSize: _fontSize, color: _color);
             Draw.ResetMatrix();
         }
 

@@ -21,30 +21,35 @@ namespace GamePack.Editor.Boilerplate
         {
             var sceneAssetPath = SceneManager.GetActiveScene().path;
             TestLevel = AssetDatabase.LoadAssetAtPath<SceneAsset>(sceneAssetPath);
+            
+            // Open main scene
             EditorSceneManager.activeSceneChangedInEditMode += OnSceneLoad;
             EditorSceneManager.OpenScene(MainSceneAssetPath);
-            
             void OnSceneLoad(Scene arg0, Scene scene)
             {
                 EditorSceneManager.activeSceneChangedInEditMode -= OnSceneLoad;
+                // Enter Play Mode
                 EditorApplication.isPlaying = true;
                 EnterPlayCallback += OnEnterPlayMode;
-
                 void OnEnterPlayMode()
                 {
+                    // Start Game
                     EnterPlayCallback -= OnEnterPlayMode;
                     _game.StartGame();
                     
-                    EditorApplication.playModeStateChanged += OnExitPlayMode;
                     
-                    void OnExitPlayMode(PlayModeStateChange playModeStateChange)
-                    {
-                        if (playModeStateChange == PlayModeStateChange.EnteredEditMode)
-                        {
-                            EditorApplication.playModeStateChanged -= OnExitPlayMode;
-                            EditorSceneManager.OpenScene(sceneAssetPath);
-                        }
-                    }
+                }
+                
+            }
+            
+            // Return to Level Scene
+            EditorApplication.playModeStateChanged += OnExitPlayMode;
+            void OnExitPlayMode(PlayModeStateChange playModeStateChange)
+            {
+                if (playModeStateChange == PlayModeStateChange.EnteredEditMode)
+                {
+                    EditorApplication.playModeStateChanged -= OnExitPlayMode;
+                    EditorSceneManager.OpenScene(sceneAssetPath);
                 }
             }
         }

@@ -35,6 +35,8 @@ namespace GamePack.Boilerplate.Structure.Physics.Trigger
 
             if (!_PhysicsObject)
                 _PhysicsObject = GetComponent<PhysicsObject>();
+            if (!_PhysicsObject)
+                _PhysicsObject = Internal_GameObject.AddComponent<PhysicsObject>();
         }
     }
 }

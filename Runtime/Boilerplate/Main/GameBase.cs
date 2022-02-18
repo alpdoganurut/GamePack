@@ -1,9 +1,10 @@
+using GamePack.Boilerplate.Structure;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace GamePack.Boilerplate.Main
 {
-    public abstract class GameBase : MonoBehaviour
+    public abstract class GameBase : StructureMonoBehaviourBase
     {
         public static Scene? LoadedScene => SceneLevelManager.LoadedScene;
         

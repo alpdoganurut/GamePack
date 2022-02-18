@@ -13,6 +13,7 @@ namespace GamePack.Editor.Boilerplate
     {
         private const string EnableAnalyticsDefineSymbol = "ENABLE_ANALYTICS";
         private const string LoggingDefineSymbol = "GAME_WINDOW_LOGGING";
+        private const string TimerEngineDefineSymbol = "TIMER_ENABLE_LOG";
 
         private const string VersionFileName = "version.txt";
         
@@ -96,14 +97,6 @@ namespace GamePack.Editor.Boilerplate
             set => SetDefineSymbol(value, EnableAnalyticsDefineSymbol);
         }
         
-        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
-        private bool GameWindowLogging
-        {
-            get =>
-                IsDefineSymbolEnabled(LoggingDefineSymbol);
-            set => SetDefineSymbol(value, LoggingDefineSymbol);
-        }
-        
         [TabGroup("Settings"), ShowInInspector, ShowIf("@_game != null")]
         private bool GameVisible
         {
@@ -129,6 +122,22 @@ namespace GamePack.Editor.Boilerplate
             }
         }
 
+        [Title("Debug")]
+        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
+        private bool GameWindowLogging
+        {
+            get =>
+                IsDefineSymbolEnabled(LoggingDefineSymbol);
+            set => SetDefineSymbol(value, LoggingDefineSymbol);
+        }
+        
+        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
+        private bool TimerEngineLogging
+        {
+            get =>
+                IsDefineSymbolEnabled(TimerEngineDefineSymbol);
+            set => SetDefineSymbol(value, TimerEngineDefineSymbol);
+        }
         [ShowInInspector, TabGroup("Settings")]
         [InlineEditor(InlineEditorObjectFieldModes.Foldout)]
         private ManagedLogConfig ManagedLogConfig

@@ -14,7 +14,13 @@ namespace GamePack.Examples.Logging
         private void LogInWorld(string msg = "Hello", Color? color = null)
         {
             WorldLog.Log($"{msg} At Pos", pos: Vector3.zero, color: color);
-            WorldLog.Log($"{msg} At Transform", transform: transform, color: color);
+            WorldLog.Log($"{msg} At Transform", localTransform: transform, color: color);
+        }
+
+        [Button]
+        private void LogOnScreen(string msg = "On Screen Log")
+        {
+            WorldLog.OnScreen(msg);
         }
 
         private void Update()

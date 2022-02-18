@@ -84,7 +84,6 @@ namespace GamePack.Boilerplate.Structure
 
         internal static void RegisterViewOrController(Object obj)
         {
-            ManagedLog.Log($"Registered new {obj.GetType().Name} ({obj.GetScenePath()})", ManagedLog.Type.Structure);
             switch (obj)
             {
                 case View view:
@@ -93,10 +92,11 @@ namespace GamePack.Boilerplate.Structure
                 case ControllerBase controllerBase:
                     Controllers.Add(controllerBase);
                     break;
-                // default:
+                default:
                     // Assert.IsTrue(false, "Can only register View or Controller!"); // This causes an error and not necessary, but wanted to keep it here to show that other types can enter here
-                    // break;
+                    return;
             }
+            ManagedLog.Log($"Registered new {obj.GetType().Name} ({obj.GetScenePath()})", ManagedLog.Type.Structure);
         }
         
         private static void AddAllComponentsInScene<T>(Scene arg0) where T: Component
