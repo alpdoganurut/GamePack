@@ -90,16 +90,6 @@ namespace GamePack.Editor.Boilerplate
         }
 
         #endregion
-        
-        /*
-        #region Level Helper
-
-        [Title("Level Helper")]
-        [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("@_levelHelper")]
-        private LevelHelperBase _levelHelper;
-
-        #endregion
-        */
 
         [Conditional("GAME_WINDOW_LOGGING")]
         private static void Log(object msg)

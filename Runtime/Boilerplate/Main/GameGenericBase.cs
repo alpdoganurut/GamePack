@@ -4,6 +4,7 @@ using GamePack.Boilerplate.Structure;
 using GamePack.Boilerplate.Tutorial;
 using GamePack.Logging;
 using GamePack.UnityUtilities;
+using InfluencerRun.Main;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -13,10 +14,10 @@ using UnityEngine.UI;
 using UnityEditor;
 #endif
 
-#if ENABLE_ANALYTICS
-using ElephantSDK;
-using GameAnalyticsSDK;
-#endif
+// #if ENABLE_ANALYTICS
+// using ElephantSDK;
+// using GameAnalyticsSDK;
+// #endif
 
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable UnusedParameter.Global
@@ -85,11 +86,12 @@ namespace GamePack.Boilerplate.Main
         private bool _UnloadSceneAfterStop = true;
         private TLevelHelper _levelHelper;
         
-        
         [ShowInInspector, ReadOnly, PropertyOrder(-1)] private bool _isPlaying;
 
         [SerializeField, Required] private TLevelInitData _LevelInitData;
         
+        private static GameAnalyticsDelegateBase _analyticsDelegate;
+
         // [ShowInInspector, ReadOnly] private ControllerGenericBase<TLevelInitData>[] _controllers;
 
         #region Development - InitializeOnEnterPlayMode
@@ -107,9 +109,12 @@ namespace GamePack.Boilerplate.Main
         
         protected virtual void Awake()
         {
-            #if ENABLE_ANALYTICS
+            Debug.Log("TEST: GameGenericBase.Awake");
+            _analyticsDelegate?.Initialize();
+            
+            /*#if ENABLE_ANALYTICS
             GameAnalytics.Initialize();
-            #endif
+            #endif*/
             
             _staticConfig = _Config;
             
@@ -121,7 +126,6 @@ namespace GamePack.Boilerplate.Main
             Time.timeScale = _Config.DefaultTimeScale;
         }
 
-
         private protected override void InternalStartGame()
         {
             if (_isPlaying)
@@ -129,11 +133,12 @@ namespace GamePack.Boilerplate.Main
                 Debug.LogError("Game is already started!");
                 return;
             }
-        
-#if ENABLE_ANALYTICS
+      
+            _analyticsDelegate?.GameDidStart(_SceneLevelManager.CurrentLevelIndex);
+/*#if ENABLE_ANALYTICS
             Elephant.LevelStarted(_SceneLevelManager.CurrentLevelIndex);
             GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, _SceneLevelManager.CurrentLevelIndex.ToString());
-#endif
+#endif*/
             _isPlaying = true;
 
             WillStartLevel();
@@ -174,6 +179,8 @@ namespace GamePack.Boilerplate.Main
                 return;
             }
 
+            _analyticsDelegate?.GameDidStop(isSuccess, _SceneLevelManager.CurrentLevelIndex);
+/*
 #if ENABLE_ANALYTICS
             if(isSuccess)
             {
@@ -186,6 +193,7 @@ namespace GamePack.Boilerplate.Main
                 GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, _SceneLevelManager.CurrentLevelIndex.ToString());
             }
 #endif
+*/
             
             if(isSuccess) _SceneLevelManager.IterateLevel();
             
@@ -330,6 +338,9 @@ namespace GamePack.Boilerplate.Main
 
         #endregion
         
-        
+        public static void SetAnalyticsDelegate(GameAnalyticsDelegateBase analyticsDelegate)
+        {
+            _analyticsDelegate = analyticsDelegate;
+        }
     }
 }

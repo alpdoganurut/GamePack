@@ -89,7 +89,7 @@ namespace GamePack.Logging
             _frameCount++;
         }
         
-        // [Conditional("UNITY_EDITOR")]
+        [Conditional("UNITY_EDITOR")]
         public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null, bool avoidFrameCount = false)
         {
             var msg = obj.ToString();

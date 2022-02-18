@@ -98,8 +98,8 @@ namespace GamePack.Boilerplate
             // Set Scene Name
             var levelSceneName = _LevelSceneNames[ClampedLevelIndex];
 #if UNITY_EDITOR
-            if (_TestLevel)
-                levelSceneName = _TestLevel.name;
+            if (TestLevel)
+                levelSceneName = TestLevel.name;
 #endif
 
             // Unload if necessary
@@ -113,9 +113,9 @@ namespace GamePack.Boilerplate
                 
                 // Load TestLevel if it is set and in Editor environment 
 #if UNITY_EDITOR
-                if (_TestLevel)
+                if (TestLevel)
                 {
-                    var path = AssetDatabase.GetAssetPath(_TestLevel);
+                    var path = AssetDatabase.GetAssetPath(TestLevel);
                     _asyncOperation = UnityEditor.SceneManagement.EditorSceneManager.LoadSceneAsyncInPlayMode(path,
                         new LoadSceneParameters(LoadSceneMode.Additive));
                     _asyncOperation.completed += OnloadComplete;
@@ -229,11 +229,12 @@ namespace GamePack.Boilerplate
             EditorBuildSettings.scenes = allScenes.ToArray();
         }
         
-        [SerializeField, 
+        /*[SerializeField, 
          HideInInspector,
          InlineButton("@_TestLevel = null", "Clear"),
-         TabGroup("Setup")] 
-        public SceneAsset _TestLevel;
+         TabGroup("Setup")]*/ 
+        // public SceneAsset _TestLevel;
+        public static SceneAsset TestLevel;
 
         [SerializeField, InfoBox("Disable to cancel scene loading for testing."), TabGroup("Options")] 
         private bool _LoadLevelScene = true;

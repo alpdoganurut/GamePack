@@ -1,3 +1,4 @@
+using GamePack.Boilerplate;
 using Sirenix.OdinInspector;
 using UnityEditor;
 
@@ -13,8 +14,8 @@ namespace GamePack.Editor.Boilerplate
          ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
         public static SceneAsset TestLevel
         {
-            get => _levelManager ? _levelManager._TestLevel : null;
-            set { if(_levelManager) _levelManager._TestLevel = value; }
+            get => SceneLevelManager.TestLevel;
+            set => SceneLevelManager.TestLevel = value;
         }
         
         [PropertySpace]

@@ -12,8 +12,6 @@ namespace GamePack.Editor.Boilerplate
 {
     public partial class GameWindow
     {
-        #region Initilization
-
         private static GameWindow _instance;
         
         [PropertyOrder(OrderTabsMid)]
@@ -67,38 +65,27 @@ namespace GamePack.Editor.Boilerplate
             ManagedLog.Log($"{nameof(GameWindow)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
             EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneManagerOnSceneLoaded;
+            
+            InitScene(SceneManager.GetActiveScene());
         }
 
-
-        /*
-        [InitializeOnEnterPlayMode]
-        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
+        private static void OnSceneManagerOnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            GameWindow.Log($"OnEnterPlaymodeInEditor: {options}");
-            
-            // if (!_instance || !options.HasFlag(EnterPlayModeOptions.DisableDomainReload)) return;
-            
-            // _instance.StopListeningSceneChange();
-            // CheckTestLevelPlayModeEnter();
-            
-        }
-        */
-
-        private static void OnSceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode mode)
-        {
+            InitScene(scene);
             CheckLevelEnterPlayModeForLoadingMainScene();
         }
         
         private static void EditorSceneManagerOnSceneLoaded(Scene arg1, Scene scene)
         {
             GameWindow.Log($"Scene opened: {scene.name}");
+            if(Application.isPlaying) return;
             InitScene(scene);
         }
         
         private static void InitScene(Scene scene)
         {
             GameWindow.Log($"Initializing scene {scene.name}");
-
+            
             _scene = scene;
             
             _game = FindObjectOfType<GameBase>();
@@ -122,32 +109,5 @@ namespace GamePack.Editor.Boilerplate
             }
 
         }
-
-        /*
-        private void OnInspectorUpdate()
-        {
-            // if(_isInit) base.OnGUI();
-            if (!_isInit) Init();
-        }
-        */
-
-        /*
-        protected override void OnDestroy()
-        {
-            StopListeningSceneChange();
-            GameWindow.Log("Window closed.");
-        }
-        */
-
-        /*
-        public void StopListeningSceneChange()
-        {
-            GameWindow.Log("Stopping listening.");
-            EditorSceneManager.activeSceneChangedInEditMode -= EditorSceneManagerOnSceneLoaded;
-            _isListening = false;
-        }
-        */
-        
-        #endregion
     }
 }
