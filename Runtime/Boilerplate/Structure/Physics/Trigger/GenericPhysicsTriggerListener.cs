@@ -1,3 +1,4 @@
+using GamePack.Logging;
 using UnityEngine;
 
 namespace GamePack.Boilerplate.Structure.Physics.Trigger
@@ -15,7 +16,7 @@ namespace GamePack.Boilerplate.Structure.Physics.Trigger
                 
             if(component)
             {
-                Log($"TriggerDidEnter, other:{other}, component: {component}");
+                Log($"TriggerDidEnter, other:{other}, component: {component}", ManagedLog.Type.Verbose);
                 DidEnter?.Invoke(component, other);
             }
         }

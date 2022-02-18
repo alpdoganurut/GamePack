@@ -153,7 +153,7 @@ namespace GamePack.Boilerplate.Main
 
                 // Invoke controller methods
                 if(StructureManager.Controllers != null)
-                    foreach (var controller in StructureManager.Controllers)
+                    foreach (var controller in StructureManager.Controllers.ToArray())  // TODO: Optimize
                     {
                         (controller as ControllerGenericBase<TLevelInitData, TLevelHelper>)?.InternalOnLevelStart(_LevelInitData, _levelHelper);
                     }
