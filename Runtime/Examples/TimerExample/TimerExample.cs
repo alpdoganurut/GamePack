@@ -67,7 +67,11 @@ namespace GamePack.Examples.TimerExample
                     }))
                 .Save();
             
-            if(_IsRepeat) _operationDescription.RepeatInfinite();
+            if(_IsRepeat) _operationDescription.StartRepeating(_IgnoreTimeScale);
+            else
+            {
+                _operationDescription.Start(_IgnoreTimeScale);
+            }
             
             _operationDescription.Start(ignoreTimeScale:_IgnoreTimeScale);
         }

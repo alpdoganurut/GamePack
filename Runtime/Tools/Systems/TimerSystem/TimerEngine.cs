@@ -31,14 +31,16 @@ namespace GamePack.TimerSystem
         // Optimization
         private static readonly List<Operation> OperationsToResolveImmediately = new List<Operation>();
 
-        public static void AddOperation(Operation operation)
+        internal static void AddOperation(Operation operation)
         {
             Log($"Adding operation {operation.Name}, delay: {operation.Delay}, ignoreTimeScale: {operation.IsIgnoreTimeScale}");
             
             RootOperations.Add(operation);
             RootOperationTimes.Add(GetTimeForOperation(operation) + operation.Delay);
         }
-        
+
+        #region Initialization
+
 #if !UNITY_EDITOR
         [RuntimeInitializeOnLoadMethod]
         private static void RuntimeInitializeOnLoadMethod()
@@ -54,7 +56,6 @@ namespace GamePack.TimerSystem
         {
             ManagedLog.Log($"{nameof(TimerEngine)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), Update);
-            
         }
 
 #if UNITY_EDITOR
@@ -71,6 +72,8 @@ namespace GamePack.TimerSystem
             RunningOperationEndTimes.Clear();
         }
 #endif
+
+        #endregion
 
         private static void Update()
         {
@@ -107,13 +110,13 @@ namespace GamePack.TimerSystem
                 )
                 {
                     RunOperation(rootOperation);
-                    if(rootOperation.ShouldResolveImmediately())
+                    if(rootOperation.ShouldResolveImmediately()) 
                     {
                         OperationsToResolveImmediately.Add(rootOperation);
                     }
                 }
             }
-            // Delete 
+            // Resolve collected operations
             foreach (var operation in OperationsToResolveImmediately) Resolve(operation);
 
             // Catch cancelled operations and run their end actions if set to true

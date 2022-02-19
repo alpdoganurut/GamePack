@@ -8,7 +8,7 @@ namespace GamePack.TimerSystem
 {
     public class Operation
     {
-        private const float NullFloatValue = -1f;
+        protected const float NullFloatValue = -1f;
 
         public delegate void OperationAction();
         public delegate void OperationUpdateAction(float tVal);
@@ -20,7 +20,7 @@ namespace GamePack.TimerSystem
         #region Readonly State
 
         internal string Name { get; set; }
-        protected float _duration;
+        protected float? _duration;
         internal float Delay { get; set; }
         protected EasingFunction.Ease? _ease;
         protected AnimationCurve _easeCurve;
@@ -38,20 +38,20 @@ namespace GamePack.TimerSystem
 
         #region Mutating State
 
-        internal OperationState State { get; private set; }
+        internal OperationState State { get; private set; } = OperationState.NotStarted;
         internal List<Operation> Children { get; } = new List<Operation>();
         
         internal bool IsIgnoreTimeScale { get; private set; }
         
         public bool IsRunEndActionBeforeCancel { get; private set; }
 
-        internal float? Duration => _duration < 0 ? (float?) null : _duration;
+        internal float? Duration => _duration < 0 ? null : _duration;
         
         #endregion
 
         public Operation(
             string name = null,
-            float duration = NullFloatValue,
+            float? duration = null,
             float delay = 0,
             bool ignoreTimeScale = false,
             EasingFunction.Ease? ease = null,
@@ -69,8 +69,10 @@ namespace GamePack.TimerSystem
             #endif
             
             // Validity checks
+            
+            Assert.IsTrue( !duration.HasValue || duration > 0, $"duration must be > 0 ({duration})");
             // Check if duration and finish condition both supplied
-            var isDurationSupplied = duration > 0;
+            var isDurationSupplied = duration.HasValue;
             Assert.IsFalse(isDurationSupplied && finishCondition != null, "Duration and finish condition both can't be supplied!"); // Botch can't be supplied
             // Ease can't be used if no duration is set
             Assert.IsTrue(ease == null || isDurationSupplied, "Ease can't be used if no duration is set!");
@@ -93,24 +95,27 @@ namespace GamePack.TimerSystem
             _skipCondition = skipCondition;
         }
 
+        #region Public API
+
         public OperationTreeDescription Save()
         {
-            return GetDescription();
+            return new OperationTreeDescription(this);
         }
         
         public OperationTreeDescription Start(bool ignoreTimeScale = false)
         {
-            var description = GetDescription();
+            var description = Save();
             description.Start(ignoreTimeScale);
             return description;
         }
 
-        public void Restart()
+        public OperationTreeDescription StartRepeating(bool ignoreTimeScale = false)
         {
-            ResetState();
-            Start();
+            var description = Save();
+            description.StartRepeating(ignoreTimeScale);
+            return description;
         }
-        
+
         public Operation Add(Operation operation)
         {
             // Assert.IsTrue(State == OperationState.NotStarted, "Can't add to operation that is started.");
@@ -119,10 +124,10 @@ namespace GamePack.TimerSystem
             Children.Add(operation);
             return operation;
         }
-        
+
         public Operation Add(
             string name = null,
-            float duration = NullFloatValue,
+            float? duration = null,
             float delay = 0, 
             bool ignoreTimeScale = false,
             EasingFunction.Ease? ease = null,
@@ -138,6 +143,8 @@ namespace GamePack.TimerSystem
                 finishCondition);
             return Add(newOp);
         }
+
+        #endregion
 
         #region Internal API - These are used by Engine and OperationTreeDescription
 
@@ -210,24 +217,18 @@ namespace GamePack.TimerSystem
             IsRunEndActionBeforeCancel = isRunEndActionBeforeCancel; 
             State = OperationState.Cancelled;
         }
-        
-        internal void ResetState()
-        {
-            State = OperationState.Waiting;
-            IsRunEndActionBeforeCancel = false;
-        }
 
         #endregion
 
         #region Private
 
-        private Operation GetRoot()
+        public Operation GetRoot()
         {
             if (Parent != null) return Parent.GetRoot();
             else return this;
         }
 
-        private void RecursiveFindAllInTree(ref List<Operation> operations, ref List<Operation> tips)
+        public void RecursiveFindAllInTree(ref List<Operation> operations, ref List<Operation> tips)
         {
             if(operations.Contains(this)) return;
 
@@ -242,6 +243,7 @@ namespace GamePack.TimerSystem
             }
         }
         
+        /*
         private OperationTreeDescription GetDescription()   // TODO: Move this to OperationTreeDescription constructor
         {
             var root = GetRoot();
@@ -257,6 +259,7 @@ namespace GamePack.TimerSystem
             };
             return operationTreeDescription;
         }
+        */
         
         #endregion
 

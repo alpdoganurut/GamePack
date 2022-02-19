@@ -2,13 +2,13 @@ using UnityEngine;
 
 namespace GamePack.TimerSystem
 {
-    public class OneDScaleOp: Operation
+    public class UniformScaleOp: Operation
     {
         private readonly Transform _transform;
         private readonly float _targetScale;
         private Vector3 _initialScale;
 
-        public OneDScaleOp(
+        public UniformScaleOp(
             Transform transform,
             float duration,
             float targetScale,
@@ -29,7 +29,7 @@ namespace GamePack.TimerSystem
 
             _updateAction = UpdateAction;
             
-            Name = name ?? $"{(_transform ? _transform.name + " "  : "")} {nameof(OneDScaleOp)}";
+            Name = name ?? $"{(_transform ? _transform.name + " "  : "")} {nameof(UniformScaleOp)}";
         }
 
         protected override void OnRun()

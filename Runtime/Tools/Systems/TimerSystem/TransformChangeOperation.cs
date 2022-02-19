@@ -44,7 +44,7 @@ namespace GamePack.TimerSystem
             _isRotate = targetRot != null || targetRotRef;
             _isScale = targetScale != null || targetScaleRef;
             
-            Assert.IsTrue(_isMove || _isRotate || _isScale, "Operation is neither Move nor Rotate, supply one of the targets for either of them.");
+            Assert.IsTrue(_isMove || _isRotate || _isScale, "Operation is not Move, Rotate or Scale, supply target for one of them.");
             Assert.IsTrue(moveSpeed > 0 || duration > 0, "Either speed or duration must have value and bigger than zero!");
 
             // Cache initialization parameters to calculate initial movement values OnStart.
@@ -83,6 +83,8 @@ namespace GamePack.TimerSystem
 
         private void UpdateAction(float tVal)
         {
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
+            Assert.IsTrue(tVal != NullFloatValue, $"tVal has no value in {nameof(TransformChangeOperation)}. This points to an internal err ");
             if (!_transform)
             {
                 Debug.LogError($"{_transform} is destroyed.");
@@ -115,8 +117,10 @@ namespace GamePack.TimerSystem
             if(_isRotate)
                 rot = GetUpdatedRotation(tVal);
             if(_isScale)
+            {
                 scale = GetUpdatedScale(tVal);
-            
+            }
+
             // Apply values
             if(_isMove && _isRotate)
                 _transform.SetPositionAndRotation(pos, rot);
