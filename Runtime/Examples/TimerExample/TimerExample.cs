@@ -72,8 +72,6 @@ namespace GamePack.Examples.TimerExample
             {
                 _operationDescription.Start(_IgnoreTimeScale);
             }
-            
-            _operationDescription.Start(ignoreTimeScale:_IgnoreTimeScale);
         }
     }
 }

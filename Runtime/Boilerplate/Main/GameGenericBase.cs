@@ -109,7 +109,6 @@ namespace GamePack.Boilerplate.Main
         
         protected virtual void Awake()
         {
-            Debug.Log("TEST: GameGenericBase.Awake");
             _analyticsDelegate?.Initialize();
             
             /*#if ENABLE_ANALYTICS

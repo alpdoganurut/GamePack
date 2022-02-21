@@ -21,7 +21,6 @@ namespace GamePack.TimerSystem
             memberOperation.RecursiveFindAllInTree(ref _operations, ref _tips);
         }
 
-
         public void Start(bool ignoreTimeScale = false)
         {
             if (IsStarted())
