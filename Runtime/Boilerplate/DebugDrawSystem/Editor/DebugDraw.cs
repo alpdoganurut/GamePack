@@ -100,9 +100,9 @@ namespace GamePack.Utilities.DebugDrawSystem
         {
             _isInit = true;
             // LogEvent($"{nameof(DebugDraw)}.InitializeOnLoadMethod");
-// #if UNITY_EDITOR
+#if UNITY_EDITOR
             EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
-// #endif
+#endif
             SceneManager.sceneLoaded += OnEditorSceneManagerOnSceneLoaded;
             ListenCamera();
 

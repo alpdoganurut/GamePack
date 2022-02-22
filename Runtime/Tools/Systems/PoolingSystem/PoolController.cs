@@ -11,13 +11,13 @@ namespace GamePack.PoolingSystem
         [ShowInInspector, ReadOnly] private readonly Stack<PoolableBase> _poolStack = new Stack<PoolableBase>();
         [ShowInInspector, ReadOnly] private readonly List<PoolableBase> _activeList = new List<PoolableBase>();
         [SerializeField] private int _PreFillCount;
-        [SerializeField] private bool _IsSetupInEditor;
+        [SerializeField] private bool _IsPrefillInEditor;
 
         public List<PoolableBase> ActiveList => _activeList;
 
         private void Awake()
         {
-            if(_IsSetupInEditor)
+            if(_IsPrefillInEditor)
                 Prefill();
         }
 
