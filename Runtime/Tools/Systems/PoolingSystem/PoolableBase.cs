@@ -12,7 +12,7 @@ namespace GamePack.PoolingSystem
             LifeDidEnd?.Invoke(this);
         }
 
-        public abstract void OnStart();
-        public abstract void OnStop();
+        internal abstract void OnStart();
+        internal abstract void OnStop();
     }
 }

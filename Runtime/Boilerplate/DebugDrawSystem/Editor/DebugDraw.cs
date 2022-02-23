@@ -106,7 +106,9 @@ namespace GamePack.Utilities.DebugDrawSystem
             SceneManager.sceneLoaded += OnEditorSceneManagerOnSceneLoaded;
             ListenCamera();
 
-            PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(DebugDraw), CustomLateUpdate);
+            // PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(DebugDraw), CustomLateUpdate);
+            PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(DebugDraw), CustomLateUpdate);
+            
             EnsureOfHelper();
 
             // Default Drawings
@@ -285,24 +287,21 @@ namespace GamePack.Utilities.DebugDrawSystem
         {
             LogUpdate($"{nameof(DebugDraw)}.CustomLateUpdate time:{Time.time}");
             
-            // Return if not playing
-            if(!Application.isPlaying) return;
-            
             FrameUpdate();
             TimedDrawings.RemoveAll(timedDrawing => timedDrawing.EndTime < Time.time);
             OwnedDrawings.RemoveAll(drawing => !drawing.Owner);
         }
 
+        /*
         internal static void OnHelperDrawGizmos()
         {
             LogUpdate($"{nameof(DebugDraw)}.OnDrawGizmos");
             
             // Return if play mode and not paused
             // if (Application.isPlaying && !EditorApplication.isPaused) return;
-            if (Application.isPlaying) return;
-            
-            FrameUpdate();
+            if (!Application.isPlaying) FrameUpdate();
         }
+        */
 
         private static void FrameUpdate()
         {

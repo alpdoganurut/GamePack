@@ -2,12 +2,12 @@ namespace GamePack.PoolingSystem
 {
     public class PoolableGameObject: PoolableBase
     {
-        public override void OnStart()
+        internal override void OnStart()
         {
             gameObject.SetActive(true);
         }
 
-        public override void OnStop()
+        internal override void OnStop()
         {
             gameObject.SetActive(false);
         }

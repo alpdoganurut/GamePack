@@ -11,13 +11,13 @@ namespace GamePack.PoolingSystem
         [ShowInInspector, ReadOnly] private readonly Stack<PoolableBase> _poolStack = new Stack<PoolableBase>();
         [ShowInInspector, ReadOnly] private readonly List<PoolableBase> _activeList = new List<PoolableBase>();
         [SerializeField] private int _PreFillCount;
-        [SerializeField] private bool _IsPrefillInEditor;
+        [SerializeField] private bool _InitializeAtAwake;
 
         public List<PoolableBase> ActiveList => _activeList;
 
         private void Awake()
         {
-            if(_IsPrefillInEditor)
+            if(_InitializeAtAwake)
                 Prefill();
         }
 
@@ -46,21 +46,19 @@ namespace GamePack.PoolingSystem
             return newObj;
         }
         
-        /// Grab one from pool if available or create.  
+        /// Grab one from pool if available or create new.  
         private PoolableBase FetchNew()
         {
             PoolableBase poolable;
             if (_poolStack.Count > 0)
             {
                 poolable = _poolStack.Pop();
-                // return _poolStack.Pop();
             }
             else
             {
                 var newObj = Instantiate(_Prefab);
                 poolable = newObj;
                 poolable.LifeDidEnd += PoolObject;
-                // return newObj;
             }
             
             return poolable;
@@ -69,7 +67,6 @@ namespace GamePack.PoolingSystem
         private void PoolObject(PoolableBase obj)
         {
             _poolStack.Push(obj);
-            // obj.LifeDidEnd -= PoolObject;
             obj.OnStop();
             _activeList.Remove(obj);
         }

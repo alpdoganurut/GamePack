@@ -1,3 +1,4 @@
+using System;
 using GamePack.Utilities;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -15,7 +16,8 @@ namespace GamePack.TimerSystem
         private Vector3 _initialPos;
         private readonly Vector3? _targetPos;
         private readonly Transform _targetPosRef;
-        
+        private readonly Func<Vector3> _targetPosAction;
+
         // Rotation
         private Quaternion _initialRot;
         private readonly Quaternion? _targetRot;
@@ -34,15 +36,23 @@ namespace GamePack.TimerSystem
             Transform transform = null,
             float? duration = null,
             float? moveSpeed = null,
-            Vector3? targetPos = null, [CanBeNull] Transform targetPosRef = null,
+            Vector3? targetPos = null, [CanBeNull] Transform targetPosRef = null, Func<Vector3> targetPosAction = null,
             Quaternion? targetRot = null, [CanBeNull] Transform targetRotRef = null,
             Vector3? targetScale = null, [CanBeNull] Transform targetScaleRef = null,
             EasingFunction.Ease? ease = null, AnimationCurve easeCurve = null,
             string name = null)
         {
-            _isMove = targetPos != null || targetPosRef;
+            _isMove = targetPos != null || targetPosRef || targetPosAction != null;
             _isRotate = targetRot != null || targetRotRef;
             _isScale = targetScale != null || targetScaleRef;
+
+            // Make sure only one method of position is true TODO: This might be better done with overloads, this method gets a bit more complicated than intended
+            if (targetPos != null)
+                Assert.IsTrue(targetPosRef == null && targetPosAction == null);
+            if(targetPosRef != null)
+                Assert.IsTrue(targetPos == null && targetPosAction == null);
+            if(targetPosAction != null)
+                Assert.IsTrue(targetPos == null && targetPosRef == null);
             
             Assert.IsTrue(_isMove || _isRotate || _isScale, "Operation is not Move, Rotate or Scale, supply target for one of them.");
             Assert.IsTrue(moveSpeed > 0 || duration > 0, "Either speed or duration must have value and bigger than zero!");
@@ -55,6 +65,7 @@ namespace GamePack.TimerSystem
             
             _targetPos = targetPos;
             _targetPosRef = targetPosRef;
+            _targetPosAction = targetPosAction;
             
             _targetRot = targetRot;
             _targetRotRef = targetRotRef;
@@ -136,8 +147,8 @@ namespace GamePack.TimerSystem
 
         private Vector3 GetUpdatedPos(float tVal)
         {
-            var tPos = _targetPos ?? _targetPosRef.position;
-            return Vector3.Lerp(_initialPos, tPos, tVal);
+            var tPos = _targetPos ?? (_targetPosRef != null ? _targetPosRef.position : _targetPosAction?.Invoke());
+            return Vector3.Lerp(_initialPos, tPos.Value, tVal);
         }
 
         private Quaternion GetUpdatedRotation(float tVal)

@@ -21,13 +21,13 @@ namespace GamePack.PoolingSystem
             EndLife();
         }
 
-        public override void OnStart()
+        internal override void OnStart()
         {
             gameObject.SetActive(true);
             ParticleSystem.Play();
         }
 
-        public override void OnStop()
+        internal override void OnStop()
         {
             gameObject.SetActive(false);
         }

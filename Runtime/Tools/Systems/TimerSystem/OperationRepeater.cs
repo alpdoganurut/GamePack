@@ -10,11 +10,11 @@ namespace GamePack.TimerSystem
             {
                 var isCancelled = treeDescription.IsCancelled();
                 if (isCancelled) {
-                    ManagedLog.Log($"Not restarting {nameof(OperationTreeDescription)}, root: {treeDescription.Root.Name}");
+                    ManagedLog.Log($"Not restarting {nameof(OperationTreeDescription)}, root: {treeDescription.Root.Name}", ManagedLog.Type.Verbose);
                 }
                 else
                 {
-                    ManagedLog.Log($"Restarting {nameof(OperationTreeDescription)}, root: {treeDescription.Root.Name}");
+                    ManagedLog.Log($"Restarting {nameof(OperationTreeDescription)}, root: {treeDescription.Root.Name}", ManagedLog.Type.Verbose);
                     treeDescription.Start();
                 }
             });

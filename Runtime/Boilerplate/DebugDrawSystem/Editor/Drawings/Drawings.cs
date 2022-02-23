@@ -51,8 +51,8 @@ namespace GamePack.Utilities.DebugDrawSystem
             
             Draw.Line(start, end, DrawInstructionDefaults.DefaultLineThickness, _color);
             if(_drawArrow)
-                Draw.Cone(_end, _end-_start, DrawInstructionDefaults.DefaultLineThickness, 
-                    DrawInstructionDefaults.DefaultLineThickness * DrawInstructionDefaults.ArrowRadiusToLength, _color);
+                Draw.Cone(_end, _end-_start, DrawInstructionDefaults.DefaultArrowRadius, 
+                    DrawInstructionDefaults.DefaultArrowRadius * DrawInstructionDefaults.ArrowRadiusToLength, _color);
         }
     }
 
