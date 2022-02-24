@@ -281,7 +281,7 @@ namespace GamePack.Editor.Utilities
         }
 
         [Button, TabGroup("Design")]
-        private static void PlaceItems(float verticalOffset = 100)
+        private static void PlaceItems(float placementYOffset = 0, float projectionOffset = 1)
         {
             var sel = Selection.gameObjects;
             if (sel.Length <= 0) return;
@@ -289,15 +289,21 @@ namespace GamePack.Editor.Utilities
             Undo.RecordObjects(sel.ToArray<Object>(), "Place Items");
 
             // ReSharper disable once PossibleNullReferenceException
-
+            
             sel.ForEach(o =>
             {
-                var origin = o.transform.position + (Vector3.up * 10);
+                o.SetActive(false);
+                
+                var pos = o.transform.position;
+                var origin = pos + (Vector3.up * projectionOffset);
                 Debug.DrawRay(origin, Vector3.down * 100, Color.red, 5);
                 if (!Physics.Raycast(origin, Vector3.down, out var hit)) return;
+                // if(hit.collider.gameObject == o) return;
 
-                Debug.DrawLine(origin, hit.point, Color.green, 5);
-                o.transform.position = hit.point + new Vector3(0, verticalOffset, 0);
+                Debug.DrawLine(pos, hit.point, Color.green, 5);
+                o.transform.position = hit.point + new Vector3(0, placementYOffset, 0);
+                
+                o.SetActive(true);
             });
         }
         
@@ -313,6 +319,20 @@ namespace GamePack.Editor.Utilities
             }
         }
 
+        
+        [Button, TabGroup("Design")]
+        private static void ArrangeItemsWithSpacing(float spacing = 1)
+        {
+            var sel = Selection.gameObjects;
+
+
+            for (var index = 0; index < sel.Length; index++)
+            {
+                var obj = sel[index];
+                obj.transform.position = new Vector3(index * spacing, 0, 0);
+            }
+        }
+        
         #endregion
         
     }
