@@ -11,6 +11,7 @@ namespace GamePack.Editor
     public static class BuildPostProcessor
     {
 
+        #if UNITY_IOS
         [PostProcessBuild]
         public static void AddExemptEncryptionKeyToXcodePlist(BuildTarget buildTarget, string path)
         {
@@ -28,6 +29,7 @@ namespace GamePack.Editor
 
             File.WriteAllText(plistPath, plist.WriteToString());
         }
+        #endif
         
         /* FOR REFERENCE
         [PostProcessBuild]
