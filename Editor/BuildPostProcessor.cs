@@ -1,9 +1,12 @@
 // Source: https://stackoverflow.com/questions/54370336/from-unity-to-ios-how-to-perfectly-automate-frameworks-settings-and-plist/54370793#54370793
 
+#if UNITY_IOS
+using UnityEditor.iOS.Xcode;
+#endif
+
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
-using UnityEditor.iOS.Xcode;
 using UnityEngine;
 
 namespace GamePack.Editor
