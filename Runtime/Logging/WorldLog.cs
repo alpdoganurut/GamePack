@@ -14,7 +14,7 @@ namespace GamePack.Logging
         private const float Offset = 1;
         private const float Duration = 4f;
         private static readonly Color DefaultColor = Colors.Orangered;
-        private static EasingFunction.Ease Easing = EasingFunction.Ease.EaseInOutSine;
+        private static EasingFunction.Ease Easing = EasingFunction.Ease.EaseOutSine;
         private static Camera _camera;
         private const float LogOnScreenCameraZ = 5f;
 

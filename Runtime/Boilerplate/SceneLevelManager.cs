@@ -12,7 +12,7 @@ using UnityEngine.SceneManagement;
 
 namespace GamePack.Boilerplate
 {
-    [CreateAssetMenu(fileName = "Level Manager", menuName = "Hex/Scene Level Manager", order = 0)]
+    [CreateAssetMenu(fileName = "Level Manager", menuName = "GamePack/Scene Level Manager", order = 0)]
     public class SceneLevelManager: ScriptableObject
     {
         private const string ActivateSceneNamesInfo =

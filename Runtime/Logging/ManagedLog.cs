@@ -121,21 +121,34 @@ namespace GamePack.Logging
         public static void LogError(object obj, Object context = null)
         {
             var msg = "<color=\"red\">[ERROR]</color>\t" + obj;
+            
+            msg += GetTypeAndMethod();
+            
+            // Log(obj, Type.Error, context, Colors.Tomato);
+            Log(msg, Type.Error, context);
+        }
+
+        public static void LogMethod(object obj = null)
+        {
+            Log($"{GetTypeAndMethod()} {obj}");
+        }
+        
+        private static string GetTypeAndMethod()
+        {
             try
             {
-                var frame = new StackFrame(1);
+                var frame = new StackFrame(2);
                 var method = frame.GetMethod();
                 var type = method.DeclaringType;
-                msg += $" ( {type}.{method.Name} )";
+                return $" ( {type?.Name}.{method.Name} )";
             }
             catch (Exception e)
             {
                 Debug.LogError("Failed to get stacktrace.");
                 Console.WriteLine(e);
             }
-            
-            // Log(obj, Type.Error, context, Colors.Tomato);
-            Log(msg, Type.Error, context);
+
+            return null;
         }
     }
 }

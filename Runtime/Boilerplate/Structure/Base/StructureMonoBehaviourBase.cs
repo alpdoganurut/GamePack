@@ -41,6 +41,8 @@ namespace GamePack.Boilerplate.Structure
         {
             ManagedLog.Log(obj, type, context);
         }
+        
+        // protected static voic 
 
         #region Instantiation Overrides to register new objects
 
