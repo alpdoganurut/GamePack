@@ -73,7 +73,7 @@ namespace GamePack.Utilities.DebugDrawSystem
         private static readonly List<IDrawing> FrameDrawingsBuffer = new List<IDrawing>();
         private static readonly List<IDrawing> FrameDrawings = new List<IDrawing>();
 
-        private static DebugDrawSceneHelper _helper;
+        // private static DebugDrawSceneHelper _helper;
         private static string _infoText;
         
         internal static Camera PlayModMainCamera { get; private set; }
@@ -100,16 +100,16 @@ namespace GamePack.Utilities.DebugDrawSystem
         {
             _isInit = true;
             // LogEvent($"{nameof(DebugDraw)}.InitializeOnLoadMethod");
-#if UNITY_EDITOR
-            EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
-#endif
+// #if UNITY_EDITOR
+            // EditorSceneManager.activeSceneChangedInEditMode += EditorSceneManagerOnSceneLoaded;
+// #endif
             SceneManager.sceneLoaded += OnEditorSceneManagerOnSceneLoaded;
             ListenCamera();
 
             // PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(DebugDraw), CustomLateUpdate);
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(DebugDraw), CustomLateUpdate);
             
-            EnsureOfHelper();
+            // EnsureOfHelper();
 
             // Default Drawings
             if (SHOW_ORIGIN_DATA)
@@ -176,13 +176,16 @@ namespace GamePack.Utilities.DebugDrawSystem
             return false;
         }*/
 
+        /*
         private static void EditorSceneManagerOnSceneLoaded(Scene arg0, Scene arg1)
         {
             LogEvent($"{nameof(DebugDraw)}.EditorSceneManagerOnSceneLoaded");
 
             EnsureOfHelper();
         }
+        */
 
+        /*
         private static void EnsureOfHelper()
         {
             // Try to find helper in scene
@@ -222,6 +225,7 @@ namespace GamePack.Utilities.DebugDrawSystem
                 LogEvent($"Created {nameof(DebugDrawSceneHelper)}");
             }
         }
+        */
 
 
         #endregion

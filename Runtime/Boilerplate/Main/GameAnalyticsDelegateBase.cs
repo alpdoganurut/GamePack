@@ -1,4 +1,4 @@
-namespace InfluencerRun.Main
+namespace GamePack.Boilerplate.Main
 {
     public abstract class GameAnalyticsDelegateBase
     {

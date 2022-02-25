@@ -4,7 +4,6 @@ using GamePack.Boilerplate.Structure;
 using GamePack.Boilerplate.Tutorial;
 using GamePack.Logging;
 using GamePack.UnityUtilities;
-using InfluencerRun.Main;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
