@@ -14,6 +14,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.UI;
 using Boilerplate.Structure;
+using GamePack.Boilerplate.Main;
 using Scene = UnityEngine.SceneManagement.Scene;
 
 namespace HexGames
@@ -94,11 +95,15 @@ namespace HexGames
     #endif
         #endregion
         
+        private static GameAnalyticsDelegateBase _analyticsDelegate;
+        
         protected virtual void Awake()
         {
-            #if ENABLE_ANALYTICS
+            _analyticsDelegate?.Initialize();
+            
+            /*#if ENABLE_ANALYTICS
             GameAnalytics.Initialize();
-            #endif
+            #endif*/
             
             _staticConfig = _Config;
             
@@ -117,11 +122,13 @@ namespace HexGames
                 return;
             }
         
+            _analyticsDelegate?.GameDidStart(_SceneLevelManager.CurrentLevelIndex);
+/*
 #if ENABLE_ANALYTICS
             Elephant.LevelStarted(_SceneLevelManager.CurrentLevelIndex);
             GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, _SceneLevelManager.CurrentLevelIndex.ToString());
 #endif
-            
+*/
             _isPlaying = true;
 
             WillStartGame();
@@ -159,6 +166,8 @@ namespace HexGames
                 return;
             }
 
+            _analyticsDelegate?.GameDidStop(isSuccess, _SceneLevelManager.CurrentLevelIndex);
+/*
 #if ENABLE_ANALYTICS
             if(isSuccess)
             {
@@ -171,6 +180,7 @@ namespace HexGames
                 GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, _SceneLevelManager.CurrentLevelIndex.ToString());
             }
 #endif
+*/
             
             if(isSuccess) _SceneLevelManager.IterateLevel();
             
@@ -303,6 +313,10 @@ namespace HexGames
 
         #endregion
         
-        
+        // Temporary Analytics Update
+        public static void SetAnalyticsDelegate(GameAnalyticsDelegateBase analyticsDelegate)
+        {
+            _analyticsDelegate = analyticsDelegate;
+        }
     }
 }
