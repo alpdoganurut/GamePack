@@ -2,11 +2,6 @@
 using UnityEditor; 
 #endif
 
-#if ENABLE_ANALYTICS
-using ElephantSDK;
-using GameAnalyticsSDK;
-#endif
-
 using System.Linq;
 using GamePack;
 using GamePack.UnityUtilities;
