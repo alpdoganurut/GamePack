@@ -122,6 +122,13 @@ namespace GamePack.Editor.Boilerplate
             }
         }
 
+        [TabGroup("Settings"), ShowInInspector, ShowIf("@_staticConfig != null")]
+        private bool AutoEnterMainScene
+        {
+            get => _staticConfig.AutoEnterMainScene;
+            set => _staticConfig.AutoEnterMainScene = value;
+        }
+        
         [Title("Debug")]
         [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool GameWindowLogging

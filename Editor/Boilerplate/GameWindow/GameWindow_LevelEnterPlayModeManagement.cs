@@ -5,6 +5,7 @@ using GamePack.Logging;
 using GamePack.TimerSystem;
 using GamePack.UnityUtilities;
 using NUnit.Framework;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -15,9 +16,11 @@ namespace GamePack.Editor.Boilerplate
     public partial class GameWindow
     {
         private static AsyncOperation _asyncOperation;
-
+        
         private static void CheckLevelEnterPlayModeForLoadingMainScene()
         {
+            if(!_staticConfig.AutoEnterMainScene) return;
+            
             // No game exists
             var game = FindAllObjects.InScene<GameBase>().FirstOrDefault();
             if (game) return;
