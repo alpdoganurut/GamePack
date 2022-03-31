@@ -125,7 +125,7 @@ namespace GamePack.Editor.Boilerplate
         [TabGroup("Settings"), ShowInInspector, ShowIf("@_staticConfig != null")]
         private bool AutoEnterMainScene
         {
-            get => _staticConfig.AutoEnterMainScene;
+            get => _staticConfig && _staticConfig.AutoEnterMainScene;
             set => _staticConfig.AutoEnterMainScene = value;
         }
         
