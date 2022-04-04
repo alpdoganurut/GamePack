@@ -102,7 +102,7 @@ namespace GamePack
 #endif
 
             // Unload if necessary
-            if (_loadedScene.HasValue) UnloadCurrentLevel(LoadScene);
+            if (_loadedScene.HasValue && _loadedScene.Value.IsValid()) UnloadCurrentLevel(LoadScene);
             else LoadScene();
             
             void LoadScene()
@@ -151,9 +151,10 @@ namespace GamePack
             }
 #endif
             
-            if(!_loadedScene.HasValue)
+            if(!_loadedScene.HasValue || _loadedScene.Value.IsValid())
             {
                 Debug.LogError("!_loadedScene.HasValue failed when unloading level. Returning but not sure if should all just callback immediately.");
+                didUnload?.Invoke();
                 return;
             }
             
