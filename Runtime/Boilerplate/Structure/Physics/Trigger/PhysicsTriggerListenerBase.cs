@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace GamePack.Boilerplate.Structure.Physics.Trigger
 {
-    public abstract class PhysicsTriggerBase: StructureMonoBehaviourBase
+    public abstract class PhysicsTriggerBase: StructureMonoBehaviourBase    // TODO: Rename
     {
         [SerializeField, ReadOnly] private PhysicsObject _PhysicsObject;
 
@@ -20,7 +20,7 @@ namespace GamePack.Boilerplate.Structure.Physics.Trigger
             var col = GetComponent<Collider>();
             if (!col)
             {
-                ManagedLog.LogError($"{Internal_GameObject.name} doesn't have any Collider component!");
+                ManagedLog.LogError($"{Internal_GameObject.name} doesn't have any Collider component!", gameObject);
             }
             if (col && !col.isTrigger
                     #region Editor

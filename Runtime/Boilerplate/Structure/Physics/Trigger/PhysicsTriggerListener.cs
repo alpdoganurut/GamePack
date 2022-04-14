@@ -5,7 +5,7 @@ using Component = UnityEngine.Component;
 namespace GamePack.Boilerplate.Structure.Physics.Trigger
 {
     [RequireComponent(typeof(PhysicsObject))]
-    public abstract class PhysicsTrigger: PhysicsTriggerBase
+    public abstract class PhysicsTrigger: PhysicsTriggerBase    // TODO: Rename
     {
         public delegate void EventDelegate(Component component, Collider other);
         public event EventDelegate DidEnter;

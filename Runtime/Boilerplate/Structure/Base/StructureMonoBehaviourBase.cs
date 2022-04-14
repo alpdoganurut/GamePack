@@ -6,9 +6,18 @@ namespace GamePack.Boilerplate.Structure
 {
     public abstract class StructureMonoBehaviourBase : MonoBehaviour
     {
-        #region Access Restriction
+        private Transform _cachedTransform;
+        private bool _isUpdating;
+        
+        #region Internal Access
 
+        private protected Transform Internal_Transform => transform;
+        
         private protected GameObject Internal_GameObject => base.gameObject;
+
+        #endregion
+        
+        #region Access Restriction
 
         // ReSharper disable once InconsistentNaming
         public new GameObject gameObject
@@ -17,6 +26,17 @@ namespace GamePack.Boilerplate.Structure
             {
                 Debug.LogWarning($"Shouldn't access {nameof(gameObject)} of {nameof(ControllerBase)}");
                 return base.gameObject;
+            }
+        }
+
+        // ReSharper disable once InconsistentNaming
+        public new Transform transform
+        {
+            get
+            {
+                
+                Debug.LogWarning($"Shouldn't access {nameof(gameObject)} of {nameof(ControllerBase)}");
+                return base.transform;
             }
         }
 
@@ -37,14 +57,16 @@ namespace GamePack.Boilerplate.Structure
 
         #endregion
 
-        protected static void Log(object obj, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null)
-        {
-            ManagedLog.Log(obj, type, context);
-        }
-        
-        // protected static voic 
+        #region Logging
 
-        #region Instantiation Overrides to register new objects
+        protected void Log(object obj, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null)
+        {
+            ManagedLog.Log(obj, type, context ? context : this);
+        }
+
+        #endregion
+
+        #region Object.Instantiate overrides to register new objects in StructureManager
 
         /// <summary>
         ///   <para>Clones the object original and returns the clone.</para>

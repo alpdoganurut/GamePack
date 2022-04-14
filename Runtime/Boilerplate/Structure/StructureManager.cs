@@ -42,6 +42,12 @@ namespace GamePack.Boilerplate.Structure
             SceneManager.sceneUnloaded += SceneManagerOnSceneUnloaded;
             
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), OnUpdate);
+         
+            // SceneManagerOnSceneLoaded doesn't get called for initial scene in builds, we need to call it on load to capture Managed Objects
+            #if !UNITY_EDITOR
+            var activeScene = SceneManager.GetActiveScene();
+            AddAllManagedObjectsInScene(activeScene);
+            #endif
         }
 
 #if UNITY_EDITOR
@@ -67,12 +73,18 @@ namespace GamePack.Boilerplate.Structure
             }
         }
         
+        // This doesn't get called for initial scene in builds.
         private static void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode arg1)
         {
             ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneLoaded)}", ManagedLog.Type.Structure);
+            AddAllManagedObjectsInScene(scene);
+            // TODO: We need to keep track of newly instantiated views and destroyed ones
+        }
+
+        private static void AddAllManagedObjectsInScene(Scene scene)
+        {
             AddAllComponentsInScene<View>(scene);
             AddAllComponentsInScene<ControllerBase>(scene);
-            // TODO: We need to keep track of newly instantiated views and destroyed ones
         }
 
         private static void SceneManagerOnSceneUnloaded(Scene arg0)
@@ -93,7 +105,6 @@ namespace GamePack.Boilerplate.Structure
                     Controllers.Add(controllerBase);
                     break;
                 default:
-                    // Assert.IsTrue(false, "Can only register View or Controller!"); // This causes an error and not necessary, but wanted to keep it here to show that other types can enter here
                     return;
             }
             ManagedLog.Log($"Registered new {obj.GetType().Name} ({obj.GetScenePath()})", ManagedLog.Type.Structure);

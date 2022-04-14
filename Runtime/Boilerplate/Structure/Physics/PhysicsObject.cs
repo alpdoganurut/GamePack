@@ -18,35 +18,17 @@ namespace GamePack.Boilerplate.Structure.Physics
         internal event PhysicsCollisionEvent DidCollide;
         internal event PhysicsTriggerEvent DidTrigger;
         
-        private void OnCollisionEnter(Collision collision)
-        {
-            DidCollide?.Invoke(PhysicsEventPhase.Enter, collision);
-        }
+        private void OnCollisionEnter(Collision collision) => DidCollide?.Invoke(PhysicsEventPhase.Enter, collision);
 
-        private void OnCollisionStay(Collision collision)
-        {
-            DidCollide?.Invoke(PhysicsEventPhase.Stay, collision);
-        }
+        private void OnCollisionStay(Collision collision) => DidCollide?.Invoke(PhysicsEventPhase.Stay, collision);
 
-        private void OnCollisionExit(Collision collision)
-        {
-            DidCollide?.Invoke(PhysicsEventPhase.Exit, collision);
-        }
+        private void OnCollisionExit(Collision collision) => DidCollide?.Invoke(PhysicsEventPhase.Exit, collision);
 
-        private void OnTriggerEnter(Collider other)
-        {
-            DidTrigger?.Invoke(PhysicsEventPhase.Enter, other);
-        }
+        private void OnTriggerEnter(Collider other) => DidTrigger?.Invoke(PhysicsEventPhase.Enter, other);
 
-        private void OnTriggerStay(Collider other)
-        {
-            DidTrigger?.Invoke(PhysicsEventPhase.Stay, other);
-        }
+        private void OnTriggerStay(Collider other) => DidTrigger?.Invoke(PhysicsEventPhase.Stay, other);
 
-        private void OnTriggerExit(Collider other)
-        {
-            DidTrigger?.Invoke(PhysicsEventPhase.Exit, other);
-        }
+        private void OnTriggerExit(Collider other) => DidTrigger?.Invoke(PhysicsEventPhase.Exit, other);
 
         private void OnValidate()
         {
