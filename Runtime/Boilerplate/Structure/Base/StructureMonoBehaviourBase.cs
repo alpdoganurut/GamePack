@@ -57,12 +57,10 @@ namespace GamePack.Boilerplate.Structure
 
         #endregion
 
-        #region Logging
+        #region Logging Helper Methods
 
-        protected void Log(object obj, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null)
-        {
-            ManagedLog.Log(obj, type, context ? context : this);
-        }
+        protected void Log(object obj, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null) => ManagedLog.Log(obj, type, context ? context : this);
+        protected void LogMethod(object obj = null, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null) => ManagedLog.LogMethod(obj, type, context);
 
         #endregion
 

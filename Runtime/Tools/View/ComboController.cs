@@ -4,8 +4,8 @@ using UnityEngine;
 namespace GamePack
 {
     /// <summary>
-    /// <para>Shows a random graphic of <see cref="_ComboGraphics"/> when combo.</para>
-    /// <para> Combo is: Scoring more than <see cref="_MinComboCount"/> less than <see cref="_ComboInterval"/> minutes.</para> 
+    /// <para>Shows a random graphic of <see cref="_ComboGraphics"/> on combo.</para>
+    /// <para> Combo is: Scoring more than <see cref="_MinComboCount"/> less than <see cref="_ComboInterval"/> seconds.</para> 
     /// <para> Call <see cref="DidScore"/> when scored.</para>
     /// </summary>
     public class ComboController: MonoBehaviour

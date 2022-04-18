@@ -1,6 +1,7 @@
 #if USING_SHAPES
 
 using GamePack.TimerSystem;
+using GamePack.Utilities;
 using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 using JetBrains.Annotations;
 using UnityEditor;
@@ -14,7 +15,8 @@ namespace GamePack.Logging
         private const float Offset = 1;
         private const float Duration = 4f;
         private static readonly Color DefaultColor = Colors.Orangered;
-        private static EasingFunction.Ease Easing = EasingFunction.Ease.EaseOutSine;
+        // private static EasingFunction.Ease Easing = EasingFunction.Ease.EaseOutSine;
+        private static EaseCurve Easing = new(EasingFunction.Ease.EaseOutSine);
         private static Camera _camera;
         private const float LogOnScreenCameraZ = 5f;
 

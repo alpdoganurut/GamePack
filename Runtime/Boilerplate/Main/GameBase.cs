@@ -6,8 +6,6 @@ namespace GamePack.Boilerplate.Main
 {
     public abstract class GameBase : StructureMonoBehaviourBase
     {
-        public static Scene? LoadedScene => SceneLevelManager.LoadedScene;
-        
         // ReSharper disable once UnusedMember.Global - Used by GameWindow inspector
         public abstract bool IsPlaying { get; }
 

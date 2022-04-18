@@ -1,29 +1,23 @@
-
 using System.Linq;
 using GamePack.Boilerplate.Structure;
 using GamePack.Boilerplate.Tutorial;
-using GamePack.Logging;
 using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
-// #if ENABLE_ANALYTICS
-// using ElephantSDK;
-// using GameAnalyticsSDK;
-// #endif
-
 // ReSharper disable VirtualMemberNeverOverridden.Global
 // ReSharper disable UnusedParameter.Global
 
 namespace GamePack.Boilerplate.Main
 {
-    public abstract class GameGenericBase<TConfig, TLevelHelper, TLevelInitData> : GameBase where TConfig: ConfigBase where TLevelHelper: LevelHelperBase where TLevelInitData: LevelInitDataBase
+    public abstract class GameGenericBase<TConfig, TLevelSceneRefBase, TMainSceneRefBase> : GameBase where TConfig: ConfigBase where TLevelSceneRefBase: LevelSceneRefBase where TMainSceneRefBase: MainSceneRefBase
     {
         private const string LevelTextPrefix = "Level ";
         
@@ -36,7 +30,7 @@ namespace GamePack.Boilerplate.Main
                 // Try to find Game in editor mode
                 if (!_staticConfig && !Application.isPlaying)
                 {
-                    var sceneGame = FindObjectOfType<GameGenericBase<TConfig, TLevelHelper, TLevelInitData>>();
+                    var sceneGame = FindObjectOfType<GameGenericBase<TConfig, TLevelSceneRefBase, TMainSceneRefBase>>();
                     
                     if(_staticConfig) return _staticConfig = sceneGame._Config;
                 }
@@ -46,8 +40,9 @@ namespace GamePack.Boilerplate.Main
                 if (!_staticConfig)
                 {
                     _staticConfig = FindAllObjects.InEditor<TConfig>().FirstOrDefault();
-                    if(_staticConfig) Debug.Log($"No Game present. Found a config file in {AssetDatabase.GetAssetPath(_staticConfig)}.");
-                    else Debug.Log("No config file found.");
+                    Debug.Log(_staticConfig
+                        ? $"No Game present. Found a config file in {AssetDatabase.GetAssetPath(_staticConfig)}."
+                        : "No config file found.");
                 } 
     #endif
                 #endregion
@@ -83,25 +78,22 @@ namespace GamePack.Boilerplate.Main
         
         [SerializeField, Required, FoldoutGroup("Default")]
         private bool _UnloadSceneAfterStop = true;
-        private TLevelHelper _levelHelper;
+        private TLevelSceneRefBase _levelSceneRef;
         
         [ShowInInspector, ReadOnly, PropertyOrder(-1)] private bool _isPlaying;
 
-        [SerializeField, Required] private TLevelInitData _LevelInitData;
+        [FormerlySerializedAs("_LevelInitData")] [SerializeField, Required] private TMainSceneRefBase _MainSceneRef;
         
+        // ReSharper disable once StaticMemberInGenericType
         private static GameAnalyticsDelegateBase _analyticsDelegate;
 
-        // [ShowInInspector, ReadOnly] private ControllerGenericBase<TLevelInitData>[] _controllers;
 
         #region Development - InitializeOnEnterPlayMode
     #if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
-            if (options == EnterPlayModeOptions.DisableDomainReload)
-            {
-                _staticConfig = null;
-            }
+            if (options == EnterPlayModeOptions.DisableDomainReload) _staticConfig = null;
         } 
     #endif
         #endregion
@@ -109,18 +101,13 @@ namespace GamePack.Boilerplate.Main
         protected virtual void Awake()
         {
             _analyticsDelegate?.Initialize();
-            
-            /*#if ENABLE_ANALYTICS
-            GameAnalytics.Initialize();
-            #endif*/
-            
+
             _staticConfig = _Config;
             
             if(_StartGameButton) _StartGameButton.onClick.AddListener(StartGame);
             RefreshLevelNumberText();
             if(_FakeScene) _FakeScene.SetActive(true);
 
-            Application.targetFrameRate = 60;
             Time.timeScale = _Config.DefaultTimeScale;
         }
 
@@ -133,10 +120,6 @@ namespace GamePack.Boilerplate.Main
             }
       
             _analyticsDelegate?.GameDidStart(_SceneLevelManager.CurrentLevelIndex);
-/*#if ENABLE_ANALYTICS
-            Elephant.LevelStarted(_SceneLevelManager.CurrentLevelIndex);
-            GameAnalytics.NewProgressionEvent(GAProgressionStatus.Start, _SceneLevelManager.CurrentLevelIndex.ToString());
-#endif*/
             _isPlaying = true;
 
             WillStartLevel();
@@ -146,10 +129,10 @@ namespace GamePack.Boilerplate.Main
                 
                 if(_FakeScene) _FakeScene.SetActive(false);
                 
-                _levelHelper = FindObjectOfType<TLevelHelper>();
+                _levelSceneRef = FindObjectOfType<TLevelSceneRefBase>();
                 
-                if (!LevelHelper)
-                    Debug.LogError($"No LevelHelper found in the scene: {SceneLevelManager.LoadedScene}!");
+                if (!LevelSceneRef)
+                    Debug.LogError($"No {nameof(LevelSceneRefBase)} found in the scene: {SceneLevelManager.LoadedScene}!");
 
                 if (_TutorialManager)
                     _TutorialManager.ShowTutorial(_SceneLevelManager.CurrentLevelIndex);
@@ -158,14 +141,10 @@ namespace GamePack.Boilerplate.Main
                 if(StructureManager.Controllers != null)
                     foreach (var controller in StructureManager.Controllers.ToArray())  // TODO: Optimize
                     {
-                        (controller as ControllerGenericBase<TLevelInitData, TLevelHelper>)?.InternalOnLevelStart(_LevelInitData, _levelHelper);
+                        (controller as ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase>)?.InternalOnLevelStart(_MainSceneRef, _levelSceneRef);
                     }
                 
-                /*if(_levelHelper.Controllers != null)
-                    foreach (var controller in _levelHelper.Controllers)
-                        controller.InternalOnLevelStart(_LevelInitData);*/
-                
-                DidStartLevel(LevelHelper);
+                DidStartLevel(LevelSceneRef);
             });
         }
 
@@ -178,26 +157,12 @@ namespace GamePack.Boilerplate.Main
             }
 
             _analyticsDelegate?.GameDidStop(isSuccess, _SceneLevelManager.CurrentLevelIndex);
-/*
-#if ENABLE_ANALYTICS
-            if(isSuccess)
-            {
-                Elephant.LevelCompleted(_SceneLevelManager.CurrentLevelIndex);
-                GameAnalytics.NewProgressionEvent(GAProgressionStatus.Complete, _SceneLevelManager.CurrentLevelIndex.ToString());
-            }
-            else
-            {
-                Elephant.LevelFailed(_SceneLevelManager.CurrentLevelIndex);
-                GameAnalytics.NewProgressionEvent(GAProgressionStatus.Fail, _SceneLevelManager.CurrentLevelIndex.ToString());
-            }
-#endif
-*/
-            
+
             if(isSuccess) _SceneLevelManager.IterateLevel();
             
             _isPlaying = false;
 
-            WillStopLevel(LevelHelper, isSuccess);
+            WillStopLevel(LevelSceneRef, isSuccess);
             
             if(_GameEvents) _GameEvents.Trigger(false, isSuccess);
             if(_TutorialManager) _TutorialManager.Cancel();
@@ -214,7 +179,7 @@ namespace GamePack.Boilerplate.Main
             if(StructureManager.Controllers != null)
                 foreach (var controller in StructureManager.Controllers)
                 {
-                    (controller as ControllerGenericBase<TLevelInitData, TLevelHelper>)?.InternalOnLevelStop();
+                    (controller as ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase>)?.InternalOnLevelStop();
                 }
         }
         
@@ -227,7 +192,7 @@ namespace GamePack.Boilerplate.Main
 
         public override bool IsPlaying => _isPlaying;
 
-        private TLevelHelper LevelHelper => _levelHelper;
+        private TLevelSceneRefBase LevelSceneRef => _levelSceneRef;
 
         // ReSharper disable once UnusedMember.Global
         public SceneLevelManager LevelManager => _SceneLevelManager;
@@ -238,9 +203,9 @@ namespace GamePack.Boilerplate.Main
 
         protected virtual void WillStartLevel(){}
 
-        protected virtual void DidStartLevel(TLevelHelper levelHelper){}
+        protected virtual void DidStartLevel(TLevelSceneRefBase sceneRef){}
 
-        protected virtual void WillStopLevel(TLevelHelper levelHelper, bool isSuccess){}
+        protected virtual void WillStopLevel(TLevelSceneRefBase sceneRef, bool isSuccess){}
 
         protected virtual void DidStopLevel(bool isSuccess){}
 
@@ -258,7 +223,7 @@ namespace GamePack.Boilerplate.Main
 
                 Debug.Log(!_Config
                     ? "Can't find Config for game. Please create one."
-                    : $"Found a Config at {UnityEditor.AssetDatabase.GetAssetPath(_Config)}");
+                    : $"Found a Config at {AssetDatabase.GetAssetPath(_Config)}");
             }
             
             if (!_SceneLevelManager)
@@ -268,18 +233,16 @@ namespace GamePack.Boilerplate.Main
 
                 Debug.LogError(!_SceneLevelManager
                     ? "Can't find SceneLevelManager for game. Create one."
-                    : $"Found a SceneLevelManager at {UnityEditor.AssetDatabase.GetAssetPath(_SceneLevelManager)}");
+                    : $"Found a SceneLevelManager at {AssetDatabase.GetAssetPath(_SceneLevelManager)}");
             }
-
-            // _controllers = FindAllObjects.InScene<ControllerGenericBase<TLevelInitData>>().ToArray();
         }
         
-        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedMember.Local - Used in UI
         private void SelectOrCreateGameEvents()
         {
             if (_GameEvents)
             {
-                UnityEditor.Selection.activeGameObject = _GameEvents.gameObject;
+                Selection.activeGameObject = _GameEvents.gameObject;
                 return;
             }
 
@@ -303,7 +266,7 @@ namespace GamePack.Boilerplate.Main
             }
         }
         
-        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedMember.Local - Used in UI
         private void SelectOrCreateTutorialManager()
         {
             if (_TutorialManager)
@@ -336,6 +299,7 @@ namespace GamePack.Boilerplate.Main
 
         #endregion
         
+        // ReSharper disable once UnusedMember.Global - Used when Analytics is enabled
         public static void SetAnalyticsDelegate(GameAnalyticsDelegateBase analyticsDelegate)
         {
             _analyticsDelegate = analyticsDelegate;

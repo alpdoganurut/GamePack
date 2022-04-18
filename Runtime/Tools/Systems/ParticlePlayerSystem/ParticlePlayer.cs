@@ -17,7 +17,7 @@ namespace GamePack.ParticlePlayerSystem
     {
         private static readonly Color LogColor = Colors.Aqua;
         
-        private static ParticlePlayerConfig _config;
+        private static ParticlePlayerSceneConfig _config;
         
         private static readonly Dictionary<int, PoolController> PoolControllers = new Dictionary<int, PoolController>();
         private static GameObject _managedGameObject;
@@ -51,10 +51,10 @@ namespace GamePack.ParticlePlayerSystem
 
         private static void Initialize()
         {
-            ManagedLog.Log($"{nameof(ParticlePlayerConfig)}.{nameof(InitializeOnLoadMethod)}",
+            ManagedLog.Log($"{nameof(ParticlePlayerSceneConfig)}.{nameof(InitializeOnLoadMethod)}",
                 ManagedLog.Type.Structure, color: LogColor);
             
-            _config = FindAllObjects.InScene<ParticlePlayerConfig>().FirstOrDefault();
+            _config = FindAllObjects.InScene<ParticlePlayerSceneConfig>().FirstOrDefault();
             _managedGameObject = new GameObject($"{nameof(ParticlePlayer)} Helper");
 
             if (!_config)
@@ -64,7 +64,7 @@ namespace GamePack.ParticlePlayerSystem
             }
             else
             {
-                ManagedLog.Log($"Found {nameof(ParticlePlayerConfig)} object in scene. {_config.GetScenePath()}",
+                ManagedLog.Log($"Found {nameof(ParticlePlayerSceneConfig)} object in scene. {_config.GetScenePath()}",
                     color:LogColor);
             }
             
@@ -74,9 +74,9 @@ namespace GamePack.ParticlePlayerSystem
 
         private static void InitiateConfigs()
         {
-            for (var index = 0; index < _config.Configs.Length; index++)
+            for (var index = 0; index < _config.ParticleConfigs.Length; index++)
             {
-                var particleConfig = _config.Configs[index];
+                var particleConfig = _config.ParticleConfigs[index];
                 var newPoolController = _managedGameObject.AddComponent<PoolController>();
                 newPoolController.Init(particleConfig.Prefab, particleConfig.PrefillCount);
                 PoolControllers[index] = newPoolController;
@@ -91,7 +91,7 @@ namespace GamePack.ParticlePlayerSystem
         {
             if (!_config)
             {
-                Debug.LogError($"Create {nameof(ParticlePlayerConfig)} instance in scene before using!");
+                Debug.LogError($"Create {nameof(ParticlePlayerSceneConfig)} instance in scene before using!");
                 return;
             }
             

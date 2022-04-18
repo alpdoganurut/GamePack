@@ -52,7 +52,7 @@ namespace GamePack.Editor.Boilerplate
         /*[PropertyOrder(OrderTabsMid)]
         [TabGroup("Config")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("IsValidGameScene")]*/
-        private static ConfigBase _config;
+        // private static ConfigBase _config;
 
         #endregion
 

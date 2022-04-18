@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace GamePack.Logging
 {
-    [CreateAssetMenu(fileName = "Managed Log Configuration", menuName = "GamePack/ManagedLogConfig", order = 0)]
+    [CreateAssetMenu(fileName = "Managed Log Config", menuName = "GamePack/Managed Log Config", order = 0)]
     public class ManagedLogConfig : ScriptableObject
     {
         [SerializeField, Required] private ManagedLog.Type[] _LogTypes;

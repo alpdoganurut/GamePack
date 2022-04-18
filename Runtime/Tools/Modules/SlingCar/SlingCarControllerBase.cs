@@ -9,7 +9,7 @@ namespace GamePack
     {
         [SerializeField, Required] protected SlingCar _SlingCar;
         [SerializeField, Required] protected ForwardRoad _Road;
-        [SerializeField, Required] private float _DetectionSideSpeedLimit = 0.3f;
+        // [SerializeField, Required] private float _DetectionSideSpeedLimit = 0.3f;
         [SerializeField, Required] private float _FindFrontCarTime = 2f;
         [SerializeField, Required] private LayerMask _LayerMask;
         [SerializeField, ReadOnly] private float _CarLength;
@@ -32,14 +32,6 @@ namespace GamePack
         {
             get => _isActive;
             set => _isActive = value;
-        }
-
-        private void OnValidate()   
-        {
-            // SlingCar.Controller = this;
-            // _Collider = GetComponentInChildren<Collider>();
-            // if(Collider)
-                // _CarLength = Collider.bounds.size.z;
         }
 
         private void FixedUpdate()

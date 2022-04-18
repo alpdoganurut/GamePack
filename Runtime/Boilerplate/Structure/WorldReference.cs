@@ -24,6 +24,11 @@ namespace GamePack.Boilerplate.Structure
             _transform = transform;
         }
 
+        private void OnValidate()
+        {
+            _transform = transform;
+        }
+
 #if USING_SHAPES
         private void OnDrawGizmos()
         {

@@ -1,4 +1,5 @@
 using GamePack.TimerSystem;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -37,7 +38,7 @@ namespace TrickyHands
         {
             _currentStagger?.Cancel();
 
-            _currentStagger = new Operation("Staggering", duration: _StaggerDuration, easeCurve: _StaggerSpeedCurve,
+            _currentStagger = new Operation("Staggering", duration: _StaggerDuration, ease: new EaseCurve(_StaggerSpeedCurve),
                 updateAction: (t) =>
                 {
                     _speed = _baseSpeed * t;

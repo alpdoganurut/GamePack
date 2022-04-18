@@ -19,7 +19,7 @@ namespace GamePack.Examples
             {
                 _Follower.PathPos = val * pathLength;
 
-            }).StartRepeating();
+            }).Start().Repeat();
         }
     }
 }

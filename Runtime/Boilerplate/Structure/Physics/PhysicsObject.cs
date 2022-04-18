@@ -7,10 +7,6 @@ namespace GamePack.Boilerplate.Structure.Physics
     {
         private Rigidbody _rigidbody;
 
-        public enum PhysicsEventPhase
-        {
-            Enter, Stay, Exit
-        }
 
         internal delegate void PhysicsCollisionEvent(PhysicsEventPhase eventPhase, Collision collision);
         internal delegate void PhysicsTriggerEvent(PhysicsEventPhase eventPhase, Collider collider);

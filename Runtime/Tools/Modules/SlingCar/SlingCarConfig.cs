@@ -23,7 +23,7 @@ namespace GamePack
         public float _SoftBreakMultiplier = 4;
         public float _BreakForecastTime = .15f;
         [Space] 
-        [Obsolete, ReadOnly] public float _ImpulseForceMultiplier = 1;
+        [ReadOnly] public float _ImpulseForceMultiplier = 1;
         public float _ImpulseSleepDuration = 1f;
         public float _ControlSleepDuration = .4f;
         [Space]

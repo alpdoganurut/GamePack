@@ -20,7 +20,7 @@ namespace GamePack.Examples.TimerExample
                 updateAction: tVal =>
                 {
                     _Cube.transform.position = Vector3.Lerp(startPos, endPos, tVal);
-                }).StartRepeating();
+                }).Start().Repeat();
         }
 
         [Button]

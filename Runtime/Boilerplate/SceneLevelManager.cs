@@ -103,7 +103,7 @@ namespace GamePack.Boilerplate
 #endif
 
             // Unload if necessary
-            if (_loadedScene.HasValue) UnloadCurrentLevel(LoadScene);
+            if (_loadedScene.HasValue && _loadedScene.Value.IsValid()) UnloadCurrentLevel(LoadScene);
             else LoadScene();
             
             void LoadScene()
@@ -228,12 +228,7 @@ namespace GamePack.Boilerplate
 
             EditorBuildSettings.scenes = allScenes.ToArray();
         }
-        
-        /*[SerializeField, 
-         HideInInspector,
-         InlineButton("@_TestLevel = null", "Clear"),
-         TabGroup("Setup")]*/ 
-        // public SceneAsset _TestLevel;
+
         public static SceneAsset TestLevel;
 
         [SerializeField, InfoBox("Disable to cancel scene loading for testing."), TabGroup("Options")] 

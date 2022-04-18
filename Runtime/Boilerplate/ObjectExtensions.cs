@@ -11,7 +11,7 @@ namespace GamePack.Boilerplate
         // public static T Instantiate<T>(T original, Vector3 position, Quaternion rotation) where T : Object => (T) Object.Instantiate((Object) original, position, rotation);
         public static T InstantiateInLevel<T>(this T obj, Vector3? position = null, Quaternion? rotation = null) where T : Object
         {
-            if(GameBase.LoadedScene == null)
+            if(SceneLevelManager.LoadedScene == null)
             {
                 Debug.LogError($"Game.LoadedScene is null, not instantiating {obj.name}!", obj);
                 return null;
@@ -21,7 +21,7 @@ namespace GamePack.Boilerplate
             
             var go = GetGameObject(newObj);
 
-            SceneManager.MoveGameObjectToScene(go, GameBase.LoadedScene.Value);
+            SceneManager.MoveGameObjectToScene(go, SceneLevelManager.LoadedScene.Value);
 
             return newObj;
         }
@@ -47,14 +47,14 @@ namespace GamePack.Boilerplate
 
         public static T MoveToLevelScene<T>(this T obj) where T : Object
         {
-            if(GameBase.LoadedScene == null)
+            if(SceneLevelManager.LoadedScene == null)
             {
                 Debug.LogError($"Game.LoadedScene is null, not instantiating {obj.name}!", obj);
                 return null;
             }
             
             var go = GetGameObject(obj);
-            SceneManager.MoveGameObjectToScene(go, GameBase.LoadedScene.Value);
+            SceneManager.MoveGameObjectToScene(go, SceneLevelManager.LoadedScene.Value);
 
             return obj;
         }

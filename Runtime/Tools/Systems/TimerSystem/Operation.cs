@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GamePack.Utilities;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -22,8 +23,8 @@ namespace GamePack.TimerSystem
         internal string Name { get; set; }
         protected float? _duration;
         internal float Delay { get; set; }
-        protected EasingFunction.Ease? _ease;
-        protected AnimationCurve _easeCurve;
+        protected EaseCurve? _ease;
+        // protected AnimationCurve _easeCurve;
 
         private readonly OperationAction _action;
         protected OperationUpdateAction _updateAction;
@@ -43,7 +44,7 @@ namespace GamePack.TimerSystem
         
         internal bool IsIgnoreTimeScale { get; private set; }
         
-        public bool IsRunEndActionBeforeCancel { get; private set; }
+        internal bool IsRunEndActionBeforeCancel { get; private set; }
 
         internal float? Duration => _duration < 0 ? null : _duration;
         
@@ -54,8 +55,8 @@ namespace GamePack.TimerSystem
             float? duration = null,
             float delay = 0,
             bool ignoreTimeScale = false,
-            EasingFunction.Ease? ease = null,
-            AnimationCurve easeCurve = null,
+            EaseCurve? ease = null,
+            // AnimationCurve easeCurve = null,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
             OperationEndAction endAction = null,
@@ -77,7 +78,7 @@ namespace GamePack.TimerSystem
             // Ease can't be used if no duration is set
             Assert.IsTrue(ease == null || isDurationSupplied, "Ease can't be used if no duration is set!");
             // There can't be two easing
-            Assert.IsFalse(ease != null && easeCurve != null, "There can't be two easing method!");
+            // Assert.IsFalse(ease != null && easeCurve != null, "There can't be two easing method!");
             
             Name = name;
             _duration = duration;
@@ -85,7 +86,7 @@ namespace GamePack.TimerSystem
             IsIgnoreTimeScale = ignoreTimeScale;
             
             _ease = ease;
-            _easeCurve = easeCurve;
+            // _easeCurve = easeCurve;
             
             _action = action;
             _updateAction = updateAction;
@@ -109,17 +110,8 @@ namespace GamePack.TimerSystem
             return description;
         }
 
-        public OperationTreeDescription StartRepeating(bool ignoreTimeScale = false)
-        {
-            var description = Save();
-            description.StartRepeating(ignoreTimeScale);
-            return description;
-        }
-
         public Operation Add(Operation operation)
         {
-            // Assert.IsTrue(State == OperationState.NotStarted, "Can't add to operation that is started.");
-            
             operation.Parent = this;
             Children.Add(operation);
             return operation;
@@ -130,7 +122,7 @@ namespace GamePack.TimerSystem
             float? duration = null,
             float delay = 0, 
             bool ignoreTimeScale = false,
-            EasingFunction.Ease? ease = null,
+            EaseCurve? ease = null,
             AnimationCurve easeCurve = null,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
@@ -139,7 +131,7 @@ namespace GamePack.TimerSystem
             OperationSkipCondition skipCondition = null,
             OperationFinishCondition finishCondition = null)
         {
-            var newOp = new Operation(name, duration, delay, ignoreTimeScale, ease, easeCurve, action, updateAction, endAction,  waitForCondition, skipCondition,
+            var newOp = new Operation(name, duration, delay, ignoreTimeScale, ease, action, updateAction, endAction,  waitForCondition, skipCondition,
                 finishCondition);
             return Add(newOp);
         }
@@ -169,49 +161,32 @@ namespace GamePack.TimerSystem
             
             // Apply easing
             if (_ease != null)
-                tVal = EasingFunction.GetEasingFunction(_ease.Value)(0, 1, tVal.Value);
-            else if (_easeCurve != null)
-                tVal = _easeCurve.Evaluate(tVal.Value);
+                _ease.Value.Evaluate(tVal.Value);
+                // tVal = EasingFunction.GetEasingFunction(_ease.Value)(0, 1, tVal.Value);
+            // else if (_easeCurve != null)
+                // tVal = _easeCurve.Evaluate(tVal.Value);
             
             _updateAction?.Invoke(tVal.Value);
         }
         
-        internal void SetWaiting()
-        {
-            State = OperationState.Waiting;
-        }
-        
+        internal void SetWaiting() => State = OperationState.Waiting;
+
         internal void Finish()
         {
             State = OperationState.Finished;
             _endAction?.Invoke();
         }
 
-        internal bool IsFinisCondition()
-        {
-            return _finishCondition?.Invoke() ?? false;
-        }
+        internal bool IsFinisCondition() => _finishCondition?.Invoke() ?? false;
 
-        internal bool WaitForCondition()
-        {
-            return _waitForCondition?.Invoke() ?? true;
-        }
+        internal bool WaitForCondition() => _waitForCondition?.Invoke() ?? true;
 
-        internal bool ShouldSkip()
-        {
-            return _skipCondition?.Invoke() ?? false;
-        }
+        internal bool ShouldSkip() => _skipCondition?.Invoke() ?? false;
 
-        internal bool ShouldResolveImmediately()
-        {
-            return !Duration.HasValue && _finishCondition == null;
-        }
+        internal bool ShouldResolveImmediately() => !Duration.HasValue && _finishCondition == null;
 
-        internal void SetIgnoreTimeScale(bool isIgnore)
-        {
-            IsIgnoreTimeScale = isIgnore;
-        }
-        
+        internal void SetIgnoreTimeScale(bool isIgnore) => IsIgnoreTimeScale = isIgnore;
+
         internal void Cancel(bool isRunEndActionBeforeCancel = false)
         {
             IsRunEndActionBeforeCancel = isRunEndActionBeforeCancel; 

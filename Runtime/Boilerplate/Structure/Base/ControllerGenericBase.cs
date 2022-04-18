@@ -4,15 +4,15 @@ using GamePack.Utilities;
 
 namespace GamePack.Boilerplate.Structure
 {
-    public abstract class ControllerGenericBase<TLevelInitData, TLevelHelper> : ControllerBase
-        where TLevelInitData : LevelInitDataBase where TLevelHelper: LevelHelperBase
+    public abstract class ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase> : ControllerBase
+        where TMainSceneRefBase : MainSceneRefBase where TLevelSceneRefBase: LevelSceneRefBase
 
     {
-    internal void InternalOnLevelStart(LevelInitDataBase levelData, TLevelHelper levelHelper)
+    internal void InternalOnLevelStart(MainSceneRefBase levelData, TLevelSceneRefBase levelSceneRef)
     {
         ManagedLog.Log($"{GetType().Name}.{nameof(InternalOnLevelStart)} ({this.GetScenePath()})",
             ManagedLog.Type.Verbose);
-        OnLevelDidStart(levelData as TLevelInitData, levelHelper);
+        OnLevelDidStart(levelData as TMainSceneRefBase, levelSceneRef);
     }
 
     internal void InternalOnLevelStop()
@@ -22,7 +22,7 @@ namespace GamePack.Boilerplate.Structure
         OnLevelDidStop();
     }
 
-    protected virtual void OnLevelDidStart(TLevelInitData levelInitData, TLevelHelper levelHelper)
+    protected virtual void OnLevelDidStart(TMainSceneRefBase mainSceneRef, TLevelSceneRefBase levelSceneRef)
     {
     }
 

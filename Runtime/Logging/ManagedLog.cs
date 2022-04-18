@@ -5,9 +5,6 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using GamePack.UnityUtilities;
-using GamePack.Utilities;
-
-using UnityEngine.PlayerLoop;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
@@ -24,7 +21,7 @@ namespace GamePack.Logging
             Info
         }
         
-        private static int _frameCount;
+        // private static int _frameCount;
         private static int _lastLogFrameCount;
         private static ManagedLogConfig _config;
 
@@ -37,6 +34,7 @@ namespace GamePack.Logging
             }
         }
 
+        /*
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
 #endif
@@ -46,6 +44,7 @@ namespace GamePack.Logging
             
             PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(ManagedLog), LateUpdate);
         }
+        */
 
         [Conditional("UNITY_EDITOR")]
         private static void FindConfig()
@@ -79,29 +78,30 @@ namespace GamePack.Logging
         {
             Log($"{nameof(ManagedLog)}.{nameof(InitializeOnEnterPlayMode)}", Type.Structure);
             
-            _frameCount = 0;
+            // _frameCount = 0;
             _lastLogFrameCount = 0;
         }
 #endif
         
-        private static void LateUpdate()
+        /*private static void LateUpdate()
         {
             _frameCount++;
-        }
+        }*/
         
         [Conditional("UNITY_EDITOR")]
         public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null, bool avoidFrameCount = false)
         {
             var msg = obj.ToString();
             if(Config && Config.LogTypes != null && !Config.LogTypes.Contains(type)) return;  // Log everything if config is not found.
-            
+
+            var frameCount =Time.frameCount;
             if(Application.isPlaying
                && !avoidFrameCount
                && Config.ShowFrameCount
-               && _frameCount > _lastLogFrameCount)
+               && frameCount > _lastLogFrameCount)
             {
-                Debug.Log($"# Frame {_frameCount}");
-                _lastLogFrameCount = _frameCount;
+                Debug.Log($"# Frame {frameCount}");
+                _lastLogFrameCount = frameCount;
             }
 
             if ((!Config || Config.ShowLogType) && type != Type.Default && type != Type.Error)
@@ -128,9 +128,9 @@ namespace GamePack.Logging
             Log(msg, Type.Error, context);
         }
 
-        public static void LogMethod(object obj = null)
+        public static void LogMethod(object obj = null, Type type = Type.Default, Object context = null)
         {
-            Log($"{GetTypeAndMethod()} {obj}");
+            Log($"{GetTypeAndMethod()} {obj}", type, context);
         }
         
         private static string GetTypeAndMethod()
