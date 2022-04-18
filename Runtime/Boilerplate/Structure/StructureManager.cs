@@ -54,7 +54,7 @@ namespace GamePack.Boilerplate.Structure
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode()
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnEnterPlayMode)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             Controllers.Clear();
             Views.Clear();
         }
@@ -76,7 +76,7 @@ namespace GamePack.Boilerplate.Structure
         // This doesn't get called for initial scene in builds.
         private static void SceneManagerOnSceneLoaded(Scene scene, LoadSceneMode arg1)
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneLoaded)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             AddAllManagedObjectsInScene(scene);
             // TODO: We need to keep track of newly instantiated views and destroyed ones
         }
@@ -89,7 +89,7 @@ namespace GamePack.Boilerplate.Structure
 
         private static void SceneManagerOnSceneUnloaded(Scene arg0)
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(SceneManagerOnSceneUnloaded)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             Views.RemoveAll(view => !view);
             Controllers.RemoveAll(controllerBase => !controllerBase);
         }

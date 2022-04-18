@@ -5,8 +5,8 @@ namespace GamePack.Boilerplate.Structure.Physics
 {
     public abstract class PhysicsTriggerListenerBase
     {
-        public Type Type { get; set; }
-        public PhysicsEventPhase? Phase { get; set; }
+        public Type Type { get; protected set; }
+        public PhysicsEventPhase? Phase { get; protected set; }
 
         public abstract void Invoke(Component component, Collider other);
     }
@@ -15,8 +15,15 @@ namespace GamePack.Boilerplate.Structure.Physics
     {
         public delegate void PhysicsTriggerEvent(T component, Collider other);
 
-        public event PhysicsTriggerEvent Event;
+        private readonly PhysicsTriggerEvent _event;
 
-        public override void Invoke(Component component, Collider other) => Event?.Invoke(component as T, other);
+        public PhysicsTriggerListener(Type type, PhysicsEventPhase? phase, PhysicsTriggerEvent physicsTriggerEvent)
+        {
+            Type = type;
+            Phase = phase;
+            _event = physicsTriggerEvent;
+        }
+
+        public override void Invoke(Component component, Collider other) => _event?.Invoke(component as T, other);
     }
 }

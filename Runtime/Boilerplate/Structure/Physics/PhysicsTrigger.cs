@@ -10,19 +10,13 @@ namespace GamePack.Boilerplate.Structure.Physics
     {
         [SerializeField, ReadOnly] private PhysicsObject _PhysicsObject;
 
-        private readonly List<PhysicsTriggerListenerBase> _listeners = new();
+        private readonly List<PhysicsTriggerListenerBase> _listeners = new List<PhysicsTriggerListenerBase>();
         
         private void Awake() => _PhysicsObject.DidTrigger += PhysicsObjectOnDidTrigger;
 
-        public void ListenFor<T>(PhysicsTriggerListener<T>.PhysicsTriggerEvent action, PhysicsEventPhase? phase = null) where T : Component
-        {
-            var listener = new PhysicsTriggerListener<T>();
-            listener.Event += action;
-            listener.Type = typeof(T);
-            listener.Phase = phase;
-            _listeners.Add(listener);
-        }
-        
+        public void ListenFor<T>(PhysicsTriggerListener<T>.PhysicsTriggerEvent action, PhysicsEventPhase? phase = null) where T : Component => 
+            _listeners.Add(new PhysicsTriggerListener<T>(typeof(T), phase, action));
+
         private void PhysicsObjectOnDidTrigger(PhysicsEventPhase phase, Collider other)
         {
             foreach (var listener in _listeners)
@@ -56,7 +50,6 @@ namespace GamePack.Boilerplate.Structure.Physics
             if (!_PhysicsObject)
                 _PhysicsObject = Internal_GameObject.AddComponent<PhysicsObject>();
         }
-    }
 #endif
-
+    }
 }

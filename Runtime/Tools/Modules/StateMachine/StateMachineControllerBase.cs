@@ -6,7 +6,7 @@ namespace GamePack.BasicStateMachineSystem
 {
     public abstract class StateMachineControllerBase<T>: ControllerBase where T: Enum
     {
-        [ShowInInspector, ReadOnly] private BasicStateMachine<T> _stateMachine;
+        [ShowInInspector] private BasicStateMachine<T> _stateMachine;
 
         private void Awake()
         {

@@ -6,7 +6,7 @@ namespace GamePack.Boilerplate.Structure
 {
     public abstract class StructureMonoBehaviourBase : MonoBehaviour
     {
-        private Transform _cachedTransform;
+        // private Transform _cachedTransform;
         private bool _isUpdating;
         
         #region Internal Access
@@ -60,7 +60,7 @@ namespace GamePack.Boilerplate.Structure
         #region Logging Helper Methods
 
         protected void Log(object obj, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null) => ManagedLog.Log(obj, type, context ? context : this);
-        protected void LogMethod(object obj = null, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null) => ManagedLog.LogMethod(obj, type, context);
+        protected void LogMethod(object obj = null, ManagedLog.Type type = ManagedLog.Type.Default, Object context = null) => ManagedLog.LogMethod(obj: obj, type: type, context: context, stackOffset: 1);
 
         #endregion
 

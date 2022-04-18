@@ -43,16 +43,14 @@ namespace GamePack.ParticlePlayerSystem
 
         private static void SceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(SceneManagerOnSceneLoaded)}",
-                ManagedLog.Type.Structure, color: LogColor);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure, color: LogColor);
             if(arg1 != LoadSceneMode.Additive)
                 Initialize();
         }
 
         private static void Initialize()
         {
-            ManagedLog.Log($"{nameof(ParticlePlayerSceneConfig)}.{nameof(InitializeOnLoadMethod)}",
-                ManagedLog.Type.Structure, color: LogColor);
+            ManagedLog.LogMethod(type:ManagedLog.Type.Structure, color: LogColor);
             
             _config = FindAllObjects.InScene<ParticlePlayerSceneConfig>().FirstOrDefault();
             _managedGameObject = new GameObject($"{nameof(ParticlePlayer)} Helper");

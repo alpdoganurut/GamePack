@@ -128,16 +128,16 @@ namespace GamePack.Logging
             Log(msg, Type.Error, context);
         }
 
-        public static void LogMethod(object obj = null, Type type = Type.Default, Object context = null)
+        public static void LogMethod(object obj = null, Type type = Type.Default, Object context = null, Color? color = null, int stackOffset = 0)
         {
-            Log($"{GetTypeAndMethod()} {obj}", type, context);
+            Log($"{GetTypeAndMethod(stackOffset)} {obj}", type, context, color);
         }
         
-        private static string GetTypeAndMethod()
+        private static string GetTypeAndMethod(int stackOffset = 0)
         {
             try
             {
-                var frame = new StackFrame(2);
+                var frame = new StackFrame(2 + stackOffset);
                 var method = frame.GetMethod();
                 var type = method.DeclaringType;
                 return $" ( {type?.Name}.{method.Name} )";

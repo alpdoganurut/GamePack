@@ -28,7 +28,7 @@ namespace GamePack.Utilities
         public float Evaluate(float t) => 
             IsCurve ? _Curve.Evaluate(t) : EasingFunction.GetEasingFunction(_Ease)(0, 1, t);
 
-        public static EaseCurve Linear => new(EasingFunction.Ease.Linear);
+        public static EaseCurve Linear => new EaseCurve(EasingFunction.Ease.Linear);
         
 #if UNITY_EDITOR
         [SerializeField, Required, PropertyOrder(-1)] private bool _HasCustomCurve;

@@ -3,10 +3,7 @@
 using GamePack.TimerSystem;
 using GamePack.Utilities;
 using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
-using JetBrains.Annotations;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace GamePack.Logging
 {
@@ -15,8 +12,7 @@ namespace GamePack.Logging
         private const float Offset = 1;
         private const float Duration = 4f;
         private static readonly Color DefaultColor = Colors.Orangered;
-        // private static EasingFunction.Ease Easing = EasingFunction.Ease.EaseOutSine;
-        private static EaseCurve Easing = new(EasingFunction.Ease.EaseOutSine);
+        private static readonly EaseCurve Easing = new(EasingFunction.Ease.EaseOutSine);
         private static Camera _camera;
         private const float LogOnScreenCameraZ = 5f;
 
@@ -24,10 +20,6 @@ namespace GamePack.Logging
 
         public static void Log(object msg, Vector3? pos = null, Transform localTransform = null, Color? color = null)
         {
-            // var isFollowing = (bool) transform;
-
-            // if (!isFollowing) Assert.IsTrue(pos.HasValue, "pos or transform must be supplied.");
-
             var upwardsMovement = Vector3.up * Offset;
 
             var startPos = pos ?? Vector3.zero;
@@ -41,9 +33,6 @@ namespace GamePack.Logging
             new Operation("World Log", duration: Duration, ease: Easing,
                 updateAction: val =>
                 {
-                    // var updateStartPos = isFollowing ? transform.position + (transformOffset ?? Vector3.zero) : startPos;
-                    // var updateFinalPos = isFollowing ? transform.position + (transformOffset ?? Vector3.zero) + upwardsMovement : finalPos;
-
                     var p = Vector3.Lerp(startPos, finalPos, val);
                     
                     const float cThreshold = .5f;
@@ -52,14 +41,6 @@ namespace GamePack.Logging
                     var c = Color.Lerp(startColor, endColor, cVal);
 
                     Draw.Text(p, msg.ToString(), c, localTransform: localTransform);
-                    
-                    // if (isFollowing)
-                    // {
-                    // }
-                    // else
-                    // {
-                        // Draw.Text(p, msg.ToString(), c);
-                    // }
                 }).Start(true);
         }
 
@@ -71,10 +52,7 @@ namespace GamePack.Logging
                 return;
             }
 
-            // var pos = Camera.ScreenToWorldPoint(new Vector3(Camera.pixelWidth / 2f, Camera.pixelHeight / 2f,
-                // LogOnScreenCameraZ));
             var cameraTransform = Camera.transform;
-            // var offset = pos - cameraTransform.position;
             var localPos = cameraTransform.InverseTransformPoint(
                 Camera.ScreenToWorldPoint(new Vector3(Camera.pixelWidth / 2f, Camera.pixelHeight / 2f,
                     LogOnScreenCameraZ)));

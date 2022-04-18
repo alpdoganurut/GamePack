@@ -1,3 +1,4 @@
+#if USING_SHAPES
 using Shapes;
 using UnityEngine;
 
@@ -32,3 +33,4 @@ namespace GamePack.Utilities.DebugDrawSystem
         }
     }
 }
+#endif

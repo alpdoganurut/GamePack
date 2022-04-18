@@ -19,8 +19,8 @@ namespace GamePack.BasicStateMachineSystem
         private StateMachineChange<T> _stateChange;
         private StateMachineUpdate<T> _stateUpdate;
 
-        [ShowInInspector] private T _currentState;
-        [ShowInInspector] private T _lastState;
+        [ShowInInspector, ReadOnly] private T _currentState;
+        [ShowInInspector, ReadOnly] private T _lastState;
 
         public BasicStateMachine(StateMachineChange<T> stateChange,
             StateMachineUpdate<T> stateUpdate,
