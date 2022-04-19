@@ -1,4 +1,3 @@
-using System;
 using GamePack.Logging;
 using GamePack.Utilities;
 using UnityEngine;
@@ -7,19 +6,10 @@ namespace GamePack.Boilerplate.Structure
 {
     public class View: StructureMonoBehaviourBase
     {
+        #region Private & Internal
+
         private bool _isInitiated;
         private Transform _transform;
-        
-        public bool IsVisible => Internal_GameObject.activeInHierarchy;
-
-        public Transform Transform
-        {
-            get
-            {
-                if(!_isInitiated) Initiate();
-                return _transform;
-            }
-        } 
 
         private void Initiate()
         {
@@ -33,6 +23,21 @@ namespace GamePack.Boilerplate.Structure
         }
 
         internal virtual void Internal_OnUpdate() { }
+
+        #endregion
+
+        #region Public API
+
+        public bool IsVisible => Internal_GameObject.activeInHierarchy;
+
+        public Transform Transform
+        {
+            get
+            {
+                if(!_isInitiated) Initiate();
+                return _transform;
+            }
+        } 
         
         public void DestroyView()
         {
@@ -67,5 +72,7 @@ namespace GamePack.Boilerplate.Structure
             WorldLog.Log(msg, localTransform: transform);
 #endif
         }
+
+        #endregion
     }
 }

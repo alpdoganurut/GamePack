@@ -128,7 +128,7 @@ namespace GamePack.Logging
                 var frame = new StackFrame(2 + stackOffset);
                 var method = frame.GetMethod();
                 var type = method.DeclaringType;
-                return $" ({type?.Name}.{method.Name})";
+                return $"({type?.Name}.{method.Name})";
             }
             catch (Exception e)
             {

@@ -88,7 +88,7 @@ namespace GamePack.Boilerplate.Main
         private static GameAnalyticsDelegateBase _analyticsDelegate;
 
 
-        #region Development - InitializeOnEnterPlayMode
+        /*#region Development - InitializeOnEnterPlayMode
     #if UNITY_EDITOR
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
@@ -96,7 +96,7 @@ namespace GamePack.Boilerplate.Main
             if (options == EnterPlayModeOptions.DisableDomainReload) _staticConfig = null;
         } 
     #endif
-        #endregion
+        #endregion*/
         
         protected virtual void Awake()
         {
