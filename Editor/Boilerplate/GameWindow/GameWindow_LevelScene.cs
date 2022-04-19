@@ -7,7 +7,7 @@ namespace GamePack.Editor.Boilerplate
     {
         #region Level Scene Ref
 
-        [Title("Level Helper")]
+        [Title("Level Scene Ref")]
         [ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden), ShowIf("@_levelSceneRef")]
         private static LevelSceneRefBase _levelSceneRef;
         

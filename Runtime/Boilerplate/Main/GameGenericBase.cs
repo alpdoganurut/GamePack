@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using GamePack.Boilerplate.Structure;
 using GamePack.Boilerplate.Tutorial;
@@ -82,10 +83,13 @@ namespace GamePack.Boilerplate.Main
         
         [ShowInInspector, ReadOnly, PropertyOrder(-1)] private bool _isPlaying;
 
-        [FormerlySerializedAs("_LevelInitData")] [SerializeField, Required] private TMainSceneRefBase _MainSceneRef;
+        [FormerlySerializedAs("_LevelInitData")] 
+        [PropertyOrder(1)]
+        [SerializeField, Required] private TMainSceneRefBase _MainSceneRef;
         
         // ReSharper disable once StaticMemberInGenericType
         private static GameAnalyticsDelegateBase _analyticsDelegate;
+        private GameSessionDelegateBase<TLevelSceneRefBase, TMainSceneRefBase> _gameSessionDelegate;
 
 
         /*#region Development - InitializeOnEnterPlayMode
@@ -122,7 +126,10 @@ namespace GamePack.Boilerplate.Main
             _analyticsDelegate?.GameDidStart(_SceneLevelManager.CurrentLevelIndex);
             _isPlaying = true;
 
+            _gameSessionDelegate?.WillStartLevel(_MainSceneRef);
+#pragma warning disable CS0618
             WillStartLevel();
+#pragma warning restore CS0618
             _SceneLevelManager.LoadCurrentLevelScene(() =>
             {
                 if(_GameEvents) _GameEvents.Trigger(true);
@@ -144,7 +151,10 @@ namespace GamePack.Boilerplate.Main
                         (controller as ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase>)?.InternalOnLevelStart(_MainSceneRef, _levelSceneRef);
                     }
                 
+                _gameSessionDelegate?.DidStartLevel(_MainSceneRef, LevelSceneRef);
+#pragma warning disable CS0618
                 DidStartLevel(LevelSceneRef);
+#pragma warning restore CS0618
             });
         }
 
@@ -162,7 +172,10 @@ namespace GamePack.Boilerplate.Main
             
             _isPlaying = false;
 
+            _gameSessionDelegate?.WillStopLevel(_MainSceneRef, LevelSceneRef, isSuccess);
+#pragma warning disable CS0618
             WillStopLevel(LevelSceneRef, isSuccess);
+#pragma warning restore CS0618
             
             if(_GameEvents) _GameEvents.Trigger(false, isSuccess);
             if(_TutorialManager) _TutorialManager.Cancel();
@@ -172,7 +185,10 @@ namespace GamePack.Boilerplate.Main
             {
                 _SceneLevelManager.UnloadCurrentLevel(() =>
                 {
+                    _gameSessionDelegate?.DidStopLevel(_MainSceneRef, isSuccess);
+#pragma warning disable CS0618
                     DidStopLevel(isSuccess);
+#pragma warning restore CS0618
                 });
             }
             
@@ -197,18 +213,22 @@ namespace GamePack.Boilerplate.Main
         // ReSharper disable once UnusedMember.Global
         public SceneLevelManager LevelManager => _SceneLevelManager;
 
-        protected TMainSceneRefBase MainSceneRef => _MainSceneRef;
+        // protected TMainSceneRefBase MainSceneRef => _MainSceneRef;
 
         #endregion
 
         #region Virtual Game State Callbacks
 
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
         protected virtual void WillStartLevel(){}
 
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
         protected virtual void DidStartLevel(TLevelSceneRefBase sceneRef){}
 
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
         protected virtual void WillStopLevel(TLevelSceneRefBase sceneRef, bool isSuccess){}
 
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
         protected virtual void DidStopLevel(bool isSuccess){}
 
         #endregion
@@ -302,9 +322,13 @@ namespace GamePack.Boilerplate.Main
         #endregion
         
         // ReSharper disable once UnusedMember.Global - Used when Analytics is enabled
-        public static void SetAnalyticsDelegate(GameAnalyticsDelegateBase analyticsDelegate)
-        {
+        public static void SetAnalyticsDelegate(GameAnalyticsDelegateBase analyticsDelegate) => 
             _analyticsDelegate = analyticsDelegate;
+
+        protected void SetGameSessionDelegate(GameSessionDelegateBase<TLevelSceneRefBase, TMainSceneRefBase> gameSessionDelegate)
+        {
+            _gameSessionDelegate = gameSessionDelegate;
+            _gameSessionDelegate?.InitiateMainScene(_MainSceneRef);
         }
     }
 }
