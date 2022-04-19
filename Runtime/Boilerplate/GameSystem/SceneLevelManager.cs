@@ -151,7 +151,7 @@ namespace GamePack
             }
 #endif
             
-            if(!_loadedScene.HasValue || _loadedScene.Value.IsValid())
+            if(!_loadedScene.HasValue || !_loadedScene.Value.IsValid())
             {
                 Debug.LogError("!_loadedScene.HasValue failed when unloading level. Returning but not sure if should all just callback immediately.");
                 didUnload?.Invoke();
