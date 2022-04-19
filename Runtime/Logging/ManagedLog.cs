@@ -34,18 +34,6 @@ namespace GamePack.Logging
             }
         }
 
-        /*
-#if UNITY_EDITOR
-        [InitializeOnLoadMethod]
-#endif
-        private static void InitializeOnLoadMethod()
-        {
-            Log($"{nameof(ManagedLog)}.{nameof(InitializeOnLoadMethod)}", Type.Structure);
-            
-            PlayerLoopUtilities.AppendToPlayerLoop<PostLateUpdate>(typeof(ManagedLog), LateUpdate);
-        }
-        */
-
         [Conditional("UNITY_EDITOR")]
         private static void FindConfig()
         {
@@ -76,7 +64,7 @@ namespace GamePack.Logging
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
-            Log($"{nameof(ManagedLog)}.{nameof(InitializeOnEnterPlayMode)}", Type.Structure);
+            LogMethod(type: Type.Structure);
             
             // _frameCount = 0;
             _lastLogFrameCount = 0;
@@ -140,7 +128,7 @@ namespace GamePack.Logging
                 var frame = new StackFrame(2 + stackOffset);
                 var method = frame.GetMethod();
                 var type = method.DeclaringType;
-                return $" ( {type?.Name}.{method.Name} )";
+                return $" ({type?.Name}.{method.Name})";
             }
             catch (Exception e)
             {

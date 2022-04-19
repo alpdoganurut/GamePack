@@ -35,8 +35,7 @@ namespace GamePack.ParticlePlayerSystem
 #endif
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(ParticlePlayer)}.{nameof(InitializeOnLoadMethod)}",
-                ManagedLog.Type.Structure, color: LogColor);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure, color: LogColor);
 
             SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
         }
@@ -53,7 +52,6 @@ namespace GamePack.ParticlePlayerSystem
             ManagedLog.LogMethod(type:ManagedLog.Type.Structure, color: LogColor);
             
             _config = FindAllObjects.InScene<ParticlePlayerSceneConfig>().FirstOrDefault();
-            _managedGameObject = new GameObject($"{nameof(ParticlePlayer)} Helper");
 
             if (!_config)
             {
@@ -65,9 +63,11 @@ namespace GamePack.ParticlePlayerSystem
                 ManagedLog.Log($"Found {nameof(ParticlePlayerSceneConfig)} object in scene. {_config.GetScenePath()}",
                     color:LogColor);
             }
+
+            if (!_config) return;
             
-            if(_config)
-                InitiateConfigs();
+            _managedGameObject = new GameObject($"{nameof(ParticlePlayer)}Helper");
+            InitiateConfigs();
         }
 
         private static void InitiateConfigs()

@@ -31,7 +31,7 @@ namespace GamePack.BasicStateMachineSystem
 #endif
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(BasicStateMachineEngine)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
 
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(BasicStateMachineEngine), Update);
 #if UNITY_EDITOR
@@ -43,7 +43,7 @@ namespace GamePack.BasicStateMachineSystem
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
-            ManagedLog.Log($"{nameof(BasicStateMachineEngine)}.{nameof(InitializeOnEnterPlayMode)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             StateMachines.Clear();
         }
 #endif
@@ -52,7 +52,7 @@ namespace GamePack.BasicStateMachineSystem
         private static void OnEditorApplicationOnPlayModeStateChanged(PlayModeStateChange change)
         {
             if (change != PlayModeStateChange.ExitingPlayMode) return;
-            ManagedLog.Log($"{nameof(BasicStateMachineEngine)}.{nameof(OnEditorApplicationOnPlayModeStateChanged)} {PlayModeStateChange.ExitingPlayMode}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             StateMachines.Clear();
         }
 #endif

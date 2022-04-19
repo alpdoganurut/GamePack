@@ -8,14 +8,14 @@ namespace GamePack.Editor.Boilerplate
 {
     public partial class GameWindow
     {
-        [PropertyOrder(GameWindow.OrderTop)]
+        [PropertyOrder(GameWindow.OrderGlobalTop)]
         [Button(size: ButtonSizes.Large), HideIf("IsValidGameSceneAndMain")]
         private void OpenMainScene()
         {
             EditorSceneManager.OpenScene(MainSceneAssetPath);
         }
         
-        [PropertyOrder(GameWindow.OrderTop)]
+        [PropertyOrder(GameWindow.OrderGlobalTop)]
         [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene"), ShowIf("@_levelSceneRef")]
         private void TestThisLevel()
         {
@@ -57,7 +57,7 @@ namespace GamePack.Editor.Boilerplate
 
         [InfoBox("GameName is not set.", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
         [VerticalGroup("row1/left")]
-        [PropertyOrder(GameWindow.OrderTop)]
+        [PropertyOrder(GameWindow.OrderGlobalTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain")]
         private string GameName
         {
@@ -67,7 +67,7 @@ namespace GamePack.Editor.Boilerplate
         
         [InfoBox("GameIdentifier is not set.", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
         [VerticalGroup("row1/left")]
-        [PropertyOrder(GameWindow.OrderTop)]
+        [PropertyOrder(GameWindow.OrderGlobalTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain")]
         private string GameIdentifier
         {
@@ -95,7 +95,7 @@ namespace GamePack.Editor.Boilerplate
 
         // [InfoBox("Icon is empty", InfoMessageType.Error, VisibleIf = "@GameIcon == null")]
         [HideLabel, HorizontalGroup("row1", 50), VerticalGroup("row1/right")]
-        [PropertyOrder(GameWindow.OrderTop)]
+        [PropertyOrder(GameWindow.OrderGlobalTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain"), PreviewField(50, ObjectFieldAlignment.Right)]
         private Texture2D GameIcon
         {

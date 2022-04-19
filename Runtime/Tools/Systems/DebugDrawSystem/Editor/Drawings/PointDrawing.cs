@@ -11,16 +11,18 @@ namespace GamePack.Utilities.DebugDrawSystem
         private readonly float _thickness;
         private readonly float _size;
         private readonly Transform _localTransform;
+        private readonly bool _isAxisColored;
 
         public PointDrawing(Vector3 pos, float size = DrawInstructionDefaults.DefaultPointSize,
             float thickness = DrawInstructionDefaults.DefaultLineThickness, Color? color = null,
-            Transform localTransform = null)
+            Transform localTransform = null, bool isAxisColored = false)
         {
             _pos = pos;
             _size = size;
             _thickness = thickness;
             _color = color ?? DrawInstructionDefaults.DefaultColor;
             _localTransform = localTransform;
+            _isAxisColored = isAxisColored;
         }
 
         void IDrawing.Draw(Camera camera)
@@ -45,9 +47,9 @@ namespace GamePack.Utilities.DebugDrawSystem
                 back = _localTransform.TransformPoint(back);
             }
             
-            Draw.Line(top, bottom, _thickness, _color);
-            Draw.Line(left, right, _thickness, _color);
-            Draw.Line(front, back, _thickness, _color);
+            Draw.Line(top, bottom, _thickness, _isAxisColored ? DrawInstructionDefaults.AxisYColor : _color);
+            Draw.Line(left, right, _thickness, _isAxisColored ? DrawInstructionDefaults.AxisXColor :_color);
+            Draw.Line(front, back, _thickness, _isAxisColored ? DrawInstructionDefaults.AxisZColor :_color);
         }
 
     }

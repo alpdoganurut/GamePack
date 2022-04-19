@@ -197,6 +197,8 @@ namespace GamePack.Boilerplate.Main
         // ReSharper disable once UnusedMember.Global
         public SceneLevelManager LevelManager => _SceneLevelManager;
 
+        protected TMainSceneRefBase MainSceneRef => _MainSceneRef;
+
         #endregion
 
         #region Virtual Game State Callbacks

@@ -37,7 +37,7 @@ namespace GamePack.Boilerplate.Structure
 #endif
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(StructureManager)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             SceneManager.sceneLoaded += SceneManagerOnSceneLoaded;
             SceneManager.sceneUnloaded += SceneManagerOnSceneUnloaded;
             
@@ -134,20 +134,20 @@ namespace GamePack.Boilerplate.Structure
             }
             
             if(addedCount > 0)
-                ManagedLog.Log($"Added {addedCount} {typeof(T).Name}", ManagedLog.Type.Structure);
+                ManagedLog.Log($"Added {addedCount} {typeof(T).Name} from {arg0.name} scene.", ManagedLog.Type.Structure);
         }
         
         private static void DrawView(View view)
         {
 #if USING_SHAPES
             if (ShowViewAxes)
-                Draw.Axis(Vector3.zero, view.transform);
+                Draw.Axis(Vector3.zero, view.Internal_Transform);
             if (ShowViewNames)
                 Draw.Text(Vector3.zero, $"{view.GetScenePath()} ({view.GetType().Name})",
                     color: view.IsVisible ? Color.white : Colors.DimGray,
                     textAlign: TextAlign.Bottom,
                     fontSize: .5f,
-                    localTransform: view.transform);
+                    localTransform: view.Internal_Transform);
 #endif
         }
         

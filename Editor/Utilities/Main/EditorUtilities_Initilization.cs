@@ -12,7 +12,7 @@ namespace GamePack.Editor.Utilities
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(ManagedLog)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
 
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), LateUpdate);
         }

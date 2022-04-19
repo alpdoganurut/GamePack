@@ -54,7 +54,7 @@ namespace GamePack.TimerSystem
 #endif
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(TimerEngine)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             PlayerLoopUtilities.AppendToPlayerLoop<Update.ScriptRunBehaviourUpdate>(typeof(ManagedLog), Update);
         }
 
@@ -62,7 +62,7 @@ namespace GamePack.TimerSystem
         [InitializeOnEnterPlayMode]
         private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
         {
-            ManagedLog.Log($"{nameof(TimerEngine)}.{nameof(InitializeOnEnterPlayMode)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
 
             // Clear all lists
             RootOperations.Clear();

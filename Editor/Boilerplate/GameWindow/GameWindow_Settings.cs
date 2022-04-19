@@ -4,6 +4,7 @@ using System.Linq;
 using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
+using UnityEditor.PackageManager.UI;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ namespace GamePack.Editor.Boilerplate
         private const string EnableAnalyticsDefineSymbol = "ENABLE_ANALYTICS";
         private const string LoggingDefineSymbol = "GAME_WINDOW_LOGGING";
         private const string TimerEngineDefineSymbol = "TIMER_ENABLE_LOG";
+        private const string UsingShapesDefineSymbol = "USING_SHAPES";
 
         private const string VersionFileName = "version.txt";
         
@@ -21,7 +23,8 @@ namespace GamePack.Editor.Boilerplate
         private const string PackagesDirectoryName = "Packages";
 
         [TabGroup("Settings")]
-        [ShowInInspector, PropertyOrder(GameWindow.OrderTabsBottom)] private string BoilerplateVersion
+        [ShowInInspector, PropertyOrder(OrderTabsBottom + OrderTop)] 
+        private string BoilerplateVersion
         {
             get
             {
@@ -48,34 +51,38 @@ namespace GamePack.Editor.Boilerplate
                 return null;
             }
         }
-
         [TabGroup("Settings")]
-        [Button]
-        private void UpdateGamePack()
+        [ShowInInspector, PropertyOrder(OrderTabsBottom + OrderTop)] 
+        private string GamePackVersion
         {
-            if (!EditorUtility.DisplayDialog("Update Packages", "This will delete packages.lock. Continue?", "Update",
-                "Cancel")) return;
-
-            var directoryInfo = Directory.GetParent(Application.dataPath);
-            
-            if(directoryInfo == null)
+            get
             {
-                Debug.LogError("Failed to find packages.lock");
-                return;
+                try
+                {
+                    var info = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(GameWindow).Assembly);
+                    return info.version;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+
+                return "";
             }
-
-            var path = Path.Combine(directoryInfo.FullName, PackagesDirectoryName, PackagesLockJsonName) ;
-            File.Delete(path);
-            UnityEditor.PackageManager.Client.Resolve();
-        }
-
-        [TabGroup("Settings")]
-        [Button]
-        private void RefreshWindow()
-        {
-            Init();
         }
         
+        [PropertySpace]
+        
+        [PropertyOrder(OrderTabsBottom)]
+        [TabGroup("Settings"), ShowInInspector, InlineEditor]
+        private ProjectConfig ProjectConfig
+        {
+            get => ProjectConfig.Instance;
+            // ReSharper disable once ValueParameterNotUsed
+            set{}
+        }
+        
+        [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool DisableReloadDomain
         {
@@ -89,6 +96,7 @@ namespace GamePack.Editor.Boilerplate
             }
         }
         
+        [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool Analytics
         {
@@ -97,6 +105,16 @@ namespace GamePack.Editor.Boilerplate
             set => SetDefineSymbol(value, EnableAnalyticsDefineSymbol);
         }
         
+        [PropertyOrder(OrderTabsBottom)]
+        [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
+        private bool DebugDraw
+        {
+            get =>
+                IsDefineSymbolEnabled(UsingShapesDefineSymbol);
+            set => SetDefineSymbol(value, UsingShapesDefineSymbol);
+        }
+        
+        [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, ShowIf("@_game != null")]
         private bool GameVisible
         {
@@ -122,15 +140,8 @@ namespace GamePack.Editor.Boilerplate
             }
         }
 
-        [TabGroup("Settings"), ShowInInspector, InlineEditor]
-        private ProjectConfig ProjectConfig
-        {
-            get => ProjectConfig.Instance;
-            // ReSharper disable once ValueParameterNotUsed
-            set{}
-        }
-
         [Title("Debug")]
+        [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool GameWindowLogging
         {
@@ -139,6 +150,7 @@ namespace GamePack.Editor.Boilerplate
             set => SetDefineSymbol(value, LoggingDefineSymbol);
         }
         
+        [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool TimerEngineLogging
         {
@@ -146,6 +158,8 @@ namespace GamePack.Editor.Boilerplate
                 IsDefineSymbolEnabled(TimerEngineDefineSymbol);
             set => SetDefineSymbol(value, TimerEngineDefineSymbol);
         }
+        
+        [PropertyOrder(OrderTabsBottom)]
         [ShowInInspector, TabGroup("Settings")]
         [InlineEditor(InlineEditorObjectFieldModes.Foldout)]
         private ManagedLogConfig ManagedLogConfig
@@ -154,6 +168,36 @@ namespace GamePack.Editor.Boilerplate
             set
             {
             }
+        }
+        
+        // Buttons
+        [PropertyOrder(OrderTabsBottom + OrderBottom)]
+        [TabGroup("Settings")]
+        [Button]
+        private void UpdateGamePack()
+        {
+            if (!EditorUtility.DisplayDialog("Update Packages", "This will delete packages.lock. Continue?", "Update",
+                    "Cancel")) return;
+
+            var directoryInfo = Directory.GetParent(Application.dataPath);
+            
+            if(directoryInfo == null)
+            {
+                Debug.LogError("Failed to find packages.lock");
+                return;
+            }
+
+            var path = Path.Combine(directoryInfo.FullName, PackagesDirectoryName, PackagesLockJsonName) ;
+            File.Delete(path);
+            UnityEditor.PackageManager.Client.Resolve();
+        }
+
+        [PropertyOrder(OrderTabsBottom + OrderBottom)]
+        [TabGroup("Settings")]
+        [Button]
+        private void RefreshWindow()
+        {
+            Init();
         }
 
         private static bool IsDefineSymbolEnabled(string symbol)

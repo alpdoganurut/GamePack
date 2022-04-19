@@ -6,8 +6,10 @@ using UnityEngine;
 
 namespace GamePack.Boilerplate.Structure
 {
-    public class WorldReference: StructureMonoBehaviourBase
+    public class Ref: StructureMonoBehaviourBase
     {
+        private const string Prefix = "[Ref]";
+
         private Transform _transform;
 
         public Vector3 Position
@@ -21,19 +23,25 @@ namespace GamePack.Boilerplate.Structure
 
         private void Awake()
         {
-            _transform = transform;
+            _transform = Internal_Transform;
         }
 
         private void OnValidate()
         {
-            _transform = transform;
+            _transform = Internal_Transform;
+            
+            // Add prefix
+            if (!name.Contains(Prefix))
+            {
+                name = $"{Prefix} {name}";
+            }
         }
 
 #if USING_SHAPES
         private void OnDrawGizmos()
         {
-            Draw.Axis(Vector3.zero, transform);
-            Draw.Text(Position, $"{name}", fontSize: 3, color: Colors.Yellow);
+            Draw.Axis(Vector3.zero, Internal_Transform);
+            Draw.Text(Position - new Vector3(0, 0.2f, 0), $"{name}", color: Colors.Yellow);
         }
 #endif
 

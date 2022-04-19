@@ -6,14 +6,13 @@ namespace GamePack.Boilerplate.Structure
 {
     public abstract class StructureMonoBehaviourBase : MonoBehaviour
     {
-        // private Transform _cachedTransform;
         private bool _isUpdating;
         
         #region Internal Access
 
-        private protected Transform Internal_Transform => transform;
+        internal Transform Internal_Transform => base.transform;
         
-        private protected GameObject Internal_GameObject => base.gameObject;
+        internal GameObject Internal_GameObject => base.gameObject;
 
         #endregion
         
@@ -35,7 +34,7 @@ namespace GamePack.Boilerplate.Structure
             get
             {
                 
-                Debug.LogWarning($"Shouldn't access {nameof(gameObject)} of {nameof(ControllerBase)}");
+                Debug.LogWarning($"Shouldn't access {nameof(transform)} of {nameof(ControllerBase)}");
                 return base.transform;
             }
         }

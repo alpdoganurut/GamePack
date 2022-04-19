@@ -17,14 +17,22 @@ namespace GamePack.Editor.Boilerplate
         private static event Action EnterPlayCallback;
         private static Scene _scene;
         
-        private const int OrderTop = -20;
-        private const int OrderTopMid = -10;
-        private const int OrderTabsTop = -3;
-        private const int OrderTabsMid = -2;
-        private const int OrderTabsBottom = -1;
-        private const int OrderDefault = 0;
-        private const int OrderBottomMid = 10;
-        private const int OrderBottom = 20;
+        // private const int OrderTopMid = -10;
+        // private const int OrderBottomMid = 10;
+        
+        // private const int OrderGlobalTop = -1;
+        
+        private const int OrderGlobalTop = -200;
+        private const int OrderGlobalBottom = 200;
+        
+        private const int OrderTabsTop = -100;
+        private const int OrderTabsMid = 0;
+        private const int OrderTabsBottom = 100;
+        
+        private const int OrderTop = -2;
+        private const int OrderTopMid = -1;
+        private const int OrderBottomMid = 1;
+        private const int OrderBottom = 2;
         
         public const string MainSceneAssetPath = "Assets/01_Scenes/main.unity";
         private const string NotSetProductName = "GAME_NAME_NOT_SET";
@@ -94,7 +102,7 @@ namespace GamePack.Editor.Boilerplate
         [Conditional("GAME_WINDOW_LOGGING")]
         private static void Log(object msg)
         {
-            ManagedLog.Log(msg, color: Colors.PowderBlue, type: ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(msg, color: Colors.PowderBlue, type: ManagedLog.Type.Structure, stackOffset: 1);
         }
     }
 }

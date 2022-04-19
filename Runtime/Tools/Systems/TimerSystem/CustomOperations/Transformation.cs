@@ -6,7 +6,7 @@ using UnityEngine.Assertions;
 
 namespace GamePack.TimerSystem
 {
-    public class TransformChangeOperation: Operation
+    public class Transformation: Operation
     {
         private readonly Transform _transform;
         private readonly float? _suppliedDuration;
@@ -32,14 +32,14 @@ namespace GamePack.TimerSystem
         private readonly bool _isRotate;
         private readonly bool _isScale;
 
-        public TransformChangeOperation(
+        public Transformation(
             Transform transform = null,
             float? duration = null,
             float? moveSpeed = null,
             Vector3? targetPos = null, [CanBeNull] Transform targetPosRef = null, Func<Vector3> targetPosAction = null,
             Quaternion? targetRot = null, [CanBeNull] Transform targetRotRef = null,
             Vector3? targetScale = null, [CanBeNull] Transform targetScaleRef = null,
-            EaseCurve? ease = null,/* AnimationCurve easeCurve = null,*/
+            EaseCurve? ease = null,
             string name = null)
         {
             _isMove = targetPos != null || targetPosRef || targetPosAction != null;
@@ -76,7 +76,7 @@ namespace GamePack.TimerSystem
             _ease = ease;
             // _easeCurve = easeCurve;
             
-            Name = name ?? $"{(_transform ? _transform.name + " "  : "")} {nameof(TransformChangeOperation)}";
+            Name = name ?? $"{(_transform ? _transform.name + " "  : "")} {nameof(Transformation)}";
             
             _updateAction = UpdateAction;
         }
@@ -95,7 +95,7 @@ namespace GamePack.TimerSystem
         private void UpdateAction(float tVal)
         {
             // ReSharper disable once CompareOfFloatsByEqualityOperator
-            Assert.IsTrue(tVal != NullFloatValue, $"tVal has no value in {nameof(TransformChangeOperation)}. This points to an internal err ");
+            Assert.IsTrue(tVal != NullFloatValue, $"tVal has no value in {nameof(Transformation)}. This points to an internal err ");
             if (!_transform)
             {
                 Debug.LogError($"{_transform} is destroyed.");
@@ -161,9 +161,9 @@ namespace GamePack.TimerSystem
             return Vector3.Lerp(_initialScale, tPScale, tVal);
         }
 
-        public static TransformChangeOperation Match(Transform transform, Transform targetTransform, float duration)
+        public static Transformation Match(Transform transform, Transform targetTransform, float duration)
         {
-            return new TransformChangeOperation(transform, duration: duration,
+            return new Transformation(transform, duration: duration,
                 targetPosRef: targetTransform,
                 targetRotRef: targetTransform, 
                 targetScaleRef: targetTransform);

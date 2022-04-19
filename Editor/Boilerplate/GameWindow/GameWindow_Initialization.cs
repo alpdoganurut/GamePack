@@ -47,7 +47,7 @@ namespace GamePack.Editor.Boilerplate
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
-            ManagedLog.Log($"{nameof(GameWindow)}.{nameof(InitializeOnLoadMethod)}", ManagedLog.Type.Structure);
+            ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             EditorSceneManager.activeSceneChangedInEditMode += OnActiveSceneChangedInEditMode;
             InitScene(SceneManager.GetActiveScene());
         }

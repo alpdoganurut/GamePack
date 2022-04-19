@@ -107,10 +107,10 @@ namespace GamePack.Utilities.DebugDrawSystem
             // Default Drawings
             if (SHOW_ORIGIN_DATA)
             {
+                DefaultDrawings.Add(new PointDrawing(Vector3.zero, .5f, 0.02f, isAxisColored: true));
                 DefaultDrawings.Add(new TextDrawing(new Vector3(.02f, .01f), nameof(DebugDraw),
                     new Color(1f, 0.84f, 0.2f), fontSize: .5f,
                     textAlign: TextAlign.BottomLeft, lookAtCamera: false)); // Not working consistently, maybe just in edit mode
-                DefaultDrawings.Add(new PointDrawing(Vector3.zero, .5f, 0.02f, new Color(1f, 0.84f, 0.2f, .5f)));
             }
         }
 

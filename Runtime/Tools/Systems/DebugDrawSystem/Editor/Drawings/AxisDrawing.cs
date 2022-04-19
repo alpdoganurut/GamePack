@@ -35,9 +35,9 @@ namespace GamePack.Utilities.DebugDrawSystem
                 center = _localTransform.TransformPoint(center);
             }
             
-            Draw.Line(center, top, DrawInstructionDefaults.DefaultLineThickness, Colors.Green);
-            Draw.Line(center, right, DrawInstructionDefaults.DefaultLineThickness, Colors.Red);
-            Draw.Line(center, front, DrawInstructionDefaults.DefaultLineThickness, Colors.Blue);
+            Draw.Line(center, top, DrawInstructionDefaults.DefaultLineThickness, DrawInstructionDefaults.AxisYColor);
+            Draw.Line(center, right, DrawInstructionDefaults.DefaultLineThickness, DrawInstructionDefaults.AxisXColor);
+            Draw.Line(center, front, DrawInstructionDefaults.DefaultLineThickness, DrawInstructionDefaults.AxisZColor);
         }
     }
 }
