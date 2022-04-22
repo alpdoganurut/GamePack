@@ -35,6 +35,12 @@ namespace GamePack.TimerSystem
         {
             Log($"Adding operation {operation.Name}, delay: {operation.Delay}, ignoreTimeScale: {operation.IsIgnoreTimeScale}");
             
+            if (operation.Delay == 0)
+            {
+                RunOperation(operation);
+                return;
+            }
+            
             RootOperations.Add(operation);
             RootOperationTimes.Add(GetTimeForOperation(operation) + operation.Delay);
         }
