@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace GamePack.Tools.Helper.PhysicsListeners
 {
+    [Obsolete]
     public class TriggerListener: MonoBehaviour
     {
         public event Action<Collider> Enter;

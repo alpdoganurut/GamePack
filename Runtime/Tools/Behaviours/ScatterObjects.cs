@@ -2,8 +2,8 @@
 
 using System;
 using System.Linq;
-using GamePack.Timer;
-using GamePack.UnityUtilities.Vendor;
+using GamePack.TimerSystem;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;

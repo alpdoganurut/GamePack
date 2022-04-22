@@ -1,8 +1,9 @@
 using System;
 using GamePack.TweenAlphaSetActive;
+
 // ReSharper disable InconsistentNaming
 
-namespace Boilerplate.Base
+namespace GamePack.Boilerplate.Tutorial
 {
     [Serializable]
     public struct TutorialConfig

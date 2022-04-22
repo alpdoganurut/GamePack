@@ -1,12 +1,10 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using GamePack.TweenAlphaSetActive;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
-namespace HexGames
+namespace GamePack.Boilerplate
 {
     public class GameEvents: MonoBehaviour
     {

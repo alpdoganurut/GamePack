@@ -1,6 +1,6 @@
 {
   "name": "com.alpdoganurut.gamepack",
-  "version": "0.0.1",
+  "version": "1.2.0",
   "displayName": "GamePack",
   "description": "This is the collection of reusable modules to be used in game development.",
   "unity": "2019.1",

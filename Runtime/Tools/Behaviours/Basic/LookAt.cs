@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Tools.Behaviour
 {
     /// <summary>
-    /// Very basic script to make something look at something constantly.
+    /// Basic script to make something look at something constantly.
     /// </summary>
     public class LookAt: MonoBehaviour
     {

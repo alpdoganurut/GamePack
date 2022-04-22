@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace GamePack.Tools.Helper.PhysicsListeners
 {
+    [Obsolete]
     public class CollisionListener: MonoBehaviour
     {
         public event Action<Collision> Enter;

@@ -1,14 +1,15 @@
-using GamePack.Timer;
+using GamePack.TimerSystem;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.TimerExample
+namespace GamePack.Examples.TimerExample
 {
     public class TimerExample: MonoBehaviour
     {
         [SerializeField, Required] private bool  _IsSkip;
         [SerializeField, Required] private GameObject _ObjectToMove;
-        [SerializeField] private EasingFunction.Ease _MoveObjectEase;
+        [SerializeField] private EaseCurve _MoveObjectEase = EaseCurve.Linear;
         [SerializeField] private float _InitialDelay = 2;
         [SerializeField, Required] private bool _IgnoreTimeScale;
         [SerializeField, Required] private bool _IsRepeat;
@@ -67,9 +68,11 @@ namespace GamePack.TimerExample
                     }))
                 .Save();
             
-            if(_IsRepeat) _operationDescription.RepeatInfinite();
-            
-            _operationDescription.Start(ignoreTimeScale:_IgnoreTimeScale);
+            if(_IsRepeat) _operationDescription.Start(_IgnoreTimeScale).Repeat();
+            else
+            {
+                _operationDescription.Start(_IgnoreTimeScale);
+            }
         }
     }
 }

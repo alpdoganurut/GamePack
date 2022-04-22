@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using GamePack.Logging;
 using UnityEngine;
 
 namespace GamePack.UnityUtilities
@@ -29,7 +30,12 @@ namespace GamePack.UnityUtilities
 
         public static void Stop(Coroutine coroutine)
         {
-            _runner.StopCoroutine(coroutine);
+            if (coroutine == null)
+            {
+                ManagedLog.LogError($"Tried to stop a null coroutine.");
+                return;
+            }
+            Runner.StopCoroutine(coroutine);
         }
         
         private static IEnumerator RunMultipleRoutine(Action callback, params IEnumerator[] coroutines)

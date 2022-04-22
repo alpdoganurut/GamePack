@@ -32,9 +32,6 @@ namespace GamePack.UnityUtilities
         /// <returns></returns>
         public static List<T> InScene<T>() where T: Component
         {
-            
-            // foreach (var go in Resources.FindObjectsOfTypeAll(typeof(GameObject)) as GameObject[]) // Original code from
-
             return Resources.FindObjectsOfTypeAll<T>()
 #if UNITY_EDITOR
                 .Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject) && !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave))

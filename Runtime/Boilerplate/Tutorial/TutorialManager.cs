@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using Boilerplate.Base;
-using GamePack.Timer;
+using GamePack.TimerSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Boilerplate.Tutorial
 {
     public class TutorialManager: MonoBehaviour
     {

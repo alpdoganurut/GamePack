@@ -19,64 +19,7 @@ namespace GamePack.Editor.Utilities
         {
             GetWindow<EditorUtilities>();
         }
-
-        #region Rename
-
-        private const string GenericGameObjectName = "GameObject";
-
-        [SerializeField, TabGroup("Rename")] private string _Separator = "-";
-        [SerializeField, TabGroup("Rename")] private bool _ForceRename;
-
-        [Button, TabGroup("Rename")]
-        private void RenameAll()
-        {
-            foreach (var gObject in FindObjectsOfType<GameObject>())
-            {
-                RenameGameObject(gObject);
-            }
-        }
-
-        private void RenameGameObject(GameObject gObject)
-        {
-            var components = gObject.GetComponents<MonoBehaviour>().Where(behaviour =>
-            {
-                // Filter components with UnityEngine namespace
-                var type = behaviour.GetType();
-                var baseNameSpace = type.Namespace?.Split('.')[0];
-
-                return baseNameSpace == null || baseNameSpace != "UnityEngine";
-            }).ToArray();
-
-            // Return if no component exists
-            if (!components.Any()) return;
-
-            Undo.RecordObjects(components, "BaseEditorUtilities/Rename ");
-
-            var suffix = "";
-            foreach (var component in components)
-            {
-                if (suffix != "") suffix += ", ";
-                suffix += $"{component.GetType().Name}";
-            }
-
-            // Check if name already contains suffix
-            if (!_ForceRename && gObject.name.Length >= suffix.Length &&
-                gObject.name.Substring(gObject.name.Length - suffix.Length, suffix.Length) == suffix) return;
-
-            var oldName = gObject.name;
-
-            // gObject.name = gObject.name.TrimEnd();
-            gObject.name = gObject.name.Trim();
-            if (gObject.name == GenericGameObjectName) gObject.name = "";
-
-            // Don't use separator if name is empty
-            var separator = string.IsNullOrWhiteSpace(gObject.name) ? "" : $" {_Separator} ";
-            gObject.name += separator + suffix;
-            Debug.Log($"Renamed {oldName} to {gObject.name}!");
-        }
-
-        #endregion
-
+        
         #region Replace
 
         [Button, TabGroup("Replace")]
@@ -281,7 +224,7 @@ namespace GamePack.Editor.Utilities
         }
 
         [Button, TabGroup("Design")]
-        private static void PlaceItems(float verticalOffset = 100)
+        private static void PlaceItems(float placementYOffset = 0, float projectionOffset = 1)
         {
             var sel = Selection.gameObjects;
             if (sel.Length <= 0) return;
@@ -289,15 +232,21 @@ namespace GamePack.Editor.Utilities
             Undo.RecordObjects(sel.ToArray<Object>(), "Place Items");
 
             // ReSharper disable once PossibleNullReferenceException
-
+            
             sel.ForEach(o =>
             {
-                var origin = o.transform.position + (Vector3.up * 10);
+                o.SetActive(false);
+                
+                var pos = o.transform.position;
+                var origin = pos + (Vector3.up * projectionOffset);
                 Debug.DrawRay(origin, Vector3.down * 100, Color.red, 5);
                 if (!Physics.Raycast(origin, Vector3.down, out var hit)) return;
+                // if(hit.collider.gameObject == o) return;
 
-                Debug.DrawLine(origin, hit.point, Color.green, 5);
-                o.transform.position = hit.point + new Vector3(0, verticalOffset, 0);
+                Debug.DrawLine(pos, hit.point, Color.green, 5);
+                o.transform.position = hit.point + new Vector3(0, placementYOffset, 0);
+                
+                o.SetActive(true);
             });
         }
         
@@ -313,6 +262,20 @@ namespace GamePack.Editor.Utilities
             }
         }
 
+        
+        [Button, TabGroup("Design")]
+        private static void ArrangeItemsWithSpacing(float spacing = 1)
+        {
+            var sel = Selection.gameObjects;
+
+
+            for (var index = 0; index < sel.Length; index++)
+            {
+                var obj = sel[index];
+                obj.transform.position = new Vector3(index * spacing, 0, 0);
+            }
+        }
+        
         #endregion
         
     }

@@ -5,7 +5,7 @@ using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace GamePack.UnityUtilities
+namespace GamePack.Editor.Utilities
 {
     public class ReplaceWithWindow : OdinEditorWindow
     {

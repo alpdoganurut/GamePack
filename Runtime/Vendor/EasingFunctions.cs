@@ -63,6 +63,7 @@ public static class EasingFunction
 {
     public enum Ease
     {
+        None,
         EaseInQuad = 0,
         EaseOutQuad,
         EaseInOutQuad,

@@ -1,8 +1,7 @@
-using System;
-using GamePack.Timer;
+using GamePack.TimerSystem;
 using UnityEngine;
 
-namespace GamePack.TimerExample
+namespace GamePack.Examples.TimerExample
 {
     public class RepeatingTimerExample: MonoBehaviour
     {
@@ -18,8 +17,8 @@ namespace GamePack.TimerExample
                 updateAction: tVal =>
                 {
                     _Cube.transform.position = Vector3.Lerp(startPos, endPos, tVal);
-                }).Start();
-            op.RepeatInfinite();
+                }).Start().Repeat();
+            
         }
     }
 }
