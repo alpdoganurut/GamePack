@@ -16,6 +16,8 @@ namespace GamePack.Boilerplate.Structure
 
         #endregion
         
+        // Disabled for now
+        /*
         #region Access Restriction
 
         // ReSharper disable once InconsistentNaming
@@ -55,6 +57,7 @@ namespace GamePack.Boilerplate.Structure
         }
 
         #endregion
+        */
 
         #region Logging Helper Methods
 
