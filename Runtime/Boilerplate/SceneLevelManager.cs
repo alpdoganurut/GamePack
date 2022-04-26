@@ -153,9 +153,10 @@ namespace GamePack.Boilerplate
             }
 #endif
             
-            if(!_loadedScene.HasValue)
+            if(!_loadedScene.HasValue || !_loadedScene.Value.IsValid())
             {
                 Debug.LogError("!_loadedScene.HasValue failed when unloading level. Returning but not sure if should all just callback immediately.");
+                didUnload?.Invoke();
                 return;
             }
             
