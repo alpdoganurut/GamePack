@@ -137,7 +137,7 @@ namespace GamePack.TimerSystem
             
             #if TIMER_ENABLE_LOG
             // Logging all operations to remove
-            var toRemoveFromRunning = RootOperations.Where(operation => operation.State != OperationState.Running);
+            var toRemoveFromRunning = RunningOperations.Where(operation => operation.State != OperationState.Running);
             foreach (var operation in toRemoveFromRunning)
             {
                 Log($"Will remove from {nameof(RunningOperations)}. Op: {operation.Name}, state: {operation.State}");
@@ -158,7 +158,7 @@ namespace GamePack.TimerSystem
                 if ((endTime.HasValue && timeForOperation > endTime) ||
                     runningOperation.IsFinisCondition())
                 {
-                    if(runningOperation.Duration.HasValue)
+                    if(runningOperation.Duration > 0)
                         runningOperation.Update( 1);
                     
                     Resolve(runningOperation);
@@ -212,7 +212,7 @@ namespace GamePack.TimerSystem
             }
             else
             {
-                Log("Operation chain ended");
+                Log($"Operation chain ended. Last operation: {operation.Name}");
             }
         }
 

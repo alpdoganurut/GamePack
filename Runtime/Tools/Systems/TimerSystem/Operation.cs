@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using GamePack.Utilities;
 using UnityEngine;
 using UnityEngine.Assertions;
@@ -21,7 +22,7 @@ namespace GamePack.TimerSystem
         #region Readonly State
 
         internal string Name { get; set; }
-        protected float? _duration;
+        protected float _duration;
         internal float Delay { get; set; }
         protected EaseCurve? _ease;
         // protected AnimationCurve _easeCurve;
@@ -46,13 +47,14 @@ namespace GamePack.TimerSystem
         
         internal bool IsRunEndActionBeforeCancel { get; private set; }
 
-        internal float? Duration => _duration < 0 ? null : _duration;
+        // internal float Duration => _duration < 0 ? null : _duration;
+        internal float Duration => _duration;
         
         #endregion
 
         public Operation(
             string name = null,
-            float? duration = null,
+            float duration = 0,
             float delay = 0,
             bool ignoreTimeScale = false,
             EaseCurve? ease = null,
@@ -69,17 +71,18 @@ namespace GamePack.TimerSystem
             Assert.IsTrue(Application.isPlaying);  
             #endif
             
-            // Validity checks
-            
-            Assert.IsTrue( !duration.HasValue || duration > 0, $"duration must be > 0 ({duration})");
+            // -- Validity checks -- //
             // Check if duration and finish condition both supplied
-            var isDurationSupplied = duration.HasValue;
+            var isDurationSupplied = duration > 0;
             Assert.IsFalse(isDurationSupplied && finishCondition != null, "Duration and finish condition both can't be supplied!"); // Botch can't be supplied
             // Ease can't be used if no duration is set
             Assert.IsTrue(ease == null || isDurationSupplied, "Ease can't be used if no duration is set!");
-            // There can't be two easing
-            // Assert.IsFalse(ease != null && easeCurve != null, "There can't be two easing method!");
-            
+
+#if UNITY_EDITOR
+            // Set default name in editor as calling method name
+            if (string.IsNullOrEmpty(name)) name = new StackFrame(1).GetMethod().Name;
+#endif
+
             Name = name;
             _duration = duration;
             Delay = delay;
@@ -119,7 +122,7 @@ namespace GamePack.TimerSystem
 
         public Operation Add(
             string name = null,
-            float? duration = null,
+            float duration = 0,
             float delay = 0, 
             bool ignoreTimeScale = false,
             EaseCurve? ease = null,
@@ -183,7 +186,7 @@ namespace GamePack.TimerSystem
 
         internal bool ShouldSkip() => _skipCondition?.Invoke() ?? false;
 
-        internal bool ShouldResolveImmediately() => !Duration.HasValue && _finishCondition == null;
+        internal bool ShouldResolveImmediately() => Duration == 0 && _finishCondition == null;
 
         internal void SetIgnoreTimeScale(bool isIgnore) => IsIgnoreTimeScale = isIgnore;
 
