@@ -327,6 +327,7 @@ namespace GamePack.Boilerplate.Main
 
         protected void SetGameSessionDelegate(GameSessionDelegateBase<TLevelSceneRefBase, TMainSceneRefBase> gameSessionDelegate)
         {
+            _gameSessionDelegate.Game = this;
             _gameSessionDelegate = gameSessionDelegate;
             _gameSessionDelegate?.InitiateMainScene(_MainSceneRef);
         }
