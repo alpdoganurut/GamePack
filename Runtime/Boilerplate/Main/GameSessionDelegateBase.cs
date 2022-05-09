@@ -11,6 +11,10 @@ namespace GamePack.Boilerplate.Main
         public virtual void WillStopLevel(TMainSceneRefBase mainSceneRef, TLevelSceneRefBase levelSceneRef, bool isSuccess){}
 
         public virtual void DidStopLevel(TMainSceneRefBase mainSceneRef, bool isSuccess){}
-        public GameBase Game {get; internal set; }
+        internal GameBase Game {get; set; }
+        
+        public void StartGame() => Game.StartGame();
+
+        public void StopGame(bool isSuccess) => Game.StopGame(isSuccess);
     }
 }
