@@ -7,9 +7,15 @@ namespace GamePack.Examples.DebugDraw
 {
     public class DebugDrawExample : MonoBehaviour
     {
-        private void Update() => Draw.Text(new Vector3(1.5f, 0, 0), "Update", new Color(1f, 0.35f, 0.43f));
+        private void Update()
+        {
+            Draw.Text(new Vector3(1.5f, 0, 0), "Update", new Color(1f, 0.35f, 0.43f));
+        }
 
-        private void Start() => Draw.Text(Vector3.left, "Timed", Color.magenta, duration: 3f);
+        private void Start()
+        {
+            Draw.Text(Vector3.left, "Timed", Color.magenta, duration: 3f);
+        }
 
         private void OnDrawGizmos()
         {

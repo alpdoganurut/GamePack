@@ -53,8 +53,8 @@
 ### [Systems](../Runtime/Tools/Systems)
 
 - **DebugDrawSystem -** Draw shapes in world space for debug purposes. **[[EXAMPLE]](../Runtime/Examples/DebugDraw/DebugDrawExample.cs)**
-- **ParticlePlayerSystem -** Play particles globally. **[[EXAMPLE]](../Runtime/Examples/TimerExample/TimerExample.cs)** **[[EXAMPLE]](../Runtime/Examples/TimerExample/RepeatingTimerExample.cs)**
-- **TimerSystem** - Define and execute timed actions.
+- **ParticlePlayerSystem -** Play particles globally.
+- **TimerSystem** - Define and execute timed actions. **[[EXAMPLE]](../Runtime/Examples/TimerExample/TimerExample.cs)** **[[EXAMPLE]](../Runtime/Examples/TimerExample/RepeatingTimerExample.cs)**
 
 ### **[Behaviours](../Runtime/Tools/Behaviours)**
 
@@ -126,10 +126,10 @@ public static void OnScreen(object msg, Color? color = null)
 # 4. Custom Attributes
 
 ```csharp
-[AutoFillSelf]
-[AutoFillChildren]
-[AutoFillScene]
-[RenameInHierarchy]
+[AutoFillSelf]      // Set serialized component with the first found instance on the same gameobject.
+[AutoFillChildren]  // Set serialized component with the first found instance of the children.
+[AutoFillScene]     // Set serialized component with the first found instance in the scene.
+[RenameInHierarchy] // Rename serialized component or gameobject as the name of the field.
 ```
 
 # 5. Utilities
@@ -156,7 +156,7 @@ public static void OnScreen(object msg, Color? color = null)
 # 6. Vendor
 
 - **LeanTween**
-- **Colors** - Cool colors to use instead of default Color.red etc.
+- **Colors** - Web colors to use instead of default Color.red etc.
 - **CustomZTestUI** - Used to override sorting for UI elements.
 - **EasingFunctions** - Collection of easing functions.
 - **SROptions.Custom -** Copy this in project to use SRDebugger.
