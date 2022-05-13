@@ -2,7 +2,7 @@
 
 using System;
 
-namespace GamePack.UnityUtilities
+namespace GamePack.Utilities
 {
     /// <summary>The Range class.</summary>
     /// <typeparam name="T">Generic parameter.</typeparam>

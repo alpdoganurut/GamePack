@@ -27,13 +27,9 @@ namespace GamePack.Boilerplate.Structure.Physics
             if (LifeTimeCheckCondition?.Invoke(this) ?? false)
             {
                 if (DestructionAction != null)
-                {
                     DestructionAction.Invoke(this);
-                }
                 else
-                {
                     Destroy(Internal_GameObject);
-                }
             }
         }
     }

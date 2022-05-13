@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using Color = UnityEngine.Color;
 
-namespace GamePack.UnityUtilities
+namespace GamePack.Utilities
 {
     [Obsolete]public static class ObsoleteDebugDraw
     {

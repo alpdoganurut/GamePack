@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace GamePack.UnityUtilities
+namespace GamePack.Utilities
 {
     public static class InterfaceExtensions
     {

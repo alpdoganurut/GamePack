@@ -1,9 +1,9 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.TweenAlphaSetActive
+namespace GamePack.Visual.ObjectFader
 {
-    public abstract class Fader : MonoBehaviour
+    public abstract class FaderBase : MonoBehaviour
     {
         [SerializeField] protected float _Duration = .3f;
         [SerializeField] protected LeanTweenType _Easing = LeanTweenType.easeInOutSine;

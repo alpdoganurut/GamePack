@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace GamePack.TweenAlphaSetActive
+namespace GamePack.Visual.ObjectFader
 {
     [RequireComponent(typeof(CanvasGroup))]
-    public class UIFader : Fader
+    public class UIFader : FaderBase
     {
         private CanvasGroup _canvasGroup;
 

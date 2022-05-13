@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Visual
 {
     public class SegmentArray: MonoBehaviour
     {

@@ -26,6 +26,20 @@ namespace GamePack.Boilerplate
             return newObj;
         }
 
+        public static T MoveToLevelScene<T>(this T obj) where T : Object
+        {
+            if(SceneLevelManager.LoadedScene == null)
+            {
+                Debug.LogError($"Game.LoadedScene is null, not instantiating {obj.name}!", obj);
+                return null;
+            }
+            
+            var go = GetGameObject(obj);
+            SceneManager.MoveGameObjectToScene(go, SceneLevelManager.LoadedScene.Value);
+
+            return obj;
+        }
+
         private static GameObject GetGameObject<T>(T newObj) where T : Object
         {
             GameObject go = null;
@@ -43,20 +57,6 @@ namespace GamePack.Boilerplate
             }
 
             return go;
-        }
-
-        public static T MoveToLevelScene<T>(this T obj) where T : Object
-        {
-            if(SceneLevelManager.LoadedScene == null)
-            {
-                Debug.LogError($"Game.LoadedScene is null, not instantiating {obj.name}!", obj);
-                return null;
-            }
-            
-            var go = GetGameObject(obj);
-            SceneManager.MoveGameObjectToScene(go, SceneLevelManager.LoadedScene.Value);
-
-            return obj;
         }
     }
 }

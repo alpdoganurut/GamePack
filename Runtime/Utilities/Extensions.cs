@@ -78,6 +78,7 @@ namespace GamePack.Utilities
             return array[Random.Range(0, array.Length)];
         }
 
+        // Unity Object Info
         public static string GetScenePath(this UnityEngine.Object component)
         {
             return GetScenePath(component as Component);

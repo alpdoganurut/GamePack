@@ -1,5 +1,5 @@
 using System;
-using GamePack.TweenAlphaSetActive;
+using GamePack.Visual.ObjectFader;
 
 // ReSharper disable InconsistentNaming
 

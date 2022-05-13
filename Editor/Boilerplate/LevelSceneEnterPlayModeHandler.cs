@@ -3,6 +3,7 @@ using GamePack.Boilerplate.Main;
 using GamePack.Logging;
 using GamePack.TimerSystem;
 using GamePack.UnityUtilities;
+using GamePack.Utilities;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;

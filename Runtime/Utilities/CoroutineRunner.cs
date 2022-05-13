@@ -3,7 +3,7 @@ using System.Collections;
 using GamePack.Logging;
 using UnityEngine;
 
-namespace GamePack.UnityUtilities
+namespace GamePack.Utilities
 {
     public class CoroutineRunner: MonoBehaviour
     {

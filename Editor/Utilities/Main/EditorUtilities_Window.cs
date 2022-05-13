@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GamePack.UnityUtilities;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
 using TMPro;
@@ -191,13 +192,13 @@ namespace GamePack.Editor.Utilities
 
             var firstParent = firstOrDefault ? firstOrDefault.transform.parent : null;
             var center = Vector3.zero;
-            sel.ForEach(o => { center += o.transform.position / sel.Length; });
+            LinqExtensions.ForEach(sel, o => { center += o.transform.position / sel.Length; });
 
             var wrapperGo = new GameObject("Wrapper");
             wrapperGo.transform.position = center;
             wrapperGo.transform.SetParent(firstParent);
 
-            sel.ForEach(o => { o.transform.SetParent(wrapperGo.transform); });
+            LinqExtensions.ForEach(sel, o => { o.transform.SetParent(wrapperGo.transform); });
         }
         
         
@@ -233,7 +234,7 @@ namespace GamePack.Editor.Utilities
 
             // ReSharper disable once PossibleNullReferenceException
             
-            sel.ForEach(o =>
+            LinqExtensions.ForEach(sel, o =>
             {
                 o.SetActive(false);
                 

@@ -1,7 +1,7 @@
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Visual
 {
     /// <summary>
     /// <para>Shows a random graphic of <see cref="_ComboGraphics"/> on combo.</para>

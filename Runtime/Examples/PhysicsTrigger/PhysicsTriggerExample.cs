@@ -14,9 +14,6 @@ namespace GamePack.Examples
             _SomeTrigger.ListenFor<MeshRenderer>(DidTriggerWith, PhysicsEventPhase.Enter);
         }
 
-        private void DidTriggerWith(MeshRenderer meshRenderer, Collider other)
-        {
-            LogMethod(meshRenderer.name);
-        }
+        private void DidTriggerWith(MeshRenderer meshRenderer, Collider other) => LogMethod(meshRenderer.name);
     }
 }

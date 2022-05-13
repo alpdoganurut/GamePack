@@ -3,6 +3,7 @@ using System.Linq;
 using GamePack.Boilerplate.Structure;
 using GamePack.Boilerplate.Tutorial;
 using GamePack.UnityUtilities;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
@@ -88,20 +89,10 @@ namespace GamePack.Boilerplate.Main
         [SerializeField, Required] private TMainSceneRefBase _MainSceneRef;
         
         // ReSharper disable once StaticMemberInGenericType
-        private static GameAnalyticsDelegateBase _analyticsDelegate;
+        private static AnalyticsDelegateBase _analyticsDelegate;
         private GameSessionDelegateBase<TLevelSceneRefBase, TMainSceneRefBase> _gameSessionDelegate;
 
 
-        /*#region Development - InitializeOnEnterPlayMode
-    #if UNITY_EDITOR
-        [InitializeOnEnterPlayMode]
-        private static void InitializeOnEnterPlayMode(EnterPlayModeOptions options)
-        {
-            if (options == EnterPlayModeOptions.DisableDomainReload) _staticConfig = null;
-        } 
-    #endif
-        #endregion*/
-        
         protected virtual void Awake()
         {
             _analyticsDelegate?.Initialize();
@@ -146,11 +137,13 @@ namespace GamePack.Boilerplate.Main
 
                 // Invoke controller methods
                 if(StructureManager.Controllers != null)
-                    foreach (var controller in StructureManager.Controllers.ToArray())  // TODO: Optimize
+                    for (var index = StructureManager.Controllers.Count - 1; index >= 0; index--)
                     {
-                        (controller as ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase>)?.InternalOnLevelStart(_MainSceneRef, _levelSceneRef);
+                        var controller = StructureManager.Controllers[index];
+                        (controller as ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase>)
+                            ?.InternalOnLevelStart(_MainSceneRef, _levelSceneRef);
                     }
-                
+
                 _gameSessionDelegate?.DidStartLevel(_MainSceneRef, LevelSceneRef);
 #pragma warning disable CS0618
                 DidStartLevel(LevelSceneRef);
@@ -214,22 +207,6 @@ namespace GamePack.Boilerplate.Main
         public SceneLevelManager LevelManager => _SceneLevelManager;
 
         // protected TMainSceneRefBase MainSceneRef => _MainSceneRef;
-
-        #endregion
-
-        #region Virtual Game State Callbacks
-
-        [Obsolete("Use GameSessionDelegate for handling level event.")]
-        protected virtual void WillStartLevel(){}
-
-        [Obsolete("Use GameSessionDelegate for handling level event.")]
-        protected virtual void DidStartLevel(TLevelSceneRefBase sceneRef){}
-
-        [Obsolete("Use GameSessionDelegate for handling level event.")]
-        protected virtual void WillStopLevel(TLevelSceneRefBase sceneRef, bool isSuccess){}
-
-        [Obsolete("Use GameSessionDelegate for handling level event.")]
-        protected virtual void DidStopLevel(bool isSuccess){}
 
         #endregion
 
@@ -322,7 +299,7 @@ namespace GamePack.Boilerplate.Main
         #endregion
         
         // ReSharper disable once UnusedMember.Global - Used when Analytics is enabled
-        public static void SetAnalyticsDelegate(GameAnalyticsDelegateBase analyticsDelegate) => 
+        public static void SetAnalyticsDelegate(AnalyticsDelegateBase analyticsDelegate) => 
             _analyticsDelegate = analyticsDelegate;
 
         protected void SetGameSessionDelegate(GameSessionDelegateBase<TLevelSceneRefBase, TMainSceneRefBase> gameSessionDelegate)
@@ -331,5 +308,22 @@ namespace GamePack.Boilerplate.Main
             _gameSessionDelegate.Game = this;
             _gameSessionDelegate?.InitiateMainScene(_MainSceneRef);
         }
+        
+
+        #region Obsolete Virtual Game State Callbacks
+
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
+        protected virtual void WillStartLevel(){}
+
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
+        protected virtual void DidStartLevel(TLevelSceneRefBase sceneRef){}
+
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
+        protected virtual void WillStopLevel(TLevelSceneRefBase sceneRef, bool isSuccess){}
+
+        [Obsolete("Use GameSessionDelegate for handling level event.")]
+        protected virtual void DidStopLevel(bool isSuccess){}
+
+        #endregion
     }
 }

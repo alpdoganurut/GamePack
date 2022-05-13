@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace GamePack.TweenAlphaSetActive
+namespace GamePack.Visual.ObjectFader
 {
     [RequireComponent(typeof(SpriteRenderer))]
-    public class SpriteFader : Fader
+    public class SpriteFader : FaderBase
     {
         private SpriteRenderer _renderer;
 

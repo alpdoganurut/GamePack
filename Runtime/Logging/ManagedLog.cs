@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using System.Linq;
 using GamePack.UnityUtilities;
+using GamePack.Utilities;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 

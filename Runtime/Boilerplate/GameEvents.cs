@@ -1,6 +1,6 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using GamePack.TweenAlphaSetActive;
+using GamePack.Visual.ObjectFader;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

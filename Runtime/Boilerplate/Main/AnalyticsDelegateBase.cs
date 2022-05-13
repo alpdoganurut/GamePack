@@ -1,6 +1,6 @@
 namespace GamePack.Boilerplate.Main
 {
-    public abstract class GameAnalyticsDelegateBase
+    public abstract class AnalyticsDelegateBase
     {
         public abstract void Initialize();
         public abstract void GameDidStart(int levelIndex);

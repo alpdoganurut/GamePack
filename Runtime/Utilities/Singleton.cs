@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GamePack.UnityUtilities
+namespace GamePack.Utilities
 {
     /// <summary>
     /// This is a basic Singleton implementation.

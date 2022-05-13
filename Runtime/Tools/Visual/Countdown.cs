@@ -1,11 +1,11 @@
 using System;
 using System.Collections;
-using GamePack.TweenAlphaSetActive;
+using GamePack.Visual.ObjectFader;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
 
-namespace GamePack
+namespace GamePack.Visual
 {
     public class Countdown: MonoBehaviour
     {

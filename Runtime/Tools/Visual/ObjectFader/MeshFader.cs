@@ -1,9 +1,9 @@
 using UnityEngine;
 
-namespace GamePack.TweenAlphaSetActive
+namespace GamePack.Visual.ObjectFader
 {
     [RequireComponent(typeof(MeshRenderer))]
-    public class MeshFader : Fader
+    public class MeshFader : FaderBase
     {
     
         private MeshRenderer _renderer;

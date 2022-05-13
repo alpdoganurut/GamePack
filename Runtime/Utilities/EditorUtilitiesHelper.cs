@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Editor.Utilities
+namespace GamePack.Utilities
 {
     public class EditorUtilitiesHelper:MonoBehaviour
     {

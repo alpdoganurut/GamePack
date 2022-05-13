@@ -14,7 +14,7 @@ namespace GamePack.Boilerplate.Structure.Physics
         
         private void Awake() => _PhysicsObject.DidTrigger += PhysicsObjectOnDidTrigger;
 
-        public void ListenFor<T>(PhysicsTriggerListener<T>.PhysicsTriggerEvent action, PhysicsEventPhase? phase = null) where T : Component => 
+        public void ListenFor<T>(PhysicsTriggerEvent<T> action, PhysicsEventPhase? phase = null) where T : Component => 
             _listeners.Add(new PhysicsTriggerListener<T>(typeof(T), phase, action));
 
         private void PhysicsObjectOnDidTrigger(PhysicsEventPhase phase, Collider other)

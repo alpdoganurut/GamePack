@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEngine;
-
 #if UNITY_EDITOR
 #endif
 
-namespace GamePack.UnityUtilities
+namespace GamePack.Utilities
 {
     /// <summary>
     /// TR: Unity'nin kendi 'Object.FindObjectOfType' methodunun 'disabled GameObjects' dahil olarak çalışan versiyonunu içerir.

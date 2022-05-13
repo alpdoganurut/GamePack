@@ -16,7 +16,7 @@ namespace GamePack.Boilerplate.Structure
         {
             get
             {
-                if(!_transform) return Vector3.zero;
+                if(!_transform) return Internal_Transform.position;
                 return _transform.position;
             }
         }
@@ -31,10 +31,7 @@ namespace GamePack.Boilerplate.Structure
             _transform = Internal_Transform;
             
             // Add prefix
-            if (!name.Contains(Prefix))
-            {
-                name = $"{Prefix} {name}";
-            }
+            if (!name.Contains(Prefix)) name = $"{Prefix} {name}";
         }
 
 #if USING_SHAPES
