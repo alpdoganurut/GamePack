@@ -55,23 +55,17 @@ namespace GamePack.TimerSystem
         
         public void Cancel()
         {
-            foreach (var operation in _operations)
-            {
-                operation.Cancel();
-            }
+            foreach (var operation in _operations) operation.Cancel();
         }
 
         private void SetIgnoreTimeScale(bool isIgnore)
         {
-            foreach (var operation in _operations)
-            {
-                operation.SetIgnoreTimeScale(isIgnore);
-            }
+            foreach (var operation in _operations) operation.SetIgnoreTimeScale(isIgnore);
         }
 
         internal OperationTreeDescription AddOperation(Operation operation)
         {
-            var tip = GetSingleTip();
+            var tip = GetOnlySingleTip();
             Assert.IsNotNull(tip, $"{nameof(OperationTreeDescription)} has more than 1 tips. Can't add operation.");
 
             if(IsWaitingOrRunning()) operation.SetWaitingToRun();
@@ -93,11 +87,7 @@ namespace GamePack.TimerSystem
         
         public override string ToString() => $"OpTDesc, root: {_root.Name}";
         
-        private Operation GetSingleTip()
-        {
-            if (_tips.Count != 1) return null;
-            return _tips[0];
-        }
-
+        /// Returns only single tip or null
+        private Operation GetOnlySingleTip() => _tips.Count != 1 ? null : _tips[0];
     }
 }
