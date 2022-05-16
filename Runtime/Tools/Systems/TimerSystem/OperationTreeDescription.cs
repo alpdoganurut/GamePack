@@ -42,7 +42,7 @@ namespace GamePack.TimerSystem
 
         public OperationTreeDescription Repeat(int? count = null)
         {
-            OperationRepeater.Repeat(this);
+            OperationRepeater.Repeat(this, count);
             return this;
         }
 

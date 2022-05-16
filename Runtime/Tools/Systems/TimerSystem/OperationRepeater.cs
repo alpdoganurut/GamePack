@@ -12,7 +12,7 @@ namespace GamePack.TimerSystem
             var controlOp = new Operation(endAction: () =>
             {
                 if (isCounted) count++;
-                if (isCounted && count > repeatCount)
+                if (isCounted && count >= repeatCount)
                     return;
 
                 var isCancelled = treeDescription.IsCancelled();
