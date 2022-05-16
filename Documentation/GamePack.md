@@ -14,6 +14,17 @@
 
 ## Structure
 
+###**Boilerplate Usage**
+
+**Config.cs** - Central game configuration, populated with design variables.
+
+**GameSessionDelegate.cs** - GameSession callbacks to control game logic flow.
+
+**LevelSceneRef.cs** - Contains level specific references to use in Controller and GameSessionDelegate. Every level Scene contains one instance.
+
+**MainSceneRef.cs** - Contains main scene references to use in Controller and GameSessionDelegate.
+
+
 - **Controller**
     
     ```csharp
