@@ -14,10 +14,7 @@ namespace GamePack.LevelDesign
         private static readonly Texture2D Icon = Resources.Load<Texture2D>("chain-icon");
         private static readonly Texture2D ParentIcon = Resources.Load<Texture2D>("chain-parent-icon");
 
-        static ChainableHierarchyDrawer()
-        {
-            EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemCallback;
-        }
+        static ChainableHierarchyDrawer() => EditorApplication.hierarchyWindowItemOnGUI += HierarchyWindowItemCallback;
 
         private static void HierarchyWindowItemCallback(int instanceId, Rect selectionRect)
         {
