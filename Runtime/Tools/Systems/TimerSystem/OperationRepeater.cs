@@ -27,7 +27,7 @@ namespace GamePack.TimerSystem
             });
             treeDescription.AddOperation(controlOp);
             
-            if(!treeDescription.IsStarted())
+            if(!treeDescription.IsWaitingOrRunning())
             {
                 treeDescription.Start();
             }

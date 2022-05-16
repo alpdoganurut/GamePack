@@ -4,7 +4,7 @@ namespace GamePack.Utilities.DebugDrawSystem
 {
     internal static class DrawInstructionDefaults
     {
-        public const float DefaultLineThickness = 0.02f;
+        public const float DefaultLineThickness = 0.015f;
         public static readonly Color DefaultColor = Color.white;
         public const float DefaultPointSize = .1f;
         public const float ArrowRadiusToLength = 1.4f;

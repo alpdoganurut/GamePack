@@ -23,7 +23,7 @@ namespace GamePack.TimerSystem
 
         public OperationTreeDescription Start(bool ignoreTimeScale = false)
         {
-            if (IsStarted())
+            if (IsWaitingOrRunning())
             {
                 Debug.LogError($"{this} is already started. Not starting again.");
                 return this;
@@ -67,7 +67,7 @@ namespace GamePack.TimerSystem
             var tip = GetSingleTip();
             Assert.IsNotNull(tip, $"{nameof(OperationTreeDescription)} has more than 1 tips. Can't add operation.");
 
-            if(IsStarted()) operation.SetWaiting();
+            if(IsWaitingOrRunning()) operation.SetWaiting();
             
             tip.Add(operation);
             _operations.Add(operation);
@@ -77,7 +77,7 @@ namespace GamePack.TimerSystem
 
         public bool IsCancelled() => _operations.Any(operation => operation.State == OperationState.Cancelled);
 
-        public bool IsStarted() => _operations.Any(operation => operation.State == OperationState.Waiting);
+        public bool IsWaitingOrRunning() => _operations != null && _operations.Any(operation => operation.State is OperationState.Waiting or OperationState.Running);
 
         public bool IsFinished() => _operations.All(operation => operation.State == OperationState.Finished);
         
