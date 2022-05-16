@@ -215,6 +215,7 @@ MonoBehaviour:
   _InitialDelay: 0
   _IgnoreTimeScale: 0
   _IsRepeat: 1
+  _BindObject: {fileID: 0}
 --- !u!4 &186439550
 Transform:
   m_ObjectHideFlags: 0
@@ -247,7 +248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &267397720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,6 +421,7 @@ MonoBehaviour:
   _InitialDelay: 4
   _IgnoreTimeScale: 0
   _IsRepeat: 0
+  _BindObject: {fileID: 0}
 --- !u!4 &663795517
 Transform:
   m_ObjectHideFlags: 0
@@ -1012,6 +1014,7 @@ MonoBehaviour:
   _InitialDelay: 2
   _IgnoreTimeScale: 1
   _IsRepeat: 0
+  _BindObject: {fileID: 749175984}
 --- !u!4 &2012851845
 Transform:
   m_ObjectHideFlags: 0

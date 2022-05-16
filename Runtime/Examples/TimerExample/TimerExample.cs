@@ -13,6 +13,7 @@ namespace GamePack.Examples.TimerExample
         [SerializeField] private float _InitialDelay = 2;
         [SerializeField, Required] private bool _IgnoreTimeScale;
         [SerializeField, Required] private bool _IsRepeat;
+        [SerializeField] private Object _BindObject;
         private OperationTreeDescription _operationDescription;
 
         [Button]
@@ -66,7 +67,8 @@ namespace GamePack.Examples.TimerExample
                     {
                         _ObjectToMove.transform.position = Vector3.Lerp(objectStartPos, objectStartPos + new Vector3(0, 0, 5), 1 - tVal);
                     }))
-                .Save();
+                .Save()
+                .BindTo(_BindObject);
             
             if(_IsRepeat) _operationDescription.Start(_IgnoreTimeScale).Repeat();
             else

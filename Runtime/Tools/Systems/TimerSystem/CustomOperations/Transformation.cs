@@ -79,9 +79,11 @@ namespace GamePack.TimerSystem
             Name = name ?? $"{(_transform ? _transform.name + " "  : "")} {nameof(Transformation)}";
             
             _updateAction = UpdateAction;
+
+            BindTo(_transform);
         }
 
-        protected override void OnRun()
+        private protected override void OnRun()
         {
             _initialPos = _transform.position;
             _initialRot = _transform.rotation;

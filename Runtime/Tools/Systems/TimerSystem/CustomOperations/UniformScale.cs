@@ -31,8 +31,10 @@ namespace GamePack.TimerSystem
             _updateAction = UpdateAction;
             
             Name = name ?? $"{(_transform ? _transform.name + " "  : "")} {nameof(UniformScale)}";
+            
+            BindTo(transform);
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR    // Check if initial scale is uniform.
             if (Math.Abs(_transform.localScale.x - _transform.localScale.y) > Mathf.Epsilon ||
                 Math.Abs(_transform.localScale.x - _transform.localScale.z) > Mathf.Epsilon)
             {
@@ -41,14 +43,9 @@ namespace GamePack.TimerSystem
 #endif
         }
 
-        protected override void OnRun()
-        {
-            _initialScale = _transform.localScale;
-        }
+        private protected override void OnRun() => _initialScale = _transform.localScale;
 
-        private void UpdateAction(float tVal)
-        {
+        private void UpdateAction(float tVal) => 
             _transform.localScale = Vector3.Lerp(_initialScale, new Vector3(_targetScale, _targetScale, _targetScale), tVal);
-        }
     }
 }

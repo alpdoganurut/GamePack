@@ -31,7 +31,7 @@ namespace GamePack.TimerSystem
             
             foreach (var operation in _operations)
             {
-                operation.SetWaiting();
+                operation.SetWaitingToRun();
             }
             
             TimerEngine.AddOperation(_root);
@@ -46,6 +46,13 @@ namespace GamePack.TimerSystem
             return this;
         }
 
+        public OperationTreeDescription BindTo(Object obj)
+        {
+            foreach (var operation in _operations) operation.BindTo(obj);
+
+            return this;
+        }
+        
         public void Cancel()
         {
             foreach (var operation in _operations)
@@ -67,10 +74,13 @@ namespace GamePack.TimerSystem
             var tip = GetSingleTip();
             Assert.IsNotNull(tip, $"{nameof(OperationTreeDescription)} has more than 1 tips. Can't add operation.");
 
-            if(IsWaitingOrRunning()) operation.SetWaiting();
+            if(IsWaitingOrRunning()) operation.SetWaitingToRun();
             
             tip.Add(operation);
             _operations.Add(operation);
+
+            if (tip.BindObjExists)
+                operation.BindTo(tip.BindObj);
             
             return this;
         }

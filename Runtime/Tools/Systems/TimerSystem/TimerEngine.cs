@@ -21,15 +21,15 @@ namespace GamePack.TimerSystem
 {
     public static class TimerEngine
     {
-        [ShowInInspector] private static readonly List<Operation> RootOperations = new List<Operation>();
-        private static readonly List<float?> RootOperationTimes = new List<float?>();
+        [ShowInInspector] private static readonly List<Operation> RootOperations = new();
+        private static readonly List<float?> RootOperationTimes = new();
         
-        [ShowInInspector] private static readonly List<Operation> RunningOperations = new List<Operation>();
-        private static readonly List<float> RunningOperationStartTimes = new List<float>();
-        private static readonly List<float?> RunningOperationEndTimes = new List<float?>();
+        [ShowInInspector] private static readonly List<Operation> RunningOperations = new();
+        private static readonly List<float> RunningOperationStartTimes = new();
+        private static readonly List<float?> RunningOperationEndTimes = new();
         
         // Optimization
-        private static readonly List<Operation> OperationsToResolveImmediately = new List<Operation>();
+        private static readonly List<Operation> OperationsToResolveImmediately = new();
 
         internal static void AddOperation(Operation operation)
         {
@@ -84,7 +84,11 @@ namespace GamePack.TimerSystem
         private static void Update()
         {
             if(!Application.isPlaying) return;
-
+            
+            // 1. Check for operation bind obj state.
+            foreach (var operation in RootOperations) operation.BindObjUpdate();
+            foreach (var operation in RunningOperations) operation.BindObjUpdate();
+            
             #if TIMER_ENABLE_LOG
             // Logging all operations to remove
             var toRemove = RootOperations.Where(operation => operation.State != OperationState.Waiting);
@@ -93,11 +97,17 @@ namespace GamePack.TimerSystem
                 Log($"Will remove from {nameof(RootOperations)}. Op: {operation.Name}, state: {operation.State}");
             }
             #endif
-            
-            // Remove root operations if they are no longer waiting -- Operations that are cancelled before started is removed at this stage
-            SyncRemove(operation => operation.State != OperationState.Waiting, RootOperations, RootOperationTimes);
 
-            // Run Operations
+
+            // 2. Remove root operations if they are no longer waiting -- Operations that are cancelled before started is removed at this stage
+            SyncRemove(
+                operation => operation.State != OperationState.Waiting, 
+                RootOperations, 
+                RootOperationTimes);
+
+            // 3. Run Operations and resolve them if necessary
+            // Operations with no duration or finish conditions are resolved after running
+            // Skipped operations are resolved without running
             OperationsToResolveImmediately.Clear();
             for (var index = 0; index < RootOperations.Count; index++)
             {
@@ -112,7 +122,7 @@ namespace GamePack.TimerSystem
                 }
 
                 if (timeForOperation > rootOperationTime &&
-                    rootOperation.WaitForCondition()
+                    rootOperation.IsWaitForConditionTrue()
                 )
                 {
                     RunOperation(rootOperation);
@@ -125,7 +135,7 @@ namespace GamePack.TimerSystem
             // Resolve collected operations
             foreach (var operation in OperationsToResolveImmediately) Resolve(operation);
 
-            // Catch cancelled operations and run their end actions if set to true
+            // 4. Catch cancelled operations and run their end actions if set to true
             foreach (var runningOperation in RunningOperations)
             {
                 if (runningOperation.State == OperationState.Cancelled &&
@@ -143,21 +153,26 @@ namespace GamePack.TimerSystem
                 Log($"Will remove from {nameof(RunningOperations)}. Op: {operation.Name}, state: {operation.State}");
             }
             #endif
-            // Remove operations if they are no longer running
-            SyncRemove(operation => operation.State != OperationState.Running, RunningOperations, RunningOperationEndTimes, RunningOperationStartTimes);
             
-            // Update, resolve or cancel operations based on conditions
+            // 5. Remove operations if they are no longer running
+            SyncRemove(
+                operation => operation.State != OperationState.Running,
+                RunningOperations, 
+                RunningOperationEndTimes, RunningOperationStartTimes);
+            
+            // 6. Update, resolve or cancel operations based on conditions
             for (var index = 0; index < RunningOperations.Count; index++)
             {
                 var runningOperation = RunningOperations[index];
                 var endTime = RunningOperationEndTimes[index];
-                var hasUpdateTime = runningOperation.Duration != null;
+                var hasUpdateTime = runningOperation.HasDuration();
                 var timeForOperation = GetTimeForOperation(runningOperation);
                 
                 // Resolve
                 if ((endTime.HasValue && timeForOperation > endTime) ||
-                    runningOperation.IsFinisCondition())
+                    runningOperation.IsFinishConditionTrue())
                 {
+                    // Final update call
                     if(runningOperation.Duration > 0)
                         runningOperation.Update( 1);
                     
@@ -227,7 +242,7 @@ namespace GamePack.TimerSystem
             return operation.IsIgnoreTimeScale ? Time.unscaledTime : Time.time;
         }
         
-        // Removes from list1 by condition and removes from list2 by the same index
+        // Removes from lookupList by condition and removes from lists by the same index
         private static void SyncRemove<T1>(Func<T1, bool> firstListRemovalCondition, IList<T1> lookupList, params IList[] lists)
         {
             Assert.IsTrue(lists.Length > 0);

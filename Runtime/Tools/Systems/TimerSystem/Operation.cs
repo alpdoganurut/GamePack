@@ -19,13 +19,12 @@ namespace GamePack.TimerSystem
         public delegate bool OperationWaitForCondition();
         public delegate bool OperationSkipCondition();
 
-        #region Readonly State
+        #region Readonly Fields
 
         internal string Name { get; set; }
         protected float _duration;
         internal float Delay { get; set; }
         protected EaseCurve? _ease;
-        // protected AnimationCurve _easeCurve;
 
         private readonly OperationAction _action;
         protected OperationUpdateAction _updateAction;
@@ -38,18 +37,18 @@ namespace GamePack.TimerSystem
         
         #endregion
 
-        #region Mutating State
+        #region Mutating Fields
 
         internal OperationState State { get; private set; } = OperationState.NotStarted;
         internal List<Operation> Children { get; } = new List<Operation>();
-        
         internal bool IsIgnoreTimeScale { get; private set; }
-        
         internal bool IsRunEndActionBeforeCancel { get; private set; }
-
-        // internal float Duration => _duration < 0 ? null : _duration;
+        // Object Binding
+        internal Object BindObj { get; private set; }
+        internal bool BindObjExists { get; private set; }
+        private bool ShouldContinueIfBindObjInvalid { get; set; }
         internal float Duration => _duration;
-        
+
         #endregion
 
         public Operation(
@@ -120,6 +119,13 @@ namespace GamePack.TimerSystem
             return operation;
         }
 
+        internal void BindTo(Object obj, bool shouldContinueIfBindObjInvalid = false)
+        {
+            BindObjExists = true;
+            ShouldContinueIfBindObjInvalid = shouldContinueIfBindObjInvalid;
+            BindObj = obj;
+        }
+        
         public Operation Add(
             string name = null,
             float duration = 0,
@@ -139,9 +145,12 @@ namespace GamePack.TimerSystem
             return Add(newOp);
         }
 
+        
         #endregion
 
         #region Internal API - These are used by Engine and OperationTreeDescription
+
+        internal void SetWaitingToRun() => State = OperationState.Waiting;
 
         internal void Run()
         {
@@ -150,8 +159,6 @@ namespace GamePack.TimerSystem
             State = OperationState.Running;
         }
 
-        protected virtual void OnRun() {}
-
         internal void Update(float? tVal)
         {
             if (!tVal.HasValue)
@@ -159,46 +166,54 @@ namespace GamePack.TimerSystem
                 _updateAction?.Invoke(NullFloatValue);
                 return;
             }
-            Assert.IsTrue(tVal.HasValue);
-            Assert.IsTrue(tVal >= 0 && tVal <= 1, $"tVal is not between [0,1]! tVal: {tVal}");
+            
+            Assert.IsTrue(tVal is >= 0 and <= 1, $"tVal is not between [0,1]! tVal: {tVal}");
             
             // Apply easing
             if (_ease != null)
-                _ease.Value.Evaluate(tVal.Value);
-                // tVal = EasingFunction.GetEasingFunction(_ease.Value)(0, 1, tVal.Value);
-            // else if (_easeCurve != null)
-                // tVal = _easeCurve.Evaluate(tVal.Value);
+                tVal = _ease.Value.Evaluate(tVal.Value);
             
             _updateAction?.Invoke(tVal.Value);
         }
-        
-        internal void SetWaiting() => State = OperationState.Waiting;
 
+        internal void BindObjUpdate()
+        {
+            if (ShouldCancelBecauseBindObjIsInvalid()) State = OperationState.Cancelled;
+        }
+        
         internal void Finish()
         {
             State = OperationState.Finished;
+            
             _endAction?.Invoke();
         }
-
-        internal bool IsFinisCondition() => _finishCondition?.Invoke() ?? false;
-
-        internal bool WaitForCondition() => _waitForCondition?.Invoke() ?? true;
-
-        internal bool ShouldSkip() => _skipCondition?.Invoke() ?? false;
-
-        internal bool ShouldResolveImmediately() => Duration == 0 && _finishCondition == null;
-
-        internal void SetIgnoreTimeScale(bool isIgnore) => IsIgnoreTimeScale = isIgnore;
-
+        
         internal void Cancel(bool isRunEndActionBeforeCancel = false)
         {
             IsRunEndActionBeforeCancel = isRunEndActionBeforeCancel; 
             State = OperationState.Cancelled;
         }
 
+        /// Default is false
+        internal bool IsFinishConditionTrue() => _finishCondition?.Invoke() ?? false;
+
+        /// Default is true
+        internal bool IsWaitForConditionTrue() => _waitForCondition?.Invoke() ?? true;
+
+        /// Default is false
+        internal bool ShouldSkip() => _skipCondition?.Invoke() ?? false;
+
+        internal bool ShouldResolveImmediately() => (!IsBindObjValid() && ShouldContinueIfBindObjInvalid)   // Bind obj is invalid and should continue
+                                                    || (Duration == 0 && _finishCondition == null);         // Duration is zero and there is no finish condition
+
+        internal bool HasDuration() => _duration > 0;
+        
+        internal void SetIgnoreTimeScale(bool isIgnore) => IsIgnoreTimeScale = isIgnore;
+
+
         #endregion
 
-        #region Private
+        #region Private & Protected
 
         public Operation GetRoot()
         {
@@ -238,6 +253,12 @@ namespace GamePack.TimerSystem
             return operationTreeDescription;
         }
         */
+        private bool ShouldCancelBecauseBindObjIsInvalid() => !ShouldContinueIfBindObjInvalid &&
+                                                              !IsBindObjValid();
+
+        private bool IsBindObjValid() => !BindObjExists || BindObj;
+        
+        private protected virtual void OnRun() {}
         
         #endregion
 
