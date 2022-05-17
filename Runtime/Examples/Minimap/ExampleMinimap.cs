@@ -7,7 +7,7 @@ namespace GamePack.Examples.Minimap
 {
     public class CustomMinimap : MinimapBase
     {
-        [SerializeField, Required] private PoolController _IndicatorPool;
+        [SerializeField, Required] private GenericPoolController _IndicatorPool;
         protected override PoolableIndicator GetPoolable(MinimapObject minimapObject)
         {
             return _IndicatorPool.Get() as PoolableIndicator;

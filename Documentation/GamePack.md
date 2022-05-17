@@ -99,16 +99,19 @@
 
 ### [Modules](../Runtime/Tools/Modules)
 
+- **ObjectPool** - Simple object pool implementation. Can be extended to use with different behaviours. 
+- **StateMachine** - Basic state machine implementation that can be extended and used with a custom enum as state. **[[EXAMPLE]](../Runtime/Examples/BasicStateMachine/StateMachineControllerExample.cs)**
+
+
 - **Minimap** - Show object positions on a UI panel. **[[EXAMPLE]](../Runtime/Examples/Minimap/)**
 - **OffScreenIndicator** - Show object directions on a screen edges when they are offscreen.
 - **SlingCar** - Forward moving object with slinging motion used to predefined lanes. **[[EXAMPLE]](../Runtime/Examples/SlingCar/)**
 - **SnapDrag** - Drag and snap an object to a designated position.
-- **StateMachine** - Basic state machine implementation that can be extended and used with a custom enum as state. **[[EXAMPLE]](../Runtime/Examples/BasicStateMachine/StateMachineControllerExample.cs)**
 
 ### [Visual](../Runtime/Tools/Visual)
 
 - **ObjectFader** - Fade in/out objects with a duration.
-    - Fader
+    - Fader (abstract base class)
     - MeshFader
     - SpriteFader
     - UIFader

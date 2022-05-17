@@ -5,8 +5,6 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using GamePack.Logging;
-using GamePack.Modules.ObjectPool;
-using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -20,7 +18,7 @@ namespace GamePack.ParticlePlayerSystem
         
         private static ParticlePlayerSceneConfig _config;
         
-        private static readonly Dictionary<int, PoolController> PoolControllers = new Dictionary<int, PoolController>();
+        private static readonly Dictionary<int, ParticlePlayerPoolController> PoolControllers = new();
         private static GameObject _managedGameObject;
 
 #if !UNITY_EDITOR
@@ -76,7 +74,7 @@ namespace GamePack.ParticlePlayerSystem
             for (var index = 0; index < _config.ParticleConfigs.Length; index++)
             {
                 var particleConfig = _config.ParticleConfigs[index];
-                var newPoolController = _managedGameObject.AddComponent<PoolController>();
+                var newPoolController = _managedGameObject.AddComponent<ParticlePlayerPoolController>();
                 newPoolController.Init(particleConfig.Prefab, particleConfig.PrefillCount);
                 PoolControllers[index] = newPoolController;
 

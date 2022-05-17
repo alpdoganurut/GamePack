@@ -1,10 +1,13 @@
+#if USING_SHAPES
+using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
+#endif
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using GamePack.Logging;
 using GamePack.TimerSystem;
-using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -34,7 +37,7 @@ namespace GamePack.LevelDesign
         {
             if (!IsParent) return;
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && USING_SHAPES
             RefreshChildren();
 #endif
 
@@ -68,7 +71,7 @@ namespace GamePack.LevelDesign
                 );
         }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && USING_SHAPES
 
         private void OnTransformChildrenChanged() => Invoke(nameof(PlaceModulesRecursiveUpwards), TRANSFORM_CHILDREN_CHANGED_REFRESH_DELAY);
 

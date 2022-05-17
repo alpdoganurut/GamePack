@@ -64,8 +64,9 @@ namespace GamePack.Modules.ObjectPool
             return poolable;
         }
 
-        private void PoolObject(T obj)
+        private void PoolObject(PoolableBase poolableBase)
         {
+            var obj = poolableBase as T;
             _poolStack.Push(obj);
             obj.OnStop();
             _activeList.Remove(obj);
