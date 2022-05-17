@@ -5,6 +5,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using GamePack.Logging;
+using GamePack.Modules.ObjectPool;
 using GamePack.Utilities;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -99,12 +100,22 @@ namespace GamePack.ParticlePlayerSystem
             }
             
             var poolable = PoolControllers[hashedId].Get();
-            poolable.transform.position = position;
 
             if (follow)
             {
-                poolable.gameObject.AddComponent<PositionConstraint>();
+                var positionConstraint = poolable.gameObject.AddComponent<PositionConstraint>();
+                positionConstraint.AddSource(new ConstraintSource {weight = 1, sourceTransform = follow});
+                positionConstraint.constraintActive = true;
+                poolable.LifeDidEnd += FollowingParticleOnLifeDidEnd;
             }
+            else poolable.transform.position = position;
+        }
+
+        private static void FollowingParticleOnLifeDidEnd(PoolableBase obj)
+        {
+            var positionConstraint = obj.gameObject.GetComponent<PositionConstraint>();
+            Object.Destroy(positionConstraint);
+            obj.LifeDidEnd -= FollowingParticleOnLifeDidEnd;
         }
 
         public static void Play(string id, Vector3 position = new(), Transform follow = null) => Play(HashId(id), position, follow);
