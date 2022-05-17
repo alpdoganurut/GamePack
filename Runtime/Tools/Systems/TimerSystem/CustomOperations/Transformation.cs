@@ -89,9 +89,9 @@ namespace GamePack.TimerSystem
             _initialRot = _transform.rotation;
             _initialScale = _transform.lossyScale;
             
-            var finalDuration = _suppliedDuration ?? (Vector3.Distance(_targetPos ?? _targetPosRef.position, _initialPos) / _moveSpeed);
-            Assert.IsTrue(finalDuration != null, nameof(finalDuration) + " != null");
-            _duration = finalDuration.Value;
+            var duration = _suppliedDuration ?? (Vector3.Distance(_targetPos ?? _targetPosRef.position, _initialPos) / _moveSpeed);
+            Assert.IsTrue(duration != null, nameof(duration) + " != null");
+            _duration = duration.Value;
         }
 
         private void UpdateAction(float tVal)
@@ -147,7 +147,8 @@ namespace GamePack.TimerSystem
 
         private Vector3 GetUpdatedPos(float tVal)
         {
-            var tPos = _targetPos ?? (_targetPosRef != null ? _targetPosRef.position : _targetPosAction?.Invoke());
+            var tPos = _targetPos ?? (_targetPosRef ? _targetPosRef.position : _targetPosAction?.Invoke());
+            System.Diagnostics.Debug.Assert(tPos != null, nameof(tPos) + " != null");
             return Vector3.Lerp(_initialPos, tPos.Value, tVal);
         }
 

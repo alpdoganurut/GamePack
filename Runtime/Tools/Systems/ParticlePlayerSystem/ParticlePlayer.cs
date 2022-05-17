@@ -106,6 +106,11 @@ namespace GamePack.ParticlePlayerSystem
                 var positionConstraint = poolable.gameObject.AddComponent<PositionConstraint>();
                 positionConstraint.AddSource(new ConstraintSource {weight = 1, sourceTransform = follow});
                 positionConstraint.constraintActive = true;
+                
+                var rotationConstraint = poolable.gameObject.AddComponent<RotationConstraint>();
+                rotationConstraint.AddSource(new ConstraintSource {weight = 1, sourceTransform = follow});
+                rotationConstraint.constraintActive = true;
+                
                 poolable.LifeDidEnd += FollowingParticleOnLifeDidEnd;
             }
             else poolable.transform.position = position;
