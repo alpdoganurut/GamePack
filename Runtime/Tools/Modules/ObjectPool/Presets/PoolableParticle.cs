@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GamePack.PoolingSystem
+namespace GamePack.Modules.ObjectPool
 {
     [RequireComponent(typeof(ParticleSystem))] 
     public class PoolableParticle : PoolableBase
@@ -11,15 +11,12 @@ namespace GamePack.PoolingSystem
         {   
             get
             {
-                if (_particleSystem == null) _particleSystem = GetComponent<ParticleSystem>();
+                if (!_particleSystem) _particleSystem = GetComponent<ParticleSystem>();
                 return _particleSystem;
             }
         }
         
-        private void OnParticleSystemStopped()
-        {
-            EndLife();
-        }
+        private void OnParticleSystemStopped() => EndLife();
 
         internal override void OnStart()
         {
@@ -27,10 +24,7 @@ namespace GamePack.PoolingSystem
             ParticleSystem.Play();
         }
 
-        internal override void OnStop()
-        {
-            gameObject.SetActive(false);
-        }
+        internal override void OnStop() => gameObject.SetActive(false);
 
         private void OnValidate()
         {

@@ -2,18 +2,18 @@ using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.PoolingSystem
+namespace GamePack.Modules.ObjectPool
 {
-    public class PoolController : MonoBehaviour
+    public class PoolController<T> : MonoBehaviour where T: PoolableBase
     {
-        [SerializeField] private PoolableBase _Prefab;
+        [SerializeField] private T _Prefab;
 
-        [ShowInInspector, ReadOnly] private readonly Stack<PoolableBase> _poolStack = new Stack<PoolableBase>();
-        [ShowInInspector, ReadOnly] private readonly List<PoolableBase> _activeList = new List<PoolableBase>();
+        [ShowInInspector, ReadOnly] private readonly Stack<T> _poolStack = new Stack<T>();
+        [ShowInInspector, ReadOnly] private readonly List<T> _activeList = new List<T>();
         [SerializeField] private int _PreFillCount;
         [SerializeField] private bool _InitializeAtAwake;
 
-        public List<PoolableBase> ActiveList => _activeList;
+        public List<T> ActiveList => _activeList;
 
         private void Awake()
         {
@@ -21,14 +21,14 @@ namespace GamePack.PoolingSystem
                 Prefill();
         }
 
-        public void Init(PoolableBase poolablePrefab, int prefillCount)
+        public void Init(T poolablePrefab, int prefillCount)
         {
             _Prefab = poolablePrefab;
             _PreFillCount = prefillCount;
             Prefill();
         }
 
-        public PoolableBase Get()
+        public T Get()
         {
             var newObj = FetchNew();
             newObj.OnStart();
@@ -38,7 +38,7 @@ namespace GamePack.PoolingSystem
 
         private void Prefill()
         {
-            var objs = new PoolableBase[_PreFillCount];
+            var objs = new T[_PreFillCount];
             for (var i = 0; i < _PreFillCount; i++)
             {
                 objs[i] = FetchNew();
@@ -47,9 +47,9 @@ namespace GamePack.PoolingSystem
         }
 
         /// Grab one from pool if available or create new.  
-        private PoolableBase FetchNew()
+        private T FetchNew()
         {
-            PoolableBase poolable;
+            T poolable;
             if (_poolStack.Count > 0)
             {
                 poolable = _poolStack.Pop();
@@ -64,7 +64,7 @@ namespace GamePack.PoolingSystem
             return poolable;
         }
 
-        private void PoolObject(PoolableBase obj)
+        private void PoolObject(T obj)
         {
             _poolStack.Push(obj);
             obj.OnStop();

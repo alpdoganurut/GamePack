@@ -1,7 +1,7 @@
 using GamePack.CustomAttribute.Attributes;
 using UnityEngine;
 
-namespace GamePack.PoolingSystem
+namespace GamePack.Modules.ObjectPool
 {
     [RequireComponent(typeof(Rigidbody))]
     public class PoolableRigidbody: PoolableBase

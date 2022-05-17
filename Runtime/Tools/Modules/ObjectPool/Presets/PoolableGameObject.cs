@@ -1,4 +1,4 @@
-namespace GamePack.PoolingSystem
+namespace GamePack.Modules.ObjectPool
 {
     public class PoolableGameObject: PoolableBase
     {

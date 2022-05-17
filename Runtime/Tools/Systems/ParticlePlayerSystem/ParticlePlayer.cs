@@ -5,10 +5,11 @@ using UnityEditor;
 using System.Collections.Generic;
 using System.Linq;
 using GamePack.Logging;
-using GamePack.PoolingSystem;
+using GamePack.Modules.ObjectPool;
 using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.SceneManagement;
 
 namespace GamePack.ParticlePlayerSystem
@@ -85,7 +86,7 @@ namespace GamePack.ParticlePlayerSystem
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public static void Play(int hashedId, Vector3 position)
+        public static void Play(int hashedId, Vector3 position = new(), Transform follow = null)
         {
             if (!_config)
             {
@@ -93,21 +94,24 @@ namespace GamePack.ParticlePlayerSystem
                 return;
             }
             
-            if(!PoolControllers.ContainsKey(hashedId)) return;
+            if(!PoolControllers.ContainsKey(hashedId))
+            {
+                Debug.LogWarning($"Can't find particle. Hashed ID: {hashedId}");
+                return;
+            }
             
             var poolable = PoolControllers[hashedId].Get();
             poolable.transform.position = position;
+
+            if (follow)
+            {
+                poolable.gameObject.AddComponent<PositionConstraint>();
+            }
         }
 
-        public static void Play(string id, Vector3 position)
-        {
-            Play(HashId(id), position);
-        }
-        
+        public static void Play(string id, Vector3 position = new(), Transform follow = null) => Play(HashId(id), position, follow);
+
         // ReSharper disable once MemberCanBePrivate.Global
-        public static int HashId(string id)
-        {
-            return Animator.StringToHash(id);
-        }
+        public static int HashId(string id) => Animator.StringToHash(id);
     }
 }

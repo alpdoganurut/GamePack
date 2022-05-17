@@ -1,4 +1,4 @@
-using GamePack.PoolingSystem;
+using GamePack.Modules.ObjectPool;
 using Sirenix.OdinInspector;
 using UnityEngine;
 

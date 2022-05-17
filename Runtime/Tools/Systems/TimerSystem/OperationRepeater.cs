@@ -25,12 +25,10 @@ namespace GamePack.TimerSystem
                     treeDescription.Start();
                 }
             });
+            
             treeDescription.AddOperation(controlOp);
             
-            if(!treeDescription.IsWaitingOrRunning())
-            {
-                treeDescription.Start();
-            }
+            if(!treeDescription.IsWaitingOrRunning()) treeDescription.Start();
         }
         
         

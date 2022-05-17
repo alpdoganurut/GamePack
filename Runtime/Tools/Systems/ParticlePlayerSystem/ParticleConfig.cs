@@ -1,5 +1,5 @@
 using System;
-using GamePack.PoolingSystem;
+using GamePack.Modules.ObjectPool;
 using Sirenix.OdinInspector;
 
 // ReSharper disable InconsistentNaming
