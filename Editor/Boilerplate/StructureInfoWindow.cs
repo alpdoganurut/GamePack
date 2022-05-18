@@ -1,11 +1,8 @@
 using System.Collections.Generic;
 using GamePack.Boilerplate.Structure;
-using GamePack.UnityUtilities;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEditor;
-using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace GamePack.Editor.Boilerplate
 {

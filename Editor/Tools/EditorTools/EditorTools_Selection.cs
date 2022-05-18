@@ -31,10 +31,9 @@ namespace GamePack.Editor.Tools
 
             foreach (var obj in Selection.gameObjects)
             {
-                var go = obj as GameObject;
-                if (go != null && go.transform.parent)
+                if (obj != null && obj.transform.parent)
                 {
-                    selectedObjects.Add(go.transform.parent.gameObject);
+                    selectedObjects.Add(obj.transform.parent.gameObject);
                 }
             }
 
@@ -48,15 +47,14 @@ namespace GamePack.Editor.Tools
 
             foreach (var obj in Selection.gameObjects)
             {
-                var go = obj as GameObject;
-                if (go != null && go.transform.childCount > 0)
+                if (obj != null && obj.transform.childCount > 0)
                 {
                     // selectedObjects.Add(go.transform.parent.gameObject);
-                    selectedObjects.AddRange(go.transform.Cast<Transform>().Select(transform => transform.gameObject));
+                    selectedObjects.AddRange(obj.transform.Cast<Transform>().Select(transform => transform.gameObject));
                 }
                 else
                 {
-                    selectedObjects.Add(go);
+                    selectedObjects.Add(obj);
                 }
             }
 
@@ -93,10 +91,8 @@ namespace GamePack.Editor.Tools
             var sel = Selection.gameObjects.ToList();
             if (sel.Count <= 0) return;
 
-            foreach (Transform sibling in sel.FirstOrDefault().transform.parent)
-            {
-                sel.Add(sibling.gameObject);
-            }
+            var transformParent = sel.FirstOrDefault()?.transform.parent;
+            if (transformParent != null) sel.AddRange(from Transform sibling in transformParent select sibling.gameObject);
 
             Selection.objects = sel.ToArray();
         }

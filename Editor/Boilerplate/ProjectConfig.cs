@@ -1,6 +1,7 @@
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace GamePack.Editor.Boilerplate
 {

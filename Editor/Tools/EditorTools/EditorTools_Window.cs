@@ -56,7 +56,7 @@ namespace GamePack.Editor.Tools
             }
 
             Debug.Log($"Replaced {changed.Count} names!");
-            UnityEditor.Selection.objects = changed.Select(ugui => ugui.gameObject).ToArray();
+            Selection.objects = changed.Select(ugui => ugui.gameObject).ToArray();
         }
 
         [Button, TabGroup("Replace")]
@@ -73,7 +73,7 @@ namespace GamePack.Editor.Tools
             }
 
             Debug.Log($"Replaced {changed.Count} names!");
-            UnityEditor.Selection.objects = changed.ToArray();
+            Selection.objects = changed.ToArray();
         }
 
         [Button, TabGroup("Replace")]
@@ -91,7 +91,7 @@ namespace GamePack.Editor.Tools
             }
 
             Debug.Log($"Replaced {changedImages.Count} sprites!");
-            UnityEditor.Selection.objects = changedImages.ToArray();
+            Selection.objects = changedImages.ToArray();
         }
 
         [Button, TabGroup("Replace")]

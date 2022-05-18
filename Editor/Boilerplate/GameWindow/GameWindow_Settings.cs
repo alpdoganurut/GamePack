@@ -4,7 +4,6 @@ using System.Linq;
 using GamePack.Logging;
 using Sirenix.OdinInspector;
 using UnityEditor;
-using UnityEditor.PackageManager.UI;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using PackageInfo = UnityEditor.PackageManager.PackageInfo;
@@ -177,9 +176,8 @@ namespace GamePack.Editor.Boilerplate
         private ManagedLogConfig ManagedLogConfig
         {
             get => ManagedLog.Config;
-            set
-            {
-            }
+            // ReSharper disable once ValueParameterNotUsed - Need to change inner values of field
+            set {}
         }
         
         // Buttons

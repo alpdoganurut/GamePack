@@ -6,7 +6,6 @@ using GamePack.Logging;
 using Sirenix.OdinInspector;
 using Sirenix.OdinInspector.Editor;
 using UnityEngine.SceneManagement;
-using Debug = UnityEngine.Debug;
 
 namespace GamePack.Editor.Boilerplate
 {

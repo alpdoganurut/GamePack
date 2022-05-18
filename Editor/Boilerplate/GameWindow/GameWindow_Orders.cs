@@ -1,3 +1,4 @@
+// ReSharper disable UnusedMember.Local
 namespace GamePack.Editor.Boilerplate
 {
     public partial class GameWindow

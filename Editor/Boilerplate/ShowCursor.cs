@@ -1,11 +1,10 @@
-using GamePack.Editor.Boilerplate;
 using GamePack.TimerSystem;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace GamePack
+namespace GamePack.Editor.Boilerplate
 {
     public static class ShowCursor
     {
@@ -28,7 +27,7 @@ namespace GamePack
             var canvas = new GameObject("Cursor Canvas").AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
             var canvasScaler = canvas.gameObject.AddComponent<CanvasScaler>();
-            
+
             canvasScaler.matchWidthOrHeight = 0;
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = new Vector2(1080, 1920);
@@ -37,13 +36,7 @@ namespace GamePack
             cursor.rectTransform.anchorMax = Vector2.zero;
             cursor.rectTransform.anchorMin = Vector2.zero;
 
-            var canvasScale = canvas.transform.localScale.x;
-            
-            new Operation(updateAction: val =>
-            {
-                cursor.rectTransform.anchoredPosition = Input.mousePosition / canvasScale;
-                Debug.Log("Update");
-            }).Start();
+            new Operation(updateAction: _ => cursor.rectTransform.anchoredPosition = Input.mousePosition / canvas.transform.localScale.x).Start();
         }
     }
 }

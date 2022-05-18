@@ -1,7 +1,6 @@
 using GamePack.Boilerplate;
 using GamePack.Boilerplate.Main;
 using GamePack.Logging;
-using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEditor;
