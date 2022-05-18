@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -11,14 +10,14 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-namespace GamePack.Editor.Utilities
+namespace GamePack.Editor.Tools
 {
-    public partial class EditorUtilities
+    public partial class EditorTools
     {
         [MenuItem("Utilities/Window")]
         public static void ShowWindow()
         {
-            GetWindow<EditorUtilities>();
+            GetWindow<EditorTools>();
         }
         
         #region Replace

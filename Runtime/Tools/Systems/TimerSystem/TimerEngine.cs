@@ -207,7 +207,7 @@ namespace GamePack.TimerSystem
             
             RunningOperations.Add(operation);
             RunningOperationStartTimes.Add(timeForOperation);
-            RunningOperationEndTimes.Add(timeForOperation + operation.Duration);
+            RunningOperationEndTimes.Add( operation.HasDuration() ? timeForOperation + operation.Duration : null);
         }
 
         private static void Resolve(Operation operation)

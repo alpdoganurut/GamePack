@@ -13,6 +13,7 @@ namespace GamePack.Logging
 {
     public static class ManagedLog
     {
+        private static readonly string CreationPath = $"Assets/{nameof(ManagedLogConfig)}.asset";
         public enum Type
         {
             Default, 
@@ -39,23 +40,19 @@ namespace GamePack.Logging
         private static void FindConfig()
         {
 #if UNITY_EDITOR
-            var managedLogConfigs = FindAllObjects.InEditor<ManagedLogConfig>();
+            _config = FindInProject.ByType<ManagedLogConfig>();
+            // var managedLogConfigs = FindAllObjects.InEditor<ManagedLogConfig>();
 
-            var assetPath = $"Assets/{nameof(ManagedLogConfig)}.asset";
-            if (managedLogConfigs.Count > 0)
-            {
-                _config = managedLogConfigs.First();
-            }
-            else if (managedLogConfigs.Count == 0)
-            {
-                _config = AssetDatabase.LoadAssetAtPath<ManagedLogConfig>(assetPath);
-            }
+            // if (managedLogConfigs.Count > 0)
+                // _config = managedLogConfigs.First();
+            // else if (managedLogConfigs.Count == 0) 
+                // _config = AssetDatabase.LoadAssetAtPath<ManagedLogConfig>(assetPath);
 
             if (!_config)
             {
                 Debug.LogError($"Can't find config file for {typeof(ManagedLog)}, creating one!");
                 var asset = ScriptableObject.CreateInstance<ManagedLogConfig>();
-                AssetDatabase.CreateAsset(asset, assetPath);
+                AssetDatabase.CreateAsset(asset, CreationPath);
                 AssetDatabase.SaveAssets();
             }
 #endif

@@ -7,6 +7,7 @@ using UnityEditor;
 using UnityEditor.PackageManager.UI;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using PackageInfo = UnityEditor.PackageManager.PackageInfo;
 
 namespace GamePack.Editor.Boilerplate
 {
@@ -21,6 +22,8 @@ namespace GamePack.Editor.Boilerplate
         
         private const string PackagesLockJsonName = "packages-lock.json";
         private const string PackagesDirectoryName = "Packages";
+
+        #region Version Strings
 
         [TabGroup("Settings")]
         [ShowInInspector, PropertyOrder(OrderTabsBottom + OrderTop)] 
@@ -51,6 +54,7 @@ namespace GamePack.Editor.Boilerplate
                 return null;
             }
         }
+        
         [TabGroup("Settings")]
         [ShowInInspector, PropertyOrder(OrderTabsBottom + OrderTop)] 
         private string GamePackVersion
@@ -59,7 +63,7 @@ namespace GamePack.Editor.Boilerplate
             {
                 try
                 {
-                    var info = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(GameWindow).Assembly);
+                    var info = PackageInfo.FindForAssembly(typeof(GameWindow).Assembly);
                     return info.version;
                 }
                 catch (Exception e)
@@ -70,17 +74,22 @@ namespace GamePack.Editor.Boilerplate
                 return "";
             }
         }
-        
         [PropertySpace]
+
+        #endregion
+        
+        [Title("Project Settings")]
         
         [PropertyOrder(OrderTabsBottom)]
-        [TabGroup("Settings"), ShowInInspector, InlineEditor]
+        [TabGroup("Settings"), ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden)]
         private ProjectConfig ProjectConfig
         {
             get => ProjectConfig.Instance;
             // ReSharper disable once ValueParameterNotUsed
             set{}
         }
+
+        [Title("Development")]
         
         [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
@@ -141,6 +150,7 @@ namespace GamePack.Editor.Boilerplate
         }
 
         [Title("Debug")]
+        
         [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, HideInPlayMode]
         private bool GameWindowLogging
@@ -159,9 +169,11 @@ namespace GamePack.Editor.Boilerplate
             set => SetDefineSymbol(value, TimerEngineDefineSymbol);
         }
         
+        [Title("Logging (ManagedLog)")]
+
         [PropertyOrder(OrderTabsBottom)]
         [ShowInInspector, TabGroup("Settings")]
-        [InlineEditor(InlineEditorObjectFieldModes.Foldout)]
+        [InlineEditor(InlineEditorObjectFieldModes.Hidden)]
         private ManagedLogConfig ManagedLogConfig
         {
             get => ManagedLog.Config;

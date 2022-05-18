@@ -4,9 +4,9 @@ using TMPro;
 using UnityEditor;
 using UnityEngine;
 
-namespace GamePack.Editor.Utilities
+namespace GamePack.Editor.Tools
 {
-    public partial class EditorUtilities
+    public partial class EditorTools
     {
         [MenuItem("Utilities/Selection/Top Most Parent")]
         private static void SelectTopMostParent()

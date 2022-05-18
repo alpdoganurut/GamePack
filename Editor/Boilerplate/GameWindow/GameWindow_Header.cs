@@ -8,15 +8,15 @@ namespace GamePack.Editor.Boilerplate
 {
     public partial class GameWindow
     {
-        [PropertyOrder(GameWindow.OrderGlobalTop)]
-        [Button(size: ButtonSizes.Large), HideIf("IsValidGameSceneAndMain")]
+        [PropertyOrder(OrderGlobalTop)]
+        [Button(ButtonSizes.Large), HideIf("IsValidGameSceneAndMain")]
         private void OpenMainScene()
         {
             EditorSceneManager.OpenScene(MainSceneAssetPath);
         }
         
-        [PropertyOrder(GameWindow.OrderGlobalTop)]
-        [Button(size: ButtonSizes.Large), HideIf("IsValidGameScene"), ShowIf("@_levelSceneRef")]
+        [PropertyOrder(OrderGlobalTop)]
+        [Button(ButtonSizes.Large), HideIf("IsValidGameScene"), ShowIf("@_levelSceneRef")]
         private void TestThisLevel()
         {
             var sceneAssetPath = SceneManager.GetActiveScene().path;
@@ -57,26 +57,26 @@ namespace GamePack.Editor.Boilerplate
 
         [InfoBox("GameName is not set.", InfoMessageType.Error, VisibleIf = "@GameName == NotSetProductName || string.IsNullOrEmpty(GameName) ")]
         [VerticalGroup("row1/left")]
-        [PropertyOrder(GameWindow.OrderGlobalTop)]
+        [PropertyOrder(OrderGlobalTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain")]
         private string GameName
         {
-            get => PlayerSettings.productName == GameWindow.NotSetProductName ? "" : PlayerSettings.productName;
-            set => PlayerSettings.productName = string.IsNullOrEmpty(value) ? GameWindow.NotSetProductName : value;
+            get => PlayerSettings.productName == NotSetProductName ? "" : PlayerSettings.productName;
+            set => PlayerSettings.productName = string.IsNullOrEmpty(value) ? NotSetProductName : value;
         }
         
         [InfoBox("GameIdentifier is not set.", InfoMessageType.Error, VisibleIf = "@GameIdentifier == null || GameIdentifier == \"\" ")]
         [VerticalGroup("row1/left")]
-        [PropertyOrder(GameWindow.OrderGlobalTop)]
+        [PropertyOrder(OrderGlobalTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain")]
         private string GameIdentifier
         {
             get
             {
                 var applicationIdentifier = PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS);
-                var gameIdentifier = applicationIdentifier.Contains(GameWindow.BuildIdentifierPrefix) ? applicationIdentifier.Replace(GameWindow.BuildIdentifierPrefix, "") : "";
+                var gameIdentifier = applicationIdentifier.Contains(BuildIdentifierPrefix) ? applicationIdentifier.Replace(BuildIdentifierPrefix, "") : "";
                 
-                if (gameIdentifier == GameWindow.NotSetGameIdentifier) return "";
+                if (gameIdentifier == NotSetGameIdentifier) return "";
                 return gameIdentifier;
             }
             set
@@ -84,18 +84,18 @@ namespace GamePack.Editor.Boilerplate
                 var namespaceValue = value.Replace(" ", string.Empty);
                 if (string.IsNullOrEmpty(value))
                 {
-                    value = GameWindow.NotSetGameIdentifier;
-                    namespaceValue = GameWindow.NotSetGameIdentifier;
+                    value = NotSetGameIdentifier;
+                    namespaceValue = NotSetGameIdentifier;
                 }
                 else value = value.ToLower().Replace(" ", string.Empty);
-                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, GameWindow.BuildIdentifierPrefix + value);
+                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, BuildIdentifierPrefix + value);
                 EditorSettings.projectGenerationRootNamespace = namespaceValue;
             }
         }
 
         // [InfoBox("Icon is empty", InfoMessageType.Error, VisibleIf = "@GameIcon == null")]
         [HideLabel, HorizontalGroup("row1", 50), VerticalGroup("row1/right")]
-        [PropertyOrder(GameWindow.OrderGlobalTop)]
+        [PropertyOrder(OrderGlobalTop)]
         [ShowInInspector, HideInPlayMode, ShowIf("IsValidGameSceneAndMain"), PreviewField(50, ObjectFieldAlignment.Right)]
         private Texture2D GameIcon
         {

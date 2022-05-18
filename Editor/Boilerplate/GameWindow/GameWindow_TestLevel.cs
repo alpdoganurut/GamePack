@@ -10,6 +10,7 @@ namespace GamePack.Editor.Boilerplate
 
         [PropertySpace]
         [PropertyOrder(OrderGlobalBottom)]
+        [Title("Testing")]
         [ShowInInspector, HorizontalGroup("Test Level"),
          ShowIf("@IsValidGameScene && !EditorApplication.isPlaying")]
         public static SceneAsset TestLevel
@@ -20,6 +21,7 @@ namespace GamePack.Editor.Boilerplate
         
         [PropertySpace]
         [PropertyOrder(OrderGlobalBottom+1)]
+        [Title("")]
         [Button("Test"),
          HorizontalGroup("Test Level", width: 70)/* ResponsiveButtonGroup("Editor Actions", AnimateVisibility = false)*/,
          ShowIf("@DisableReloadDomain && !EditorApplication.isPlaying && IsValidGameScene")]

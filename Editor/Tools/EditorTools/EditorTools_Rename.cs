@@ -3,9 +3,9 @@ using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
-namespace GamePack.Editor.Utilities
+namespace GamePack.Editor.Tools
 {
-    public partial class EditorUtilities
+    public partial class EditorTools
     {
         #region Rename
 

@@ -25,6 +25,7 @@ namespace GamePack.Boilerplate.Main
         
         private static TConfig _staticConfig;
 
+        // ReSharper disable once UnusedMember.Global - This is accessed globally
         public static TConfig Config
         {
             get
@@ -51,6 +52,8 @@ namespace GamePack.Boilerplate.Main
                 return _staticConfig;
             }
         }
+
+        #region Serialized Fields
 
         [SerializeField, Required, FoldoutGroup("Default")]
         private SceneLevelManager _SceneLevelManager;
@@ -80,18 +83,18 @@ namespace GamePack.Boilerplate.Main
         
         [SerializeField, Required, FoldoutGroup("Default")]
         private bool _UnloadSceneAfterStop = true;
-        private TLevelSceneRefBase _levelSceneRef;
         
         [ShowInInspector, ReadOnly, PropertyOrder(-1)] private bool _isPlaying;
 
-        [FormerlySerializedAs("_LevelInitData")] 
         [PropertyOrder(1)]
         [SerializeField, Required] private TMainSceneRefBase _MainSceneRef;
+
+        #endregion
         
+        private TLevelSceneRefBase _levelSceneRef;
         // ReSharper disable once StaticMemberInGenericType
         private static AnalyticsDelegateBase _analyticsDelegate;
         private GameSessionDelegateBase<TLevelSceneRefBase, TMainSceneRefBase> _gameSessionDelegate;
-
 
         protected virtual void Awake()
         {

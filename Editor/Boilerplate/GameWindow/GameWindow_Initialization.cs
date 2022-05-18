@@ -73,11 +73,12 @@ namespace GamePack.Editor.Boilerplate
             if (IsValidGameScene)
             {
                 _staticConfig = ReflectionHelper.GetPropertyOrField(_game, "_Config") as ConfigBase;
-                _levelManager = ReflectionHelper.GetPropertyOrField(_game, "_SceneLevelManager") as SceneLevelManager;
+
+                _staticLevelManager = ReflectionHelper.GetPropertyOrField(_game, "_SceneLevelManager") as SceneLevelManager;
                 _gameEvents = ReflectionHelper.GetPropertyOrField(_game, "_GameEvents") as GameEvents;
                 
                 // _staticConfig = _config;
-                _staticLevelManager = _levelManager;
+                // _staticLevelManager = _levelManager;
                 
                 GameWindow.Log($"{scene.name} is valid Game scene.");
             }
@@ -86,6 +87,12 @@ namespace GamePack.Editor.Boilerplate
                 GameWindow.Log($"{scene.name} Is valid Level scene.");
             }
 
+            // Find Config and SceneLevelManager in project if not a valid game scene
+            if (!IsValidGameScene)
+            {
+                _staticConfig = FindInProject.ByType<ConfigBase>();
+                _staticLevelManager = FindInProject.ByType<SceneLevelManager>();
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace GamePack.Editor.Boilerplate
 {
@@ -45,5 +46,8 @@ namespace GamePack.Editor.Boilerplate
             get => _AutoEnterMainScene;
             set => _AutoEnterMainScene = value;
         }
+
+        [field: SerializeField] public bool ShowCursor { get; set; }
+        [field: SerializeField] public Image CursorPrefab { get; set; }
     }
 }

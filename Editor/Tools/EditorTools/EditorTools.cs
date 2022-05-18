@@ -5,10 +5,10 @@ using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace GamePack.Editor.Utilities
+namespace GamePack.Editor.Tools
 {
     [CreateAssetMenu(fileName = "Base Editor Utilities", menuName = "GamePack/Editor Utilities", order = 0)]
-    public partial class EditorUtilities : OdinEditorWindow
+    public partial class EditorTools : OdinEditorWindow
     {
         [MenuItem("Utilities/Remove Colliders of Selection")]
         private static void RemoveColliders()

@@ -1,13 +1,11 @@
-using System;
 using GamePack.Logging;
 using GamePack.Utilities;
 using UnityEditor;
-using UnityEngine;
 using UnityEngine.PlayerLoop;
 
-namespace GamePack.Editor.Utilities
+namespace GamePack.Editor.Tools
 {
-    public partial class EditorUtilities
+    public partial class EditorTools
     {
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()

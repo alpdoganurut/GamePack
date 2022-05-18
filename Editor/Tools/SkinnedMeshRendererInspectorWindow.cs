@@ -4,7 +4,7 @@ using Sirenix.OdinInspector.Editor;
 using UnityEditor;
 using UnityEngine;
 
-namespace GamePack.Editor.Utilities
+namespace GamePack.Editor.Tools
 {
     [TypeInfoBox("@_skinnedMeshRenderer ? _skinnedMeshRenderer.name : \"Select a SkinnedMeshRenderer to inspect bones.\"")]
     public class SkinnedMeshRendererInspectorWindow : OdinEditorWindow
