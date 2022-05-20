@@ -85,18 +85,18 @@ namespace GamePack.ParticlePlayerSystem
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        public static void Play(int hashedId, Vector3 position = new(), Transform follow = null)
+        public static PoolableParticle Play(int hashedId, Vector3 position = new(), Transform follow = null)
         {
             if (!_config)
             {
                 Debug.LogError($"Create {nameof(ParticlePlayerSceneConfig)} instance in scene before using!");
-                return;
+                return null;
             }
             
             if(!PoolControllers.ContainsKey(hashedId))
             {
                 Debug.LogWarning($"Can't find particle. Hashed ID: {hashedId}");
-                return;
+                return null;
             }
             
             var poolable = PoolControllers[hashedId].Get();
@@ -114,16 +114,20 @@ namespace GamePack.ParticlePlayerSystem
                 poolable.LifeDidEnd += FollowingParticleOnLifeDidEnd;
             }
             else poolable.transform.position = position;
+
+            return poolable;
         }
 
         private static void FollowingParticleOnLifeDidEnd(PoolableBase obj)
         {
             var positionConstraint = obj.gameObject.GetComponent<PositionConstraint>();
             Object.Destroy(positionConstraint);
+            var rotConstraint = obj.gameObject.GetComponent<RotationConstraint>();
+            Object.Destroy(rotConstraint);
             obj.LifeDidEnd -= FollowingParticleOnLifeDidEnd;
         }
 
-        public static void Play(string id, Vector3 position = new(), Transform follow = null) => Play(HashId(id), position, follow);
+        public static PoolableParticle Play(string id, Vector3 position = new(), Transform follow = null) => Play(HashId(id), position, follow);
 
         // ReSharper disable once MemberCanBePrivate.Global
         public static int HashId(string id) => Animator.StringToHash(id);
