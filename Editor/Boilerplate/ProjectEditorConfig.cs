@@ -42,11 +42,11 @@ namespace GamePack.Editor.Boilerplate
             Instance = AssetDatabase.LoadAssetAtPath<ProjectEditorConfig>(path);
         }
         
-        [SerializeField] private bool _AutoEnterMainScene = true;
-        public bool AutoEnterMainScene
+        [SerializeField] private bool _AutoTestLevelScenes = true;
+        public bool AutoTestLevelScenes
         {
-            get => _AutoEnterMainScene;
-            set => _AutoEnterMainScene = value;
+            get => _AutoTestLevelScenes;
+            set => _AutoTestLevelScenes = value;
         }
 
         [field: SerializeField, FoldoutGroup("Cursor")] public bool ShowCursor { get; set; }

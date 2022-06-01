@@ -24,7 +24,7 @@ namespace GamePack.Editor.Boilerplate
         
         private static void CheckLevelEnterPlayModeForLoadingMainScene()
         {
-            if(!ProjectEditorConfig.Instance.AutoEnterMainScene) return;
+            if(!ProjectEditorConfig.Instance.AutoTestLevelScenes) return;
             
             // No game exists
             var game = FindAllObjects.InScene<GameBase>().FirstOrDefault();

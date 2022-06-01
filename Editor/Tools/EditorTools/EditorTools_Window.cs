@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GamePack.Tools.Helper;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using Sirenix.Utilities;
@@ -147,9 +148,32 @@ namespace GamePack.Editor.Tools
 
         #endregion
 
-        #region Design
+        #region Replace GameObject
 
-        [Button, TabGroup("Design")]
+        [SerializeField, Required, FoldoutGroup("Replace Selected GameObjects")] private bool _DeleteOld = true;
+        [SerializeField, Required, AssetsOnly, FoldoutGroup("Replace Selected GameObjects")] private GameObject _Target;
+        
+        [Button, FoldoutGroup("Replace Selected GameObjects")]
+        private void ReplaceSelectionWithTarget()
+        {
+            var selection = Selection.gameObjects;
+            foreach (var gameObject in selection)
+            {
+                var newPrefab = (GameObject) PrefabUtility.InstantiatePrefab(_Target);
+                newPrefab.transform.SetParent(gameObject.transform.parent);
+                
+                var info = new TransformInfo(gameObject.transform);
+                info.ApplyLocal(newPrefab.transform);
+                
+                if(_DeleteOld) DestroyImmediate(gameObject);
+            }
+        }
+
+        #endregion
+        
+        #region Tools
+
+        [Button, TabGroup("Tools")]
         private static void CenterMeshInParent()
         {
             var sel = Selection.gameObjects;
@@ -172,8 +196,8 @@ namespace GamePack.Editor.Tools
             }
         }
 
-        [Button, TabGroup("Design")]
-        private static void RandomRotation()
+        [Button, TabGroup("Tools")]
+        private static void RandomYRotation()
         {
             foreach (var o in Selection.gameObjects)
             {
@@ -181,7 +205,7 @@ namespace GamePack.Editor.Tools
             }
         }
         
-        [Button, TabGroup("Design")]
+        [Button, TabGroup("Tools")]
         private static void CreateWrapper()
         {
             var sel = Selection.gameObjects;
@@ -200,7 +224,7 @@ namespace GamePack.Editor.Tools
             LinqExtensions.ForEach(sel, o => { o.transform.SetParent(wrapperGo.transform); });
         }
         
-        [Button, TabGroup("Design")]
+        [Button, TabGroup("Tools"), Tooltip("Create one parent gameobject for each selected gameobject.Selected gameobject will be centered by position or by its bounds if it has a MeshRenderer component")]
         private static void CreateIndividualWrappers()
         {
             var sel = Selection.gameObjects;
@@ -222,7 +246,7 @@ namespace GamePack.Editor.Tools
             }
         }
 
-        [Button, TabGroup("Design")]
+        [Button, TabGroup("Tools")]
         private static void PlaceItems(float placementYOffset = 0, float projectionOffset = 1)
         {
             var sel = Selection.gameObjects;
@@ -249,7 +273,7 @@ namespace GamePack.Editor.Tools
             });
         }
         
-        [Button, TabGroup("Design")]
+        [Button, TabGroup("Tools")]
         private static void RandomizeScale(float min = .5f, float max = 1)
         {
             var sel = Selection.gameObjects;
@@ -262,7 +286,7 @@ namespace GamePack.Editor.Tools
         }
 
         
-        [Button, TabGroup("Design")]
+        [Button, TabGroup("Tools")]
         private static void ArrangeItemsWithSpacing(float spacing = 1)
         {
             var sel = Selection.gameObjects;
@@ -276,6 +300,62 @@ namespace GamePack.Editor.Tools
         }
         
         #endregion
+     
+        #region Add Component Name
+
+        [Button, FoldoutGroup("Component Name"), PropertyOrder(-1)]
+        private void AddComponentNamesInScene()
+        {
+            foreach (var gObject in FindAllObjects.InScene<GameObject>()) 
+                RenameGameObject(gObject);
+        }
         
+        [Button, FoldoutGroup("Component Name"), PropertyOrder(-1)]
+        private void AddComponentNamesOfSelected()
+        {
+            foreach (var gObject in Selection.gameObjects) 
+                RenameGameObject(gObject);
+        }
+        
+        private void RenameGameObject(GameObject gObject)
+        {
+            var oldName = gObject.name;
+            // Get components (not in UnityEngine namespace)
+            var components = gObject.GetComponents<MonoBehaviour>().Where(behaviour =>
+            {
+                // Filter components with UnityEngine namespace
+                var type = behaviour.GetType();
+                var baseNameSpace = type.Namespace?.Split('.')[0];
+
+                return baseNameSpace == null || baseNameSpace != "UnityEngine";
+            }).ToArray();
+
+            // Return if no component exists
+            if (!components.Any()) return;
+
+            Undo.RecordObject(gObject, "BaseEditorUtilities/Rename ");
+
+            var suffix = "";
+            foreach (var component in components)
+            {
+                if (suffix != "") suffix += ", ";
+                suffix += $"{component.GetType().Name}";
+            }
+            // Add braces
+            suffix = $" [{suffix}]";
+
+            // Check if name already contains suffix
+            if (gObject.name.Length >= suffix.Length &&
+                gObject.name.Contains(suffix)) return;
+
+            
+            // Trim
+            gObject.name = gObject.name.Trim();
+
+            gObject.name += suffix;
+            Debug.Log($"Renamed '{oldName}' to '{gObject.name}'");
+        }
+
+        #endregion
     }
 }

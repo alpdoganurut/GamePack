@@ -16,7 +16,7 @@ namespace GamePack.Editor.Boilerplate
 
         private static void SceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode arg1)
         {
-            if((int)arg1 == 4)  // This is the initial load mode
+            if((int)arg1 == 4)  // 4 is the initial load mode
                 CreateCursor();
         }
 
@@ -36,7 +36,11 @@ namespace GamePack.Editor.Boilerplate
             cursor.rectTransform.anchorMax = Vector2.zero;
             cursor.rectTransform.anchorMin = Vector2.zero;
 
-            new Operation(updateAction: _ => cursor.rectTransform.anchoredPosition = Input.mousePosition / canvas.transform.localScale.x).Start();
+            // Cursor showing loop
+            new Operation(
+                updateAction: _ => cursor.rectTransform.anchoredPosition = Input.mousePosition / canvas.transform.localScale.x, 
+                finishCondition: () => false)
+                .Start();
         }
     }
 }
