@@ -2,12 +2,10 @@ using System;
 using System.Linq;
 using GamePack.Boilerplate.Structure;
 using GamePack.Boilerplate.Tutorial;
-using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 #if UNITY_EDITOR
@@ -19,7 +17,10 @@ using UnityEditor;
 
 namespace GamePack.Boilerplate.Main
 {
-    public abstract class GameGenericBase<TConfig, TLevelSceneRefBase, TMainSceneRefBase> : GameBase where TConfig: ConfigBase where TLevelSceneRefBase: LevelSceneRefBase where TMainSceneRefBase: MainSceneRefBase
+    public abstract class GameGenericBase<TConfig, TLevelSceneRefBase, TMainSceneRefBase> : GameBase
+        where TConfig : ConfigBase
+        where TLevelSceneRefBase : LevelSceneRefBase
+        where TMainSceneRefBase : MainSceneRefBase
     {
         private const string LevelTextPrefix = "Level ";
         
@@ -142,9 +143,9 @@ namespace GamePack.Boilerplate.Main
                 if(StructureManager.Controllers != null)
                     for (var index = StructureManager.Controllers.Count - 1; index >= 0; index--)
                     {
-                        var controller = StructureManager.Controllers[index];
-                        (controller as ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase>)
-                            ?.InternalOnLevelStart(_MainSceneRef, _levelSceneRef);
+                        var controller = StructureManager.Controllers[index] as ControllerGenericBase<TMainSceneRefBase, TLevelSceneRefBase>;
+                        if (controller != null) controller.InternalOnLevelStart(_MainSceneRef, _levelSceneRef);
+                        else Debug.LogError( $"{StructureManager.Controllers[index].name} is type of {StructureManager.Controllers[index].GetType()} and can't be processed by {name}");
                     }
 
                 _gameSessionDelegate?.DidStartLevel(_MainSceneRef, LevelSceneRef);
@@ -302,8 +303,7 @@ namespace GamePack.Boilerplate.Main
         #endregion
         
         // ReSharper disable once UnusedMember.Global - Used when Analytics is enabled
-        public static void SetAnalyticsDelegate(AnalyticsDelegateBase analyticsDelegate) => 
-            _analyticsDelegate = analyticsDelegate;
+        public static void SetAnalyticsDelegate(AnalyticsDelegateBase analyticsDelegate) =>  _analyticsDelegate = analyticsDelegate;
 
         protected void SetGameSessionDelegate(GameSessionDelegateBase<TLevelSceneRefBase, TMainSceneRefBase> gameSessionDelegate)
         {
@@ -312,7 +312,6 @@ namespace GamePack.Boilerplate.Main
             _gameSessionDelegate?.InitiateMainScene(_MainSceneRef);
         }
         
-
         #region Obsolete Virtual Game State Callbacks
 
         [Obsolete("Use GameSessionDelegate for handling level event.")]

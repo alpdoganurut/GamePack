@@ -16,13 +16,16 @@
 
 ###**Boilerplate Usage**
 
-**Config.cs** - Central game configuration, populated with design variables.
+- **Config.cs** - Central game configuration, populated with design variables.
 
-**GameSessionDelegate.cs** - GameSession callbacks to control game logic flow.
 
-**LevelSceneRef.cs** - Contains level specific references to use in Controller and GameSessionDelegate. Every level Scene contains one instance.
+- **GameSessionDelegate.cs** - GameSession callbacks to control game logic flow.
 
-**MainSceneRef.cs** - Contains main scene references to use in Controller and GameSessionDelegate.
+
+- **MainSceneRef.cs** - Contains main scene references to use in Controller and GameSessionDelegate.
+
+
+- **LevelSceneRef.cs** - Contains level specific references to use in Controller and GameSessionDelegate. Every level Scene contains one instance.
 
 
 - **Controller**

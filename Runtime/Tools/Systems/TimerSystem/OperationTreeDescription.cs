@@ -48,6 +48,8 @@ namespace GamePack.TimerSystem
 
         public OperationTreeDescription BindTo(Object obj)
         {
+            if (!obj) return this;
+            
             foreach (var operation in _operations) operation.BindTo(obj);
 
             return this;

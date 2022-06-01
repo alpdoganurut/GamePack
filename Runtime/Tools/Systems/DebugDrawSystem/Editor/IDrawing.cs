@@ -1,6 +1,5 @@
 #if USING_SHAPES
 
-using TMPro;
 using UnityEngine;
 
 // Debug.DrawLine();    *

@@ -9,7 +9,7 @@ namespace GamePack.Editor.Tools
 {
     public class ReplaceWithWindow : OdinEditorWindow
     {
-        [MenuItem("Utilities/Replace Selection Window")]
+        [MenuItem("Utilities/Show Replace Tools Window", priority = 100)]
         public static void ShowWindow()
         {
             GetWindow<ReplaceWithWindow>();

@@ -22,7 +22,7 @@ namespace GamePack.Editor.Boilerplate
 
         private static void CreateCursor()
         {
-            if (!ProjectConfig.Instance.ShowCursor) return;
+            if (!ProjectEditorConfig.Instance.ShowCursor) return;
 
             var canvas = new GameObject("Cursor Canvas").AddComponent<Canvas>();
             canvas.renderMode = RenderMode.ScreenSpaceOverlay;
@@ -32,7 +32,7 @@ namespace GamePack.Editor.Boilerplate
             canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             canvasScaler.referenceResolution = new Vector2(1080, 1920);
 
-            var cursor = Object.Instantiate(ProjectConfig.Instance.CursorPrefab, canvas.transform, false);
+            var cursor = Object.Instantiate(ProjectEditorConfig.Instance.CursorPrefab, canvas.transform, false);
             cursor.rectTransform.anchorMax = Vector2.zero;
             cursor.rectTransform.anchorMin = Vector2.zero;
 

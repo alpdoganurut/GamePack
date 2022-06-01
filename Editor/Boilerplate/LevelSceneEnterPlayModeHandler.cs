@@ -24,7 +24,7 @@ namespace GamePack.Editor.Boilerplate
         
         private static void CheckLevelEnterPlayModeForLoadingMainScene()
         {
-            if(!ProjectConfig.Instance.AutoEnterMainScene) return;
+            if(!ProjectEditorConfig.Instance.AutoEnterMainScene) return;
             
             // No game exists
             var game = FindAllObjects.InScene<GameBase>().FirstOrDefault();
@@ -32,7 +32,7 @@ namespace GamePack.Editor.Boilerplate
             
             // Found level helper
             var sceneRef = FindAllObjects.InScene<LevelSceneRefBase>();
-            if(sceneRef.Count <= 0) return;
+            if(sceneRef.Length <= 0) return;
             
             ManagedLog.Log($"Loading main scene to test {SceneManager.GetActiveScene().name}");
 

@@ -29,21 +29,21 @@ namespace GamePack.Utilities
         /// </summary>
         /// <typeparam name="T">Bulunacak GameObject'lerin type'ı.</typeparam>
         /// <returns></returns>
-        public static List<T> InScene<T>() where T: Component
+        public static T[] InScene<T>() where T: Object
         {
             return Resources.FindObjectsOfTypeAll<T>()
 #if UNITY_EDITOR
-                .Where(go => !EditorUtility.IsPersistent(go.transform.root.gameObject) && !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave))
+                .Where(go => !EditorUtility.IsPersistent(go) && !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave))
 #endif
-                .ToList();
+                .ToArray();
         }
 
 #if UNITY_EDITOR
-        public static List<T> InEditor<T>() where T: Object
+        public static T[] InEditor<T>() where T: Object
         {
             return Resources.FindObjectsOfTypeAll<T>()
                 .Where(go => EditorUtility.IsPersistent(go) && !(go.hideFlags == HideFlags.NotEditable || go.hideFlags == HideFlags.HideAndDontSave))
-                .ToList();
+                .ToArray();
         }
 #endif
     }

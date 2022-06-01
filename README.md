@@ -1,13 +1,16 @@
 # GamePack
 
-Various tools to streamline producing basic games.
+###Various tools to streamline producing basic games.
 
-Requires following assets to work.
+###[GamePack and Boilerplate Documentation](./Documentation/GamePack.md)
 
-Core requirement:
+###**Requirements** _(Not included)_
 
+- **Core:**  
+OdinInspector is used extensively in Editor functions and required for whole pack to work.
 https://assetstore.unity.com/packages/tools/utilities/odin-inspector-and-serializer-89041
 
-DebugDraw class requirement:
 
+- **Optional:**  
+Shapes Plugin is used for DebugDraw class' drawing features.  
 https://assetstore.unity.com/packages/tools/particles-effects/shapes-173167

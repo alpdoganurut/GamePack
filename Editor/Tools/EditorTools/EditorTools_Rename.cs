@@ -1,4 +1,5 @@
 using System.Linq;
+using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -17,7 +18,7 @@ namespace GamePack.Editor.Tools
         [Button, TabGroup("Rename")]
         private void RenameAll()
         {
-            foreach (var gObject in FindObjectsOfType<GameObject>()) 
+            foreach (var gObject in FindAllObjects.InScene<GameObject>()) 
                 RenameGameObject(gObject);
         }
         

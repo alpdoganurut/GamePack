@@ -57,7 +57,6 @@ namespace GamePack.TimerSystem
             float delay = 0,
             bool ignoreTimeScale = false,
             EaseCurve? ease = null,
-            // AnimationCurve easeCurve = null,
             OperationAction action = null,
             OperationUpdateAction updateAction = null,
             OperationEndAction endAction = null,
@@ -73,7 +72,7 @@ namespace GamePack.TimerSystem
             // -- Validity checks -- //
             // Check if duration and finish condition both supplied
             var isDurationSupplied = duration > 0;
-            Assert.IsFalse(isDurationSupplied && finishCondition != null, "Duration and finish condition both can't be supplied!"); // Botch can't be supplied
+            Assert.IsFalse(isDurationSupplied && finishCondition != null, "Duration and finish condition both can't be supplied!");
             // Ease can't be used if no duration is set
             Assert.IsTrue(ease == null || isDurationSupplied, "Ease can't be used if no duration is set!");
 
@@ -88,7 +87,6 @@ namespace GamePack.TimerSystem
             IsIgnoreTimeScale = ignoreTimeScale;
             
             _ease = ease;
-            // _easeCurve = easeCurve;
             
             _action = action;
             _updateAction = updateAction;

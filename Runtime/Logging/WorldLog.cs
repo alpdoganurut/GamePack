@@ -1,8 +1,8 @@
 #if USING_SHAPES
 
+using GamePack.DebugDrawSystem.DrawingMethods;
 using GamePack.TimerSystem;
 using GamePack.Utilities;
-using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 using UnityEngine;
 
 namespace GamePack.Logging

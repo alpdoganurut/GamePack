@@ -67,8 +67,10 @@ namespace GamePack.Examples.TimerExample
                     {
                         _ObjectToMove.transform.position = Vector3.Lerp(objectStartPos, objectStartPos + new Vector3(0, 0, 5), 1 - tVal);
                     }))
-                .Save()
-                .BindTo(_BindObject);
+                .Save();
+                
+                if(_BindObject)
+                    _operationDescription.BindTo(_BindObject);
             
             if(_IsRepeat) _operationDescription.Start(_IgnoreTimeScale).Repeat();
             else

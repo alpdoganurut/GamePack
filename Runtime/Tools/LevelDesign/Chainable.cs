@@ -1,11 +1,11 @@
 #if USING_SHAPES
-using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 #endif
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using GamePack.DebugDrawSystem.DrawingMethods;
 using GamePack.Logging;
 using GamePack.TimerSystem;
 using Sirenix.OdinInspector;

@@ -4,7 +4,6 @@ using UnityEditor;
 
 using UnityEngine;
 using System.Linq;
-using GamePack.UnityUtilities;
 using GamePack.Utilities;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
@@ -68,12 +67,7 @@ namespace GamePack.Logging
             _lastLogFrameCount = 0;
         }
 #endif
-        
-        /*private static void LateUpdate()
-        {
-            _frameCount++;
-        }*/
-        
+
         [Conditional("UNITY_EDITOR")]
         public static void Log(object obj, Type type = Type.Default, Object context = null, Color? color = null, bool avoidFrameCount = false)
         {
@@ -123,10 +117,11 @@ namespace GamePack.Logging
         {
             try
             {
-                var frame = new StackFrame(2 + stackOffset);
+                var frame = new StackFrame(2 + stackOffset, true);
                 var method = frame.GetMethod();
                 var type = method.DeclaringType;
-                return $"({type?.Name}.{method.Name})";
+                var fileLineNumber = frame.GetFileLineNumber();
+                return $"({type?.Name}.{method.Name}.{fileLineNumber})";
             }
             catch (Exception e)
             {

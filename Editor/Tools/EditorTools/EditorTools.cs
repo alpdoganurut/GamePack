@@ -10,7 +10,7 @@ namespace GamePack.Editor.Tools
     [CreateAssetMenu(fileName = "Base Editor Utilities", menuName = "GamePack/Editor Utilities", order = 0)]
     public partial class EditorTools : OdinEditorWindow
     {
-        [MenuItem("Utilities/Remove Colliders of Selection")]
+        [MenuItem("Utilities/Remove Colliders of Selection", priority = 200)]
         private static void RemoveColliders()
         {
             var sel = Selection.gameObjects;
@@ -37,7 +37,7 @@ namespace GamePack.Editor.Tools
         }
 
         
-        [MenuItem("Utilities/Remove MonoBehaviours of Selection")]
+        [MenuItem("Utilities/Remove MonoBehaviours of Selection", priority = 200)]
         private static void RemoveMonoBehaviours()
         {
             var sel = Selection.gameObjects;

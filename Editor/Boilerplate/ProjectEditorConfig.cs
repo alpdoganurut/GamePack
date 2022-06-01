@@ -1,3 +1,4 @@
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -5,12 +6,12 @@ using UnityEngine.UI;
 
 namespace GamePack.Editor.Boilerplate
 {
-    [CreateAssetMenu(fileName = "Project Config", menuName = "GamePack/Project Config", order = 0)]
-    public class ProjectConfig : ScriptableObject
+    [CreateAssetMenu(fileName = "Project Config", menuName = "GamePack/Project Editor Config", order = 0)]
+    public class ProjectEditorConfig : ScriptableObject
     {
-        private static ProjectConfig _instance;
+        private static ProjectEditorConfig _instance;
 
-        public static ProjectConfig Instance
+        public static ProjectEditorConfig Instance
         {
             get
             {
@@ -25,10 +26,10 @@ namespace GamePack.Editor.Boilerplate
 
         private static void FindInProject()
         {
-            var guids = AssetDatabase.FindAssets($"t:{nameof(ProjectConfig)}");
+            var guids = AssetDatabase.FindAssets($"t:{nameof(ProjectEditorConfig)}");
             if (guids.Length == 0)
             {
-                Debug.LogError($"Project contains no {nameof(ProjectConfig)}");
+                Debug.LogError($"Project contains no {nameof(ProjectEditorConfig)}");
                 return;
             }
 
@@ -36,9 +37,9 @@ namespace GamePack.Editor.Boilerplate
 
             if (guids.Length > 1)
                 Debug.LogError(
-                    $"Shouldn't have more than one {nameof(ProjectConfig)} in project. Choosing first one ({path}) as instance.");
+                    $"Shouldn't have more than one {nameof(ProjectEditorConfig)} in project. Choosing first one ({path}) as instance.");
 
-            Instance = AssetDatabase.LoadAssetAtPath<ProjectConfig>(path);
+            Instance = AssetDatabase.LoadAssetAtPath<ProjectEditorConfig>(path);
         }
         
         [SerializeField] private bool _AutoEnterMainScene = true;
@@ -48,7 +49,7 @@ namespace GamePack.Editor.Boilerplate
             set => _AutoEnterMainScene = value;
         }
 
-        [field: SerializeField] public bool ShowCursor { get; set; }
-        [field: SerializeField] public Image CursorPrefab { get; set; }
+        [field: SerializeField, FoldoutGroup("Cursor")] public bool ShowCursor { get; set; }
+        [field: SerializeField, FoldoutGroup("Cursor")] public Image CursorPrefab { get; set; }
     }
 }

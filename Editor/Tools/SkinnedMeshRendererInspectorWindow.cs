@@ -14,7 +14,7 @@ namespace GamePack.Editor.Tools
 
         [ShowInInspector, ShowIf("@_skinnedMeshRenderer")] private Transform[] Bones => _skinnedMeshRenderer ? _skinnedMeshRenderer.bones : null;
         
-        [MenuItem("Utilities/Skinned Mesh Renderer Inspector")]
+        [MenuItem("Utilities/Show Skinned Mesh Renderer")]
         public static void ShowWindow()
         {
             GetWindow<SkinnedMeshRendererInspectorWindow>();

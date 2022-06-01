@@ -1,6 +1,6 @@
 using System;
+using GamePack.DebugDrawSystem.DrawingMethods;
 #if USING_SHAPES
-using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 #endif
 using UnityEngine;
 

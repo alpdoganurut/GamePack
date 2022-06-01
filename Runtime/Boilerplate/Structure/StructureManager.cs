@@ -1,7 +1,7 @@
 
 #if USING_SHAPES
 using Shapes;
-using Draw = GamePack.Utilities.DebugDrawSystem.DrawingMethods.Draw;
+using Draw = GamePack.DebugDrawSystem.DrawingMethods.Draw;
 #endif
 
 using System.Collections.Generic;
@@ -140,7 +140,8 @@ namespace GamePack.Boilerplate.Structure
         private static void DrawView(View view)
         {
 #if USING_SHAPES
-            if (ShowViewAxes)
+            if (
+                ShowViewAxes)
                 Draw.Axis(Vector3.zero, view.Internal_Transform);
             if (ShowViewNames)
                 Draw.Text(Vector3.zero, $"{view.GetScenePath()} ({view.GetType().Name})",

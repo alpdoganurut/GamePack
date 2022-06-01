@@ -3,6 +3,7 @@ using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+// ReSharper disable CoVariantArrayConversion
 
 namespace GamePack.Editor.Tools
 {
@@ -61,6 +62,18 @@ namespace GamePack.Editor.Tools
             Selection.objects = selectedObjects.ToArray();
         }
 
+        [MenuItem("Utilities/Selection/Siblings")]
+        private static void SelectSiblings()
+        {
+            var sel = Selection.gameObjects.ToList();
+            if (sel.Count <= 0) return;
+
+            var transformParent = sel.FirstOrDefault()?.transform.parent;
+            if (transformParent != null) sel.AddRange(from Transform sibling in transformParent select sibling.gameObject);
+
+            Selection.objects = sel.ToArray();
+        }
+
         [MenuItem("Utilities/Selection/Child TMP")]
         private static void SelectChildTMP()
         {
@@ -83,18 +96,6 @@ namespace GamePack.Editor.Tools
             }
 
             Selection.objects = selectedObjects.ToArray();
-        }
-
-        [MenuItem("Utilities/Selection/Select Siblings")]
-        private static void SelectSiblings()
-        {
-            var sel = Selection.gameObjects.ToList();
-            if (sel.Count <= 0) return;
-
-            var transformParent = sel.FirstOrDefault()?.transform.parent;
-            if (transformParent != null) sel.AddRange(from Transform sibling in transformParent select sibling.gameObject);
-
-            Selection.objects = sel.ToArray();
         }
     }
 }

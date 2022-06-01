@@ -31,6 +31,12 @@ namespace GamePack.Examples.Logging
                 transform.position = Vector3.zero;
             }
         }
+
+        [Button]
+        private void LogMethodTest()
+        {
+            ManagedLog.LogMethod();
+        }
     }
 }
 #endif

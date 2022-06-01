@@ -14,7 +14,7 @@ namespace GamePack.Editor.Tools
 {
     public partial class EditorTools
     {
-        [MenuItem("Utilities/Window")]
+        [MenuItem("Utilities/Show Editor Tools Window", priority = 100)]
         public static void ShowWindow()
         {
             GetWindow<EditorTools>();
@@ -25,7 +25,7 @@ namespace GamePack.Editor.Tools
         [Button, TabGroup("Replace")]
         private void ReplaceTmpTextString(string searchFor, string replaceWith)
         {
-            var textMeshProUguis = FindObjectsOfType<TMP_Text>();
+            var textMeshProUguis = FindAllObjects.InScene<TMP_Text>();
             // Undo.RecordObjects(textMeshProUguis.Select(ugui => ugui.gameObject).ToArray(), "ReplaceTmpTextString");
 
             var changed = new List<TMP_Text>();
@@ -44,7 +44,7 @@ namespace GamePack.Editor.Tools
         [Button, TabGroup("Replace")]
         private void ReplaceTmpUguiTextString(string searchFor, string replaceWith)
         {
-            // var textMeshProUguis = FindObjectsOfType<TextMeshProUGUI>();
+            // var textMeshProUguis = FindAllObjects.InScene<TextMeshProUGUI>();
             var textMeshProUguis = FindAllObjects.InScene<TextMeshProUGUI>();
             Undo.RecordObjects(textMeshProUguis.Select(ugui => ugui.gameObject).ToArray(), "ReplaceTmpTextString");
 
@@ -62,7 +62,7 @@ namespace GamePack.Editor.Tools
         [Button, TabGroup("Replace")]
         private void ReplaceNameString(string searchFor, string replaceWith)
         {
-            var gameObjects = FindObjectsOfType<GameObject>();
+            var gameObjects = FindAllObjects.InScene<GameObject>();
             Undo.RecordObjects(gameObjects, "ReplaceNameString");
 
             var changed = new List<GameObject>();
@@ -199,7 +199,6 @@ namespace GamePack.Editor.Tools
 
             LinqExtensions.ForEach(sel, o => { o.transform.SetParent(wrapperGo.transform); });
         }
-        
         
         [Button, TabGroup("Design")]
         private static void CreateIndividualWrappers()

@@ -3,12 +3,12 @@ using UnityEditor;
 #endif
 
 #if USING_SHAPES
-using GamePack.Utilities.DebugDrawSystem.DrawingMethods;
 #endif
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GamePack.DebugDrawSystem.DrawingMethods;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;

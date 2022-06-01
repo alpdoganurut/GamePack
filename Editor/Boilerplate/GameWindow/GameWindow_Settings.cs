@@ -81,9 +81,9 @@ namespace GamePack.Editor.Boilerplate
         
         [PropertyOrder(OrderTabsBottom)]
         [TabGroup("Settings"), ShowInInspector, InlineEditor(InlineEditorObjectFieldModes.Hidden)]
-        private ProjectConfig ProjectConfig
+        private ProjectEditorConfig ProjectEditorConfig
         {
-            get => ProjectConfig.Instance;
+            get => ProjectEditorConfig.Instance;
             // ReSharper disable once ValueParameterNotUsed
             set{}
         }
