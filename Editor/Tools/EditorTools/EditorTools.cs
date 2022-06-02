@@ -62,17 +62,6 @@ namespace GamePack.Editor.Tools
                 }
             }
         }
-        
-        public static void SortChildrenOf(GameObject go)
-        {
-            var transform = go.transform;
-            var children = transform.Cast<Transform>().OrderBy(child => child.name);
-
-            foreach (var child in children)
-            {
-                child.SetAsLastSibling();
-            }
-        }
     }
 }
 #endif

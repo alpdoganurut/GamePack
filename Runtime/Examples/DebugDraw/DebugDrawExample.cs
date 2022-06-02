@@ -1,5 +1,3 @@
-#if USING_SHAPES
-
 // #1 Import class
 using GamePack.DebugDrawSystem.DrawingMethods;
 using Sirenix.OdinInspector;
@@ -41,5 +39,3 @@ namespace GamePack.Examples.DebugDraw
         }
     }
 }
-
-#endif

@@ -2,32 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
-using TMPro;
 using UnityEditor;
 using UnityEngine;
+// ReSharper disable CoVariantArrayConversion
 
 namespace GamePack.Editor.Tools
 {
     [Serializable]
     public class SelectionHelper
     {
-        [Button, MenuItem("Utilities/Selection/Top Most Parent")]
-        private static void SelectTopMostParent()
-        {
-            var selectedObjects = new List<GameObject>();
-
-            foreach (var obj in Selection.gameObjects)
-            {
-                if (!selectedObjects.Any(o => obj.transform.IsChildOf(o.transform)))
-                {
-                    selectedObjects.Add(obj);
-                }
-            }
-
-            Selection.objects = selectedObjects.ToArray();
-        }
-
-        [Button, MenuItem("Utilities/Selection/Parents")]
+        [Button, MenuItem("Utilities/Selection/Parents"), HorizontalGroup("Selection")]
         private static void SelectParents()
         {
             var selectedObjects = new List<GameObject>();
@@ -43,7 +27,7 @@ namespace GamePack.Editor.Tools
             Selection.objects = selectedObjects.ToArray();
         }
 
-        [Button, MenuItem("Utilities/Selection/Children")]
+        [Button, MenuItem("Utilities/Selection/Children"), HorizontalGroup("Selection")]
         private static void SelectChildren()
         {
             var selectedObjects = new List<GameObject>();
@@ -64,7 +48,7 @@ namespace GamePack.Editor.Tools
             Selection.objects = selectedObjects.ToArray();
         }
 
-        [Button, MenuItem("Utilities/Selection/Siblings")]
+        [Button, MenuItem("Utilities/Selection/Siblings"), HorizontalGroup("Selection")]
         private static void SelectSiblings()
         {
             var sel = Selection.gameObjects.ToList();
@@ -74,30 +58,6 @@ namespace GamePack.Editor.Tools
             if (transformParent != null) sel.AddRange(from Transform sibling in transformParent select sibling.gameObject);
 
             Selection.objects = sel.ToArray();
-        }
-
-        [Button, MenuItem("Utilities/Selection/Child TMP")]
-        private static void SelectChildTMP()
-        {
-            var selectedObjects = new List<GameObject>();
-
-            foreach (var obj in Selection.gameObjects)
-            {
-                if (obj != null && obj.transform.childCount > 0)
-                {
-                    // selectedObjects.Add(go.transform.parent.gameObject);
-                    var tmp = obj.GetComponentInChildren<TextMeshProUGUI>();
-                    if (tmp)
-                        selectedObjects.Add(tmp.gameObject);
-                    // selectedObjects.AddRange(go.transform.Cast<Transform>().Select(transform => transform.gameObject));
-                }
-                else
-                {
-                    selectedObjects.Add(obj);
-                }
-            }
-
-            Selection.objects = selectedObjects.ToArray();
         }
     }
 }

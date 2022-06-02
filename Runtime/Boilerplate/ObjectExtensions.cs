@@ -1,4 +1,3 @@
-using GamePack.Boilerplate.Main;
 using GamePack.Boilerplate.Structure;
 using UnityEngine;
 using UnityEngine.SceneManagement;

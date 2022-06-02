@@ -2,13 +2,9 @@
 using UnityEditor;
 #endif
 
-#if USING_SHAPES
-#endif
-
-using System;
+using GamePack.DebugDrawSystem.DrawingMethods;
 using System.Collections.Generic;
 using System.Linq;
-using GamePack.DebugDrawSystem.DrawingMethods;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;

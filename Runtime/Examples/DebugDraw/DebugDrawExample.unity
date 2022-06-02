@@ -1567,7 +1567,7 @@ GameObject:
   m_Component:
   - component: {fileID: 793795788}
   m_Layer: 0
-  m_Name: ViewGroup (10)
+  m_Name: ViewGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2520,7 +2520,7 @@ GameObject:
   - component: {fileID: 1086461060}
   - component: {fileID: 1086461059}
   m_Layer: 0
-  m_Name: View
+  m_Name: View_0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

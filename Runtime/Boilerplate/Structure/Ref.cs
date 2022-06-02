@@ -1,7 +1,7 @@
 using System;
+// #if USING_SHAPES
 using GamePack.DebugDrawSystem.DrawingMethods;
-#if USING_SHAPES
-#endif
+// #endif
 using UnityEngine;
 
 namespace GamePack.Boilerplate.Structure
@@ -12,6 +12,7 @@ namespace GamePack.Boilerplate.Structure
 
         private Transform _transform;
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public Vector3 Position
         {
             get
@@ -34,13 +35,13 @@ namespace GamePack.Boilerplate.Structure
             if (!name.Contains(Prefix)) name = $"{Prefix} {name}";
         }
 
-#if USING_SHAPES
+// #if USING_SHAPES
         private void OnDrawGizmos()
         {
             Draw.Axis(Vector3.zero, Internal_Transform);
             Draw.Text(Position - new Vector3(0, 0.2f, 0), $"{name}", color: Colors.Yellow);
         }
-#endif
+// #endif
 
     }
 }

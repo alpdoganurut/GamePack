@@ -56,9 +56,6 @@ namespace GamePack.Editor.Tools
             }
         }
 
-        private static void LogTimeScale()
-        {
-            ManagedLog.Log($"TimeScale: {Time.timeScale}", avoidFrameCount: true);
-        }
+        private static void LogTimeScale() => ManagedLog.Log($"TimeScale: {Time.timeScale}", avoidFrameCount: true);
     }
 }

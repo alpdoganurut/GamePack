@@ -9,7 +9,6 @@ using GamePack.Logging;
 using GamePack.Utilities;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Assertions;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 

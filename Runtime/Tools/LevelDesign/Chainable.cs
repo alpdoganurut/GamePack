@@ -1,13 +1,6 @@
-#if USING_SHAPES
-#endif
-
-using System;
-using System.Collections;
+using GamePack.DebugDrawSystem.DrawingMethods;
 using System.Collections.Generic;
 using System.Linq;
-using GamePack.DebugDrawSystem.DrawingMethods;
-using GamePack.Logging;
-using GamePack.TimerSystem;
 using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Serialization;

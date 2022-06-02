@@ -10,7 +10,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Object = UnityEngine.Object;
+// ReSharper disable CoVariantArrayConversion
 
 namespace GamePack.Editor.Tools
 {
@@ -19,44 +19,8 @@ namespace GamePack.Editor.Tools
     {
         #region Replace
 
-        [Button, TabGroup("Replace")]
-        private void ReplaceTmpTextString(string searchFor, string replaceWith)
-        {
-            var textMeshProUguis = FindAllObjects.InScene<TMP_Text>();
-            // Undo.RecordObjects(textMeshProUguis.Select(ugui => ugui.gameObject).ToArray(), "ReplaceTmpTextString");
-
-            var changed = new List<TMP_Text>();
-            foreach (var textMeshProUgui in textMeshProUguis.Where(ugui => ugui.text.Contains(searchFor)))
-            {
-                textMeshProUgui.text = textMeshProUgui.text.Replace(searchFor, replaceWith);
-                changed.Add(textMeshProUgui);
-                EditorUtility.SetDirty(textMeshProUgui);
-            }
-
-            Debug.Log($"Replaced {changed.Count} names!");
-            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
-            Selection.objects = changed.Select(ugui => ugui.gameObject).ToArray();
-        }
-
-        [Button, TabGroup("Replace")]
-        private void ReplaceTmpUguiTextString(string searchFor, string replaceWith)
-        {
-            // var textMeshProUguis = FindAllObjects.InScene<TextMeshProUGUI>();
-            var textMeshProUguis = FindAllObjects.InScene<TextMeshProUGUI>();
-            Undo.RecordObjects(textMeshProUguis.Select(ugui => ugui.gameObject).ToArray(), "ReplaceTmpTextString");
-
-            var changed = new List<TextMeshProUGUI>();
-            foreach (var textMeshProUgui in textMeshProUguis.Where(ugui => ugui.text.Contains(searchFor)))
-            {
-                textMeshProUgui.text = textMeshProUgui.text.Replace(searchFor, replaceWith);
-                changed.Add(textMeshProUgui);
-            }
-
-            Debug.Log($"Replaced {changed.Count} names!");
-            Selection.objects = changed.Select(ugui => ugui.gameObject).ToArray();
-        }
-
-        [Button, TabGroup("Replace")]
+        [Title("Replace In Scene")]
+        [Button]
         private void ReplaceNameString(string searchFor, string replaceWith)
         {
             var gameObjects = FindAllObjects.InScene<GameObject>();
@@ -73,11 +37,28 @@ namespace GamePack.Editor.Tools
             Selection.objects = changed.ToArray();
         }
 
-        [Button, TabGroup("Replace")]
+        [Button]
+        private void ReplaceImageColors(Color searchFor, Color replaceWith)
+        {
+            var images = FindAllObjects.InScene<Image>();
+            Undo.RecordObjects(images, "Replace Colors");
+
+            var changed = new List<Image>();
+            foreach (var image in images.Where(image => image.color == searchFor))
+            {
+                image.color = replaceWith;
+                Debug.Log($"Replacing {image.name} sprite");
+                changed.Add(image);
+            }
+
+            Debug.Log($"Replaced {changed.Count} sprites!");
+        }
+
+        [Button]
         private void ReplaceImageSprite(Sprite searchFor, Sprite replaceWith)
         {
             var images = FindAllObjects.InScene<Image>();
-            Undo.RecordObjects(images.ToArray(), "Replace Sprites");
+            Undo.RecordObjects(images, "Replace Sprites");
 
             var changedImages = new List<Image>();
             foreach (var image in images.Where(spriteRenderer => spriteRenderer.sprite == searchFor))
@@ -91,28 +72,29 @@ namespace GamePack.Editor.Tools
             Selection.objects = changedImages.ToArray();
         }
 
-        [Button, TabGroup("Replace")]
-        private void ReplaceImageColors(Color searchFor, Color replaceWith)
+        [Button]
+        private void ReplaceTmpTextString(string searchFor, string replaceWith)
         {
-            var images = FindAllObjects.InScene<Image>();
-            Undo.RecordObjects(images.ToArray(), "Replace Colors");
+            var textMeshProUGuis = FindAllObjects.InScene<TMP_Text>();
 
-            var changed = new List<Image>();
-            foreach (var image in images.Where(image => image.color == searchFor))
+            var changed = new List<TMP_Text>();
+            foreach (var textMeshProUgui in textMeshProUGuis.Where(ugui => ugui.text.Contains(searchFor)))
             {
-                image.color = replaceWith;
-                Debug.Log($"Replacing {image.name} sprite");
-                changed.Add(image);
+                textMeshProUgui.text = textMeshProUgui.text.Replace(searchFor, replaceWith);
+                changed.Add(textMeshProUgui);
+                EditorUtility.SetDirty(textMeshProUgui);
             }
 
-            Debug.Log($"Replaced {changed.Count} sprites!");
+            Debug.Log($"Replaced {changed.Count} names!");
+            EditorSceneManager.MarkSceneDirty(SceneManager.GetActiveScene());
+            Selection.objects = changed.Select(ugui => ugui.gameObject).ToArray();
         }
 
-        [Button, TabGroup("Replace")]
+        [Button]
         private void ReplaceTmpTextColors(Color searchFor, Color replaceWith)
         {
             var texts = FindAllObjects.InScene<TextMeshProUGUI>();
-            Undo.RecordObjects(texts.ToArray(), "Replace TMP Text Colors");
+            Undo.RecordObjects(texts, "Replace TMP Text Colors");
 
             var changed = new List<TextMeshProUGUI>();
             foreach (var text in texts.Where(text => text.color == searchFor))
@@ -125,33 +107,24 @@ namespace GamePack.Editor.Tools
             Debug.Log($"Replaced {changed.Count} texts!");
         }
 
-        [Button, TabGroup("Replace")]
-        private void ReplaceUnityTextColors(Color searchFor, Color replaceWith)
-        {
-            var texts = FindAllObjects.InScene<Text>();
-            Undo.RecordObjects(texts, "Replace Colors");
-
-            var changed = new List<Text>();
-            foreach (var text in texts.Where(text => text.color == searchFor))
-            {
-                text.color = replaceWith;
-                Debug.Log($"Replacing {text.name} color");
-                changed.Add(text);
-            }
-
-            Debug.Log($"Replaced {changed.Count} texts!");
-        }
-
         #endregion
 
         #region Replace GameObject
 
-        [SerializeField, Required, FoldoutGroup("Replace Selected GameObjects")] private bool _DeleteOld = true;
-        [SerializeField, Required, AssetsOnly, FoldoutGroup("Replace Selected GameObjects")] private GameObject _Target;
-        
-        [Button, FoldoutGroup("Replace Selected GameObjects")]
+        [Title("Replace With Target Object")]
+        [SerializeField, AssetsOnly, HorizontalGroup("Selection", Order = -2), LabelWidth(50)] private GameObject _Target;
+        [Title("")]
+        [SerializeField, HorizontalGroup("Selection"), LabelWidth(70)] private bool _DeleteOld = true;
+
+        [PropertySpace(SpaceAfter = 20)]
+        [Button, PropertyOrder(-1)]
         private void ReplaceSelectionWithTarget()
         {
+            if(!_Target)
+            {
+                Debug.LogError("No target specified");
+                return;
+            }
             var selection = Selection.gameObjects;
             foreach (var gameObject in selection)
             {
@@ -165,7 +138,6 @@ namespace GamePack.Editor.Tools
                 if(_DeleteOld) Undo.DestroyObjectImmediate(gameObject);
             }
         }
-
         #endregion
     }
 }

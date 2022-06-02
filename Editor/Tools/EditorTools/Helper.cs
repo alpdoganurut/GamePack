@@ -54,13 +54,13 @@ namespace GamePack.Editor.Tools
 
             var firstParent = firstOrDefault ? firstOrDefault.transform.parent : null;
             var center = Vector3.zero;
-            LinqExtensions.ForEach(sel, o => { center += o.transform.position / sel.Length; });
+            sel.ForEach(o => { center += o.transform.position / sel.Length; });
 
             var wrapperGo = new GameObject("Wrapper");
             wrapperGo.transform.position = center;
             wrapperGo.transform.SetParent(firstParent);
 
-            LinqExtensions.ForEach(sel, o => { o.transform.SetParent(wrapperGo.transform); });
+            sel.ForEach(o => { o.transform.SetParent(wrapperGo.transform); });
         }
         
         [Button, Tooltip("Create one parent gameobject for each selected gameobject.Selected gameobject will be centered by position or by its bounds if it has a MeshRenderer component")]
@@ -95,7 +95,7 @@ namespace GamePack.Editor.Tools
 
             // ReSharper disable once PossibleNullReferenceException
             
-            LinqExtensions.ForEach(sel, o =>
+            sel.ForEach(o =>
             {
                 o.SetActive(false);
                 

@@ -1,12 +1,14 @@
+#if USING_SHAPES
 using GamePack.DebugDrawSystem.DrawingMethods;
+#endif
 using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace GamePack.DebugDrawSystem
+namespace GamePack.DebugDrawSystem.Helpers
 {
     public class AxisDrawer: MonoBehaviour
     {
-#if UNITY_EDITOR
+#if UNITY_EDITOR && USING_SHAPES
         [SerializeField, Required, InfoBox("Name is visible in Play Mode.")] private bool _ShowName;
         private void OnDrawGizmos()
         {
