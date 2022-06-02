@@ -20,7 +20,13 @@ namespace GamePack.Editor.Tools
         private void Number()
         {
             var selection = Selection.gameObjects.ToList();
-            selection = selection.OrderBy(o => o.transform.GetSiblingIndex()).ToList();
+            if(selection.Count == 0) return;
+            
+            var startParent = selection[0].transform.parent;
+            selection = selection
+                .Where(o => o.transform.parent == startParent)
+                .OrderBy(o => o.transform.GetSiblingIndex())
+                .ToList();
 
             for (var index = 0; index < selection.Count; index++)
             {
@@ -85,6 +91,19 @@ namespace GamePack.Editor.Tools
 
             gObject.name += suffix;
             Debug.Log($"Renamed '{oldName}' to '{gObject.name}'");
+        }
+
+        private int GetDepth(GameObject go)
+        {
+            var t = go.transform;
+            var depth = 0;
+            while (t.parent)
+            {
+                depth++;
+                t = t.parent;
+            }
+
+            return depth;
         }
     }
 }
