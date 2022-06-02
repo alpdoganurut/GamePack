@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace GamePack.Utilities.DebugDrawSystem
+namespace GamePack.DebugDrawSystem
 {
     internal static class DrawInstructionDefaults
     {

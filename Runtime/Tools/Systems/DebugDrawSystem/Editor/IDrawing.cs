@@ -18,7 +18,7 @@ using UnityEngine;
 // DrawPolyLine()
 // DrawRect(rect, pos, Vector3 orientation), DrawRect(rect, pos, Quaternion orientation)
 
-namespace GamePack.Utilities.DebugDrawSystem
+namespace GamePack.DebugDrawSystem
 {
     public interface IDrawing
     {

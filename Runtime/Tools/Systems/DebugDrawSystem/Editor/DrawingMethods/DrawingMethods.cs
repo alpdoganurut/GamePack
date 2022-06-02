@@ -1,6 +1,5 @@
 #if USING_SHAPES
 
-using GamePack.Utilities.DebugDrawSystem;
 using Shapes;
 using UnityEngine;
 

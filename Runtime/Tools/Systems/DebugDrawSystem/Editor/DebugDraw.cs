@@ -3,28 +3,23 @@
 #if USING_SHAPES
 
 #if UNITY_EDITOR
-using UnityEditor;
-using UnityEditor.SceneManagement;
 #endif
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using GamePack.Logging;
 using GamePack.Utilities;
-using GamePack.Utilities.DebugDrawSystem;
 using Shapes;
 using Sirenix.OdinInspector;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.PlayerLoop;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.SceneManagement;
-using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
-using Random = UnityEngine.Random;
 
-namespace GamePack.Utilities.DebugDrawSystem
+namespace GamePack.DebugDrawSystem
 {
     public static class DebugDraw
     {
