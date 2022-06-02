@@ -36,7 +36,7 @@ namespace GamePack.Editor.Tools
         }
 
         [Button]
-        private static void RandomYRotation()
+        private static void RandomYAxisRotation()
         {
             foreach (var o in Selection.gameObjects)
             {
@@ -47,7 +47,7 @@ namespace GamePack.Editor.Tools
         [Button]
         private static void CreateWrapper()
         {
-            var sel = Selection.gameObjects;
+            var sel = SelectionOrderedBySiblingIndex();
             if (sel.Length <= 0) return;
             var firstOrDefault = sel.FirstOrDefault();
             if (!firstOrDefault) return;
@@ -66,7 +66,7 @@ namespace GamePack.Editor.Tools
         [Button, Tooltip("Create one parent gameobject for each selected gameobject.Selected gameobject will be centered by position or by its bounds if it has a MeshRenderer component")]
         private static void CreateIndividualWrappers()
         {
-            var sel = Selection.gameObjects;
+            var sel = SelectionOrderedBySiblingIndex();
             if (sel.Length <= 0) return;
 
             foreach (var o in sel)
@@ -85,10 +85,12 @@ namespace GamePack.Editor.Tools
             }
         }
 
-        [Button]
-        private static void PlaceItems(float placementYOffset = 0, float projectionOffset = 1)
+        [Button, Tooltip("Places items by raycasting downwards. " +
+                         "placementYOffset is how high objects will be placed on the found ground. " +
+                         "projectionOffset is the vertical offset where the ray will be cast downwards from.")]
+        private static void PlaceItemsOnGround(float placementYOffset = 0, float projectionOffset = 1)
         {
-            var sel = Selection.gameObjects;
+            var sel = SelectionOrderedBySiblingIndex();
             if (sel.Length <= 0) return;
 
             Undo.RecordObjects(sel.ToArray<Object>(), "Place Items");
@@ -102,7 +104,12 @@ namespace GamePack.Editor.Tools
                 var pos = o.transform.position;
                 var origin = pos + (Vector3.up * projectionOffset);
                 Debug.DrawRay(origin, Vector3.down * 100, Color.red, 5);
-                if (!Physics.Raycast(origin, Vector3.down, out var hit)) return;
+                if (!Physics.Raycast(origin, Vector3.down, out var hit))
+                {
+                    Debug.Log($"No ground found for {o.name}.");
+                    o.SetActive(true);
+                    return;
+                }
                 // if(hit.collider.gameObject == o) return;
 
                 Debug.DrawLine(pos, hit.point, Color.green, 5);
@@ -124,18 +131,50 @@ namespace GamePack.Editor.Tools
             }
         }
 
-        
         [Button]
-        private static void ArrangeItemsWithSpacing(float spacing = 1)
+        private static void ArrangeAsArray(float spacing = 1)
         {
-            var sel = Selection.gameObjects;
-
-
+            var sel = SelectionOrderedBySiblingIndex();
             for (var index = 0; index < sel.Length; index++)
             {
                 var obj = sel[index];
                 obj.transform.position = new Vector3(index * spacing, 0, 0);
             }
+        }
+        
+        [Button(Name = "Arrange As Grid"), Tooltip("Arrange in a grid, will try to be as square as possible if columnCount <= 0.")]
+        private static void ArrangeAsGrid(float spacing = 1, int columnCount = 0, ArrangementType arrangementType = ArrangementType.Vertical)
+        {
+            var sel = SelectionOrderedBySiblingIndex();
+
+            if (columnCount <= 0) columnCount = Mathf.FloorToInt(Mathf.Sqrt(sel.Length));
+
+            for (var index = 0; index < sel.Length; index++)
+            {
+                var obj = sel[index];
+
+                var column = index % columnCount;
+                var row = Mathf.FloorToInt((float)index / columnCount);
+
+                switch (arrangementType)
+                {
+                    case ArrangementType.Vertical:
+                        obj.transform.position = new Vector3(column * spacing, row * spacing, 0);
+                        break;
+                    case ArrangementType.Ground:
+                        obj.transform.position = new Vector3(column * spacing, 0, row * spacing);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(arrangementType), arrangementType, null);
+                }
+            }
+        }
+
+        private static GameObject[] SelectionOrderedBySiblingIndex() => Selection.gameObjects.OrderBy(o => o.transform.GetSiblingIndex()).ToArray();
+        
+        private enum ArrangementType
+        {
+            Vertical, Ground 
         }
     }
 }
