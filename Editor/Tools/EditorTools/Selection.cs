@@ -1,16 +1,17 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
-// ReSharper disable CoVariantArrayConversion
 
 namespace GamePack.Editor.Tools
 {
-    public partial class EditorTools
+    [Serializable]
+    public class SelectionHelper
     {
-        /*[Button, MenuItem("Utilities/Selection/Top Most Parent")]
+        [Button, MenuItem("Utilities/Selection/Top Most Parent")]
         private static void SelectTopMostParent()
         {
             var selectedObjects = new List<GameObject>();
@@ -97,6 +98,6 @@ namespace GamePack.Editor.Tools
             }
 
             Selection.objects = selectedObjects.ToArray();
-        }*/
+        }
     }
 }

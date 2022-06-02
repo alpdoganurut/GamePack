@@ -223,10 +223,11 @@ namespace GamePack.Boilerplate.Main
             {
                 Debug.Log("Config is empty. Trying to find it in Assets.");
                 _Config = FindAllObjects.InEditor<TConfig>().FirstOrDefault();
-
-                Debug.Log(!_Config
-                    ? "Can't find Config for game. Please create one."
-                    : $"Found a Config at {AssetDatabase.GetAssetPath(_Config)}");
+                
+                if (_Config)
+                    Debug.Log($"Found a Config at {AssetDatabase.GetAssetPath(_Config)}");
+                else
+                    Debug.LogError("Can't find Config for game. Please create one.");
             }
             
             if (!_SceneLevelManager)
@@ -234,9 +235,11 @@ namespace GamePack.Boilerplate.Main
                 Debug.Log("SceneLevelManager is empty. Trying to find it in Assets.");
                 _SceneLevelManager = FindAllObjects.InEditor<SceneLevelManager>().FirstOrDefault();
 
-                Debug.LogError(!_SceneLevelManager
-                    ? "Can't find SceneLevelManager for game. Create one."
-                    : $"Found a SceneLevelManager at {AssetDatabase.GetAssetPath(_SceneLevelManager)}");
+                if (_SceneLevelManager)
+                    Debug.Log($"Found a SceneLevelManager at {AssetDatabase.GetAssetPath(_SceneLevelManager)}");
+                else
+                    Debug.LogError("Can't find SceneLevelManager for game. Create one.");
+
             }
         }
         
