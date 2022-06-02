@@ -248,7 +248,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &267397720
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,9 +262,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _Cube: {fileID: 1849028959}
-  _Duration: 0.5
+  _Duration: 1
   _MoveOffset: {x: 0, y: 0, z: 3}
-  _RepeatCount: 4
+  _RepeatCount: 0
 --- !u!4 &267397721
 Transform:
   m_ObjectHideFlags: 0
@@ -987,7 +987,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &2012851844
 MonoBehaviour:
   m_ObjectHideFlags: 0

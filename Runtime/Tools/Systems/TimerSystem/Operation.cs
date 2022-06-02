@@ -192,8 +192,8 @@ namespace GamePack.TimerSystem
             State = OperationState.Cancelled;
         }
 
-        /// Default is false
-        internal bool IsFinishConditionTrue() => _finishCondition?.Invoke() ?? false;
+        /// Default is true
+        internal bool IsFinishConditionTrue() => _finishCondition?.Invoke() ?? true;
 
         /// Default is true
         internal bool IsWaitForConditionTrue() => _waitForCondition?.Invoke() ?? true;

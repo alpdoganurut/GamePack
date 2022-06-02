@@ -34,6 +34,10 @@ namespace GamePack.TimerSystem
         internal static void AddOperation(Operation operation)
         {
             Log($"Adding operation {operation.Name}, delay: {operation.Delay}, ignoreTimeScale: {operation.IsIgnoreTimeScale}");
+
+#if UNITY_EDITOR
+            Assert.IsTrue(!RootOperations.Contains(operation) && !RunningOperations.Contains(operation), $"Tried to add an Operation: {operation} that already exists.");
+#endif
             
             if (operation.Delay == 0)
             {
@@ -169,8 +173,9 @@ namespace GamePack.TimerSystem
                 var timeForOperation = GetTimeForOperation(runningOperation);
                 
                 // Resolve
-                if ((endTime.HasValue && timeForOperation > endTime) ||
-                    runningOperation.IsFinishConditionTrue())
+                if (endTime.HasValue 
+                        ? timeForOperation > endTime 
+                        : runningOperation.IsFinishConditionTrue())
                 {
                     // Final update call
                     if(runningOperation.Duration > 0)
@@ -214,7 +219,7 @@ namespace GamePack.TimerSystem
         {
             Log($"Resolving {operation.Name}");
             
-            SyncRemove(op => op == operation, RootOperations, RootOperationTimes);
+            SyncRemove(op => op == operation, RunningOperations, RunningOperationEndTimes, RunningOperationStartTimes);
             
             operation.Finish();
             
@@ -267,7 +272,7 @@ namespace GamePack.TimerSystem
             }
 
             removalIndexArray.Sort((i1, i2) => i2 - i1);
-            
+
             // Remove from all arrays
             foreach (var i in removalIndexArray)
             {
