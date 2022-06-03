@@ -9,6 +9,8 @@ namespace GamePack.Editor.Boilerplate
     [CreateAssetMenu(fileName = "Project Config", menuName = "GamePack/Project Editor Config", order = 0)]
     public class ProjectEditorConfig : ScriptableObject
     {
+        #region Initilization
+
         private static ProjectEditorConfig _instance;
 
         public static ProjectEditorConfig Instance
@@ -41,13 +43,11 @@ namespace GamePack.Editor.Boilerplate
 
             Instance = AssetDatabase.LoadAssetAtPath<ProjectEditorConfig>(path);
         }
+
+        #endregion
         
-        [SerializeField] private bool _AutoTestLevelScenes = true;
-        public bool AutoTestLevelScenes
-        {
-            get => _AutoTestLevelScenes;
-            set => _AutoTestLevelScenes = value;
-        }
+        [field: SerializeField ] public bool AutoTestLevelScenes { get; set; }
+        [field: SerializeField ] public bool ShowSceneButtons { get; set; }
 
         [field: SerializeField, FoldoutGroup("Cursor")] public bool ShowCursor { get; set; }
         [field: SerializeField, FoldoutGroup("Cursor")] public Image CursorPrefab { get; set; }

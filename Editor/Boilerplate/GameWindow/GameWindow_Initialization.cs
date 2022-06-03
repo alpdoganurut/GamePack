@@ -76,9 +76,6 @@ namespace GamePack.Editor.Boilerplate
                 _staticLevelManager = ReflectionHelper.GetPropertyOrField(_game, "_SceneLevelManager") as SceneLevelManager;
                 _gameEvents = ReflectionHelper.GetPropertyOrField(_game, "_GameEvents") as GameEvents;
                 
-                // _staticConfig = _config;
-                // _staticLevelManager = _levelManager;
-                
                 GameWindow.Log($"{scene.name} is valid Game scene.");
             }
             else if (_levelSceneRef)

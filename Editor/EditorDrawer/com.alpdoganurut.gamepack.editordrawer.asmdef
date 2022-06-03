@@ -1,0 +1,17 @@
+{
+    "name": "com.alpdoganurut.gamepack.editordrawer",
+    "rootNamespace": "",
+    "references": [
+        "GUID:dfcefc94e2ccc4654bcdefa913a8fd18",
+        "GUID:965109b11af36490aa738566cbbc73f1"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
