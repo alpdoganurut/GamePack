@@ -1,14 +1,9 @@
 {
-    "name": "com.alpdoganurut.gamepack.editordrawer",
+    "name": "com.alpdoganurut.gamepack.editordrawer.buildreplacement",
     "rootNamespace": "",
-    "references": [
-        "GUID:dfcefc94e2ccc4654bcdefa913a8fd18",
-        "GUID:965109b11af36490aa738566cbbc73f1"
-    ],
+    "references": [],
     "includePlatforms": [],
-    "excludePlatforms": [
-        "iOS"
-    ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],

@@ -16,10 +16,6 @@ namespace Editor.EditorDrawer
         public ScreenInfo(MessageDelegate messageEvent)
         {
             _messageEvent = messageEvent;
-            
-            // size ??= DefaultSize;
-            // Size = size.Value;
-            
             SceneScreenButtonsDrawer.RegisterInfo(this);
         }
 

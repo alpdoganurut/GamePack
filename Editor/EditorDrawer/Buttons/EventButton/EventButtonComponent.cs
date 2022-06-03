@@ -18,6 +18,6 @@ namespace Editor.EditorDrawer
 
         private void OnDisable() => SceneScreenButtonsDrawer.UnRegisterButtonComponent(this);
 
-        private void OnValidate() => name = $"Button: {_Label}";
+        private void OnValidate() => name = $"Screen Button: {_Label}";
     }
 }

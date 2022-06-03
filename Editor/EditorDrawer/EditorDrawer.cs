@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using Editor.EditorDrawer.Buttons;
 using GamePack.Editor.Boilerplate;
 using GamePack.Logging;
 using GamePack.Utilities;
@@ -71,7 +70,7 @@ namespace Editor.EditorDrawer
             {
                 var rect = new Rect(Spacing, totalHeight, screenInfo.Size.x + Padding, screenInfo.Size.y + Padding);
                 GUI.skin.box.alignment = TextAnchor.MiddleCenter;
-                GUI.Box(rect, screenInfo.Message);
+                GUI.Box(rect, screenInfo.Message, GUI.skin.box);
                 totalHeight += screenInfo.Size.y + Spacing + Padding;
             }
             
