@@ -10,8 +10,8 @@ namespace Editor.EditorDrawer
 {
     public static class EditorDrawerSystem
     {
-        private const float Spacing = 6;
-        private const float Padding = 6;
+        private const float Spacing = 4;
+        private const float Padding = 2;
 
         private static ScreenButtonsConfig _config;
 

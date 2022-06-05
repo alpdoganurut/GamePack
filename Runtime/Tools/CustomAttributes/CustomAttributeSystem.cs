@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Editor.EditorDrawer;
+using Editor.EditorDrawer.Buttons;
 using GamePack.CustomAttribute.Attributes;
 using GamePack.Logging;
 using GamePack.Utilities;
@@ -51,7 +53,7 @@ namespace GamePack.CustomAttributes
         private static void InitializeOnLoadMethod()
         {
             EditorApplication.playModeStateChanged += EditorApplicationOnPlayModeStateChanged;
-            
+            EditorDrawerSystem.RegisterButton(new DynamicButton("Validate Scene", ValidateAllInScene));
         }
 
         private static void EditorApplicationOnPlayModeStateChanged(PlayModeStateChange obj)
@@ -150,6 +152,7 @@ namespace GamePack.CustomAttributes
                     {
                         var isUnityObject = ownerType.IsSubclassOf(typeof(Object)) || fieldInfo.FieldType == typeof(Object);
                         var isString = ownerType.IsSubclassOf(typeof(string)) || fieldInfo.FieldType == typeof(string);
+                        var isNative = !(isUnityObject || isString);
                         
                         foreach (var attributeType in FieldAttributeTypes[fieldInfo])
                         {
@@ -157,8 +160,8 @@ namespace GamePack.CustomAttributes
                             
                             if(isUnityObject && val as Object != null) continue;
                             if(isString && !string.IsNullOrWhiteSpace(val as string)) continue;
-                            if(val is null) continue;
-                            
+                            if(isNative && val is not null) continue;
+
                             ValidateFieldForAttributeType(attributeType, fieldInfo, ownerComponent);
                         }
                     }

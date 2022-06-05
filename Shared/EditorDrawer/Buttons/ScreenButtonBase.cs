@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Editor.EditorDrawer
 {
     [Serializable]
-    public class ScreenButtonBase
+    public abstract class ScreenButtonBase
     {
         // ReSharper disable once UnassignedGetOnlyAutoProperty
         public virtual string Label { get; }
@@ -23,7 +23,7 @@ namespace Editor.EditorDrawer
             }
         }
 
-        public virtual void Action() { }
+        public abstract void Action();
         
         [Button]
         private void UpdateSize()

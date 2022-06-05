@@ -3,14 +3,11 @@
     "rootNamespace": "GamePack",
     "references": [
         "GUID:6055be8ebefd69e48b49212b09b47b2f",
-        "GUID:6fde90cd3441441c1a487f4f8897fca0",
-        "GUID:7ddd46bb9bf8e485bb35f8017336edeb",
-        "GUID:f0544cfc7b98542589a2e27835d10fc1",
         "GUID:13a6fdc14ca9df84eb8019bc66fa9e5d",
         "GUID:234839f5b92104d4fb68841aefec625b",
-        "GUID:f588a2a9565a4d64b5d320e8276e6ccb",
         "GUID:15fc0a57446b3144c949da3e2b9737a9",
-        "GUID:93f06646fb51546c39af5b2ec917b8d6"
+        "GUID:93f06646fb51546c39af5b2ec917b8d6",
+        "GUID:62577b02a59bc4a1c9cac10303ef6311"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
