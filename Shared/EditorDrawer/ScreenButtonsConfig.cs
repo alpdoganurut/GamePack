@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Editor.EditorDrawer.Buttons;
+using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
 
@@ -20,6 +22,11 @@ namespace Editor.EditorDrawer
         private void Reset()
         {
             Buttons = DefaultButtons;
+        }
+
+        private void Awake()
+        {
+            EditorDrawerSystem.RegisterScreenButtonsConfig(this);
         }
     }
 }

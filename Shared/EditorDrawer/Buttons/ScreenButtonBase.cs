@@ -1,8 +1,7 @@
 using System;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Editor.EditorDrawer
+namespace Editor.EditorDrawer.Buttons
 {
     [Serializable]
     public abstract class ScreenButtonBase
@@ -25,10 +24,7 @@ namespace Editor.EditorDrawer
 
         public abstract void Action();
         
-        [Button]
-        private void UpdateSize()
-        {
-            _calculatedSize = Vector2.zero;
-        }
+        
+        private void UpdateSize() => _calculatedSize = Vector2.zero;
     }
 }

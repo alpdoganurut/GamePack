@@ -1,4 +1,4 @@
-using GamePack.CustomAttribute.Attributes;
+using GamePack.CustomAttributes.Attributes;
 using UnityEngine;
 
 namespace GamePack.Modules.ObjectPool

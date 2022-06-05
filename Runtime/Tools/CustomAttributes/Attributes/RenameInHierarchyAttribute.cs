@@ -1,11 +1,7 @@
 using System;
-using UnityEngine;
 
-namespace GamePack.CustomAttribute.Attributes
+namespace GamePack.CustomAttributes.Attributes
 {
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public class RenameInHierarchyAttribute: PropertyAttribute
-    {
-        
-    }
+    [AttributeUsage(AttributeTargets.Field)]
+    public class RenameInHierarchyAttribute: Attribute {}
 }

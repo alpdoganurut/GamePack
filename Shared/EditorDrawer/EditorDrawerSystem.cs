@@ -1,10 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using Editor.EditorDrawer.Buttons;
+using Editor.EditorDrawer.Buttons.EventButton;
 using GamePack.Editor.Boilerplate;
 using GamePack.Logging;
 using GamePack.Utilities;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Editor.EditorDrawer
 {
@@ -56,27 +60,42 @@ namespace Editor.EditorDrawer
                 SceneInfos.Clear();
         }
 
+        public static void RegisterScreenButtonsConfig(ScreenButtonsConfig config)
+        {
+            if(!_config)
+                _config = config;
+        }
+        
         private static void DrawGuiOnScene(SceneView view)
         {
-            if (!ProjectEditorConfig.Instance.ShowSceneButtons) return;
+            if (!ProjectEditorConfig.Instance.ShowScreenButtons) return;
             
             Handles.BeginGUI();
-            
-            var totalHeight = Spacing;
-            foreach (var screenButtonBase in Buttons)
-            {
-                if (screenButtonBase == null) continue;
 
-                DrawButton(screenButtonBase, totalHeight);
-                totalHeight += screenButtonBase.Size.y + Spacing + (Padding * 2);
+            try
+            {
+                var totalHeight = Spacing;
+                foreach (var screenButtonBase in Buttons)
+                {
+                    if (screenButtonBase == null) continue;
+
+                    DrawButton(screenButtonBase, totalHeight);
+                    totalHeight += screenButtonBase.Size.y + Spacing + (Padding * 2);
+                }
+
+                foreach (var screenInfo in SceneInfos)
+                {
+                    var rect = new Rect(Spacing, totalHeight, screenInfo.Size.x + Padding, screenInfo.Size.y + Padding);
+                    GUI.skin.box.alignment = TextAnchor.MiddleCenter;
+                    GUI.Box(rect, screenInfo.Message, GUI.skin.box);
+                    totalHeight += screenInfo.Size.y + Spacing + Padding;
+                }
             }
-
-            foreach (var screenInfo in SceneInfos)
+            catch (Exception e)
             {
-                var rect = new Rect(Spacing, totalHeight, screenInfo.Size.x + Padding, screenInfo.Size.y + Padding);
-                GUI.skin.box.alignment = TextAnchor.MiddleCenter;
-                GUI.Box(rect, screenInfo.Message, GUI.skin.box);
-                totalHeight += screenInfo.Size.y + Spacing + Padding;
+                // Buttons list can change during a button action.
+                Console.WriteLine(e);
+                return;
             }
             
             Handles.EndGUI();
@@ -91,10 +110,11 @@ namespace Editor.EditorDrawer
 
         public static void RegisterInfo(ScreenInfo info) => SceneInfos.Add(info);
 
-        public static void RegisterButton(ScreenButtonBase button)
-        {
-            DynamicButtons.Add(button);
-        }
+        public static void UnregisterInfo(ScreenInfo screenInfo) => SceneInfos.Remove(screenInfo);
+
+        public static void RegisterDynamicButton(DynamicButton button) => DynamicButtons.Add(button);
+
+        public static void UnregisterDynamicButton(DynamicButton button) => DynamicButtons.Remove(button);
 
         public static void UnRegisterButtonComponent(EventButtonComponent eventButtonComponent) => 
             SceneButtons.RemoveAll(button => (button as EventButton)?.Component == eventButtonComponent);

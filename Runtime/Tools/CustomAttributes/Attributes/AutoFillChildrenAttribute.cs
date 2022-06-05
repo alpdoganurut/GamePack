@@ -1,11 +1,8 @@
 using System;
 using UnityEngine;
 
-namespace GamePack.CustomAttribute.Attributes
+namespace GamePack.CustomAttributes.Attributes
 {
-    [AttributeUsage(AttributeTargets.All, AllowMultiple = true)]
-    public class AutoFillChildrenAttribute: PropertyAttribute
-    {
-        
-    }
+    [AttributeUsage(AttributeTargets.Field)]
+    public class AutoFillChildrenAttribute: Attribute {}
 }

@@ -1,6 +1,6 @@
 using UnityEngine.Events;
 
-namespace Editor.EditorDrawer
+namespace Editor.EditorDrawer.Buttons.EventButton
 {
     public class EventButton: ScreenButtonBase
     {

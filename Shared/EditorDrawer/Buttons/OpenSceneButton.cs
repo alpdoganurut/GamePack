@@ -3,6 +3,7 @@ using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Editor.EditorDrawer.Buttons
 {
@@ -14,6 +15,7 @@ namespace Editor.EditorDrawer.Buttons
 
         public override string Label => $"Scene: {(_SceneAsset != null ? _SceneAsset.name : "")}";
 
+        // Required for adding in editor
         public OpenSceneButton()
         {
         }
@@ -25,6 +27,17 @@ namespace Editor.EditorDrawer.Buttons
 
         public override void Action()
         {
+            var sceneCt = SceneManager.sceneCount;
+            for (var i = 0; i < sceneCt; i++)
+            {
+                if (!SceneManager.GetSceneAt(i).isDirty) continue;
+                if (EditorUtility.DisplayDialog("Scene Not Saved",
+                        $"Scene is not saved, open new scene and lose changes?", "Lose Changes",
+                        "Cancel")) continue;
+                Debug.Log("Cancelled open scene.");
+                return;
+            }
+            
             var path = AssetDatabase.GetAssetPath(_SceneAsset);
             EditorSceneManager.OpenScene(path);
         }

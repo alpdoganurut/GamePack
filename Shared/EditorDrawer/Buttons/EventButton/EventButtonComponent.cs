@@ -2,7 +2,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Editor.EditorDrawer
+namespace Editor.EditorDrawer.Buttons.EventButton
 {
     [ExecuteAlways]
     public class EventButtonComponent: MonoBehaviour

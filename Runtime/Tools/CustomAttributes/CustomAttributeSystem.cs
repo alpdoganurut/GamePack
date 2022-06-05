@@ -1,11 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Editor.EditorDrawer;
 using Editor.EditorDrawer.Buttons;
-using GamePack.CustomAttribute.Attributes;
-using GamePack.Logging;
+using GamePack.CustomAttributes.Attributes;
 using GamePack.Utilities;
 using Sirenix.OdinInspector;
 using UnityEditor;
@@ -16,26 +16,57 @@ namespace GamePack.CustomAttributes
 {
     public static class CustomAttributeSystem
     {
-        private static readonly BindingFlags BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly;
+        #region Configuration
 
-        private static readonly Type[] AttributeTypeOrder = {
+        private static readonly BindingFlags BindingFlags = BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly | BindingFlags.Static;
+
+        private static readonly Type[] AttributeTypesOrdered = {
             typeof(AutoFillSelfAttribute),
             typeof(AutoFillChildrenAttribute),
             typeof(AutoFillSceneAttribute),
-            typeof(RequireComponent),
+            typeof(RenameInHierarchyAttribute),
+            typeof(RequiredAttribute),
+            typeof(MonitorAttribute),
         };
 
         private static readonly Dictionary<Type, Type[]> AttributeValidComponents = new Dictionary<Type, Type[]>
         {
             {typeof(AutoFillSelfAttribute), new []{typeof(Component)}},
-            {typeof(AutoFillChildrenAttribute), new []{typeof(Component)}},
-            {typeof(AutoFillSceneAttribute), new []{typeof(Component)}},
+            {typeof(AutoFillChildrenAttribute), new []{typeof(Component), typeof(IEnumerable<Component>)}},
+            {typeof(AutoFillSceneAttribute), new []{typeof(Component), typeof(IEnumerable<Component>)}},
+            {typeof(RenameInHierarchyAttribute), new []{typeof(GameObject), typeof(Component)}},
             {typeof(RequiredAttribute), new []{typeof(object)}},
+            {typeof(MonitorAttribute), new []{typeof(object)}},
         };
 
+        #endregion
+
+        #region Field Cache
+
         private static readonly List<Type> OwnerTypes = new();
-        private static readonly Dictionary<FieldInfo, List<Type>> FieldAttributeTypes = new();
         private static readonly Dictionary<Type, List<FieldInfo>> TypeFieldInfos = new();
+        private static readonly Dictionary<FieldInfo, List<Type>> FieldAttributeTypes = new();
+
+        private static readonly List<ScreenInfo> ScreenInfos = new();
+
+        #endregion
+        
+        #region Method Cache
+
+        private static readonly Type[] MethodAttributeTypesOrdered = {
+            typeof(ScreenButtonAttribute),
+        };
+        
+        private static readonly List<Type> MethodOwnerTypes = new();
+        private static readonly Dictionary<Type, List<MethodInfo>> TypeMethodInfos = new();
+        private static readonly Dictionary<MethodInfo, List<Type>> MethodAttributeTypes = new();
+
+        private static readonly List<DynamicButton> MethodScreenInfos = new();
+        private static readonly List<MethodInfo> ButtonCreatedStaticMethods = new();
+
+        #endregion
+
+        #region Initilisation & Reloading & Clearing
 
         static CustomAttributeSystem()
         {
@@ -45,28 +76,42 @@ namespace GamePack.CustomAttributes
 
         private static void AssemblyReloadEventsOnAfterAssemblyReload()
         {
-            FindTypesWithAutoFillSelf();
-            ValidateAllInScene();
+            CacheFields();
+            CacheMethods();
+            ProcessScene();
         }
 
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
+            EditorApplication.playModeStateChanged -= EditorApplicationOnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += EditorApplicationOnPlayModeStateChanged;
-            EditorDrawerSystem.RegisterButton(new DynamicButton("Validate Scene", ValidateAllInScene));
+            EditorDrawerSystem.RegisterDynamicButton(new DynamicButton("Validate Scene", ProcessScene));
         }
 
         private static void EditorApplicationOnPlayModeStateChanged(PlayModeStateChange obj)
         {
-            if (obj is PlayModeStateChange.EnteredPlayMode or PlayModeStateChange.EnteredEditMode) ValidateAllInScene();
+            if (obj is PlayModeStateChange.EnteredPlayMode or PlayModeStateChange.EnteredEditMode) ProcessScene();
         }
 
-        [Button]
-        private static void FindTypesWithAutoFillSelf()
+        private static void ClearCache()
         {
-            ManagedLog.LogMethod();
+            OwnerTypes.Clear();
+            TypeFieldInfos.Clear();
+            FieldAttributeTypes.Clear();
             
-            Clear();
+            MethodOwnerTypes.Clear();
+            TypeMethodInfos.Clear();
+            MethodAttributeTypes.Clear();
+        }
+
+        #endregion
+
+        #region Field Caching
+
+        private static void CacheFields()
+        {
+            ClearCache();
             
             var asm = Assembly.Load("Assembly-CSharp");
             foreach (var type in asm.GetTypes())
@@ -76,47 +121,33 @@ namespace GamePack.CustomAttributes
                 var fieldInfos = type.GetFields(BindingFlags);
                 foreach (var fieldInfo in fieldInfos)
                 {
-                    // if(!(fieldInfo.FieldType.IsSubclassOf(typeof(Component)) || fieldInfo.FieldType.IsSubclassOf(typeof(GameObject)))) continue;
-                    
                     var attributes = fieldInfo.GetCustomAttributes();
                     foreach (var fieldAttribute in attributes)
-                    {
-                        CheckFieldAttributeAndAdd<AutoFillSelfAttribute>(fieldAttribute, type, fieldInfo);
-                        CheckFieldAttributeAndAdd<AutoFillChildrenAttribute>(fieldAttribute, type, fieldInfo);
-                        CheckFieldAttributeAndAdd<AutoFillSceneAttribute>(fieldAttribute, type, fieldInfo);
-                        CheckFieldAttributeAndAdd<RequiredAttribute>(fieldAttribute, type, fieldInfo);
-                    }
+                    foreach (var attributeType in AttributeTypesOrdered)
+                        MatchFieldAttributeAndAdd(attributeType, fieldAttribute, type, fieldInfo);
                 }
             }
 
             foreach (var attributeList in FieldAttributeTypes.Values)
             {
-                attributeList.Sort((type, type1) => Array.IndexOf(AttributeTypeOrder, type1) - Array.IndexOf(AttributeTypeOrder, type) );
-            }
-            
-            Debug.Log("Found attributes for:");
-            foreach (var type in OwnerTypes)
-            {
-                Debug.Log(type);
+                attributeList.Sort((type, type1) => Array.IndexOf(AttributeTypesOrdered, type) - Array.IndexOf(AttributeTypesOrdered, type1) );
             }
         }
 
-        private static void CheckFieldAttributeAndAdd<T>(Attribute attribute, Type ownerType, FieldInfo fieldInfo)
+        private static void MatchFieldAttributeAndAdd(Type attributeTypeToMatch, Attribute attribute, Type ownerType, FieldInfo fieldInfo)
         {
-            if (attribute is not T) return;
+            if (attribute.GetType() != attributeTypeToMatch) return;
             
-            var attributeType = typeof(T);
-            
-            if (!AttributeValidComponents[attributeType].Any(type => fieldInfo.FieldType.IsSubclassOf(type) || type == fieldInfo.FieldType))
+            if (!AttributeValidComponents[attributeTypeToMatch].Any(type => fieldInfo.FieldType.IsSubclassOf(type) || type == fieldInfo.FieldType || type.IsAssignableFrom(fieldInfo.FieldType)))
             {
-                LogValidationError($"type: {fieldInfo.FieldType} for field: {fieldInfo.Name} in class: {fieldInfo.DeclaringType} is not valid for attribute {attributeType}");
+                LogValidationError($"type: {fieldInfo.FieldType} for field: {fieldInfo.Name} in class: {fieldInfo.DeclaringType} is not valid for attribute {attributeTypeToMatch}");
                 return;
             }
             
-            AddNewField(ownerType, attributeType, fieldInfo);
+            AddNewFieldToCache(ownerType, attributeTypeToMatch, fieldInfo);
         }
 
-        private static void AddNewField(Type ownerType, Type attributeType, FieldInfo fieldInfo)
+        private static void AddNewFieldToCache(Type ownerType, Type attributeType, FieldInfo fieldInfo)
         {
             if(!FieldAttributeTypes.ContainsKey(fieldInfo))
                 FieldAttributeTypes.Add(fieldInfo, new List<Type> {attributeType});
@@ -135,77 +166,222 @@ namespace GamePack.CustomAttributes
             }
         }
 
-        [Button]
-        private static void ValidateAllInScene()
+        #endregion
+
+        #region Method Caching
+
+        private static void CacheMethods()
         {
-            ManagedLog.LogMethod();
-            
-            foreach (var ownerType in OwnerTypes)
+            var asm = Assembly.Load("Assembly-CSharp");
+            foreach (var type in asm.GetTypes())
             {
-                var ownerComponents = Object.FindObjectsOfType(ownerType).Cast<Component>();
+                if(!type.IsSubclassOf(typeof(Component))) continue;
 
-                foreach (var ownerComponent in ownerComponents)
+                var methodInfos = type.GetMethods(BindingFlags);
+                foreach (var methodInfo in methodInfos)
                 {
-                    Debug.Log($"Filling {ownerComponent}");
-
-                    foreach (var fieldInfo in TypeFieldInfos[ownerType])
+                    var customAttributes = methodInfo.GetCustomAttributes();
+                    foreach (var methodAttribute in customAttributes)
                     {
-                        var isUnityObject = ownerType.IsSubclassOf(typeof(Object)) || fieldInfo.FieldType == typeof(Object);
-                        var isString = ownerType.IsSubclassOf(typeof(string)) || fieldInfo.FieldType == typeof(string);
-                        var isNative = !(isUnityObject || isString);
-                        
-                        foreach (var attributeType in FieldAttributeTypes[fieldInfo])
+                        foreach (var attributeTypeToMatch in MethodAttributeTypesOrdered)
                         {
-                            var val = fieldInfo.GetValue(ownerComponent);
+                            if (methodAttribute.GetType() != attributeTypeToMatch) continue;
                             
-                            if(isUnityObject && val as Object != null) continue;
-                            if(isString && !string.IsNullOrWhiteSpace(val as string)) continue;
-                            if(isNative && val is not null) continue;
-
-                            ValidateFieldForAttributeType(attributeType, fieldInfo, ownerComponent);
+                            AddNewMethodToCache(type, attributeTypeToMatch, methodInfo);
                         }
                     }
                 }
             }
         }
+        
+        private static void AddNewMethodToCache(Type ownerType, Type attributeType, MethodInfo methodInfo)
+        {
+            if(!MethodAttributeTypes.ContainsKey(methodInfo))
+                MethodAttributeTypes.Add(methodInfo, new List<Type> {attributeType});
+            
+            if (!MethodOwnerTypes.Contains(ownerType))
+            {
+                MethodOwnerTypes.Add(ownerType);
+                TypeMethodInfos.Add(ownerType, new List<MethodInfo> {methodInfo});
+            }
+            else
+            {
+                if(!TypeMethodInfos[ownerType].Contains(methodInfo))
+                    TypeMethodInfos[ownerType].Add(methodInfo);
+                if (!MethodAttributeTypes[methodInfo].Contains(attributeType))
+                    MethodAttributeTypes[methodInfo].Add(attributeType);
+            }
+        }
 
-        private static void ValidateFieldForAttributeType(Type attributeType, FieldInfo fieldInfo, Component ownerComponent)
+        #endregion
+        
+        #region Processing
+
+        private static void ProcessScene()
+        {
+            ProcessFields();
+            ProcessMethods();
+        }
+
+        private static void ClearMethodButtons()
+        {
+            foreach (var screenInfo in MethodScreenInfos)
+                EditorDrawerSystem.UnregisterDynamicButton(screenInfo);
+            MethodScreenInfos.Clear();
+            ButtonCreatedStaticMethods.Clear();
+        }
+
+        private static void ClearScreenInfos()
+        {
+            foreach (var screenInfo in ScreenInfos)
+            {
+                screenInfo?.Delete();
+            }
+
+            ScreenInfos.Clear();
+        }
+
+        #endregion
+
+        #region Field Processing
+
+        private static void ProcessFields()
+        {
+            ClearScreenInfos();
+
+            foreach (var ownerType in OwnerTypes)
+            {
+                var sceneComponents = Object.FindObjectsOfType(ownerType).Cast<Component>().ToArray();
+                ProcessComponentsFields(sceneComponents, ownerType);
+            }
+        }
+
+        private static void ProcessComponentsFields(IEnumerable<Component> sceneComponents, Type ownerType)
+        {
+            foreach (var ownerComponent in sceneComponents)
+            {
+                foreach (var fieldInfo in TypeFieldInfos[ownerType])
+                {
+                    var fieldType = fieldInfo.FieldType;
+                    var isUnityObject = fieldType.IsSubclassOf(typeof(Object)) || fieldType == typeof(Object);
+                    var isString = fieldType.IsSubclassOf(typeof(string)) || fieldType == typeof(string);
+                    var isNative = !(isUnityObject || isString);
+                    var isEnumerable = IsFieldTypeEnumerable(fieldType);
+
+                    foreach (var attributeType in FieldAttributeTypes[fieldInfo])
+                    {
+                        var val = fieldInfo.GetValue(ownerComponent);
+                        var isValid = !isEnumerable // Enumerable is always invalid - to get new objects 
+                                      && (isUnityObject && val as Object != null) // Cast and check
+                                      || (isString && !string.IsNullOrWhiteSpace(val as string)) // Invalid for whitespace
+                                      || (isNative && !isEnumerable && val is not null); // Invalid if null
+
+                        // Process Field by AttributeType
+                        if (!isValid) ProcessInvalidField(attributeType, fieldInfo, ownerComponent);
+                        ProcessField(attributeType, fieldInfo, ownerComponent);
+                    }
+                }
+            }
+        }
+
+        private static void ProcessField(Type attributeType, FieldInfo fieldInfo, Component ownerComponent)
+        {
+            var fieldInfoName = fieldInfo.Name;
+            
+            if (attributeType == typeof(RenameInHierarchyAttribute))
+            {
+                var val = fieldInfo.GetValue(ownerComponent);
+                var comp = val as Component;
+                if (comp) comp.name = fieldInfoName;
+                
+                var go = val as GameObject;
+                if (go) go.name = fieldInfoName;
+            }
+            else if (attributeType == typeof(MonitorAttribute))
+                ScreenInfos.Add(AttributeProcessors.ProcessMonitorAttribute(fieldInfo, ownerComponent, fieldInfoName));
+        }
+
+        private static void ProcessInvalidField(Type attributeType, FieldInfo fieldInfo, Component ownerComponent)
         {
             if (attributeType == typeof(AutoFillSelfAttribute))
             {
-                var value = ownerComponent.GetComponent(fieldInfo.FieldType);
-                fieldInfo.SetValue(ownerComponent, value);
+                AttributeProcessors.ProcessAutoFillSelfAttribute(fieldInfo, ownerComponent);
             }
             else if (attributeType == typeof(AutoFillChildrenAttribute))
             {
-                var value = ownerComponent.GetComponentsInChildren(fieldInfo.FieldType)
-                    .FirstOrDefault(component => component.gameObject != ownerComponent.gameObject);
-                
-                fieldInfo.SetValue(ownerComponent, value);
+                AttributeProcessors.ProcessAutoFillChildrenAttribute(fieldInfo, ownerComponent);
             }
             else if(attributeType == typeof(AutoFillSceneAttribute))
             {
-                var value = Object.FindObjectOfType(fieldInfo.FieldType, true);
-                fieldInfo.SetValue(ownerComponent, value);
+                AttributeProcessors.ProcessAutoFillSceneAttribute(fieldInfo, ownerComponent);
             }
-            else if (attributeType == typeof(RequiredAttribute))
-                LogValidationError( $"Field {fieldInfo.Name} of type {fieldInfo.DeclaringType?.Name} is not set. ({ownerComponent.GetScenePath()})",
+            else if (attributeType == typeof(RequiredAttribute) && !IsFieldTypeEnumerable(fieldInfo.FieldType))
+            {
+                LogValidationError(
+                    $"Field {fieldInfo.Name} of type {fieldInfo.DeclaringType?.Name} is not set. ({ownerComponent.GetScenePath()})",
                     ownerComponent);
-            else
-                LogValidationError($"{attributeType} is not handled.");
+            }
         }
 
-        [Button]
-        private static void Clear()
+        #endregion
+
+        #region Method Processing
+
+        private static void ProcessMethods()
         {
-            OwnerTypes.Clear();
-            FieldAttributeTypes.Clear();
-            TypeFieldInfos.Clear();
+            ClearMethodButtons();
+            foreach (var ownerType in MethodOwnerTypes)
+            {
+                var sceneComponents = Object.FindObjectsOfType(ownerType).Cast<Component>().ToArray();
+                ProcessComponentsMethods(sceneComponents, ownerType);
+            }
         }
 
-        private static void LogValidationError(string msg, Object obj = null)
+        private static void ProcessComponentsMethods(IEnumerable<Component> components, Type ownerType)
+        {
+            foreach (var ownerComponent in components)
+            {
+                foreach (var methodInfo in TypeMethodInfos[ownerType])
+                {
+                    foreach (var attributeType in MethodAttributeTypes[methodInfo])
+                    {
+                        ProcessMethod(attributeType, methodInfo, ownerComponent);
+                    }
+                }
+            }
+        }
+
+        private static void ProcessMethod(Type attributeType, MethodInfo methodInfo, Component ownerComponent)
+        {
+            if (attributeType == typeof(ScreenButtonAttribute))
+            {
+                if (methodInfo.IsStatic)
+                {
+                    if(ButtonCreatedStaticMethods.Contains(methodInfo)) return;
+                    
+                    ButtonCreatedStaticMethods.Add(methodInfo);
+                }
+
+                var button = new DynamicButton(methodInfo.Name,
+                    () => { methodInfo.Invoke(ownerComponent, Array.Empty<object>()); });
+
+                MethodScreenInfos.Add(button);
+                EditorDrawerSystem.RegisterDynamicButton(button);
+
+            }
+        }
+
+        #endregion
+
+        #region Helpers
+
+        private static bool IsFieldTypeEnumerable(Type fieldType) => fieldType.IsArray || typeof(IEnumerable).IsAssignableFrom(fieldType);
+
+        public static void LogValidationError(string msg, Object obj = null)
         {
             Debug.Log($"<color=red>[VALIDATION]</color> {msg}", obj);
         }
+
+        #endregion
     }
 }

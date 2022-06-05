@@ -19,5 +19,9 @@ namespace Editor.EditorDrawer
             EditorDrawerSystem.RegisterInfo(this);
         }
 
+        public void Delete()
+        {
+            EditorDrawerSystem.UnregisterInfo(this);
+        }
     }
 }

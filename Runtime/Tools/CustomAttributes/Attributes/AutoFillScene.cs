@@ -1,9 +1,7 @@
-using UnityEngine;
+using System;
 
-namespace GamePack.CustomAttribute.Attributes
+namespace GamePack.CustomAttributes.Attributes
 {
-    public class AutoFillSceneAttribute: PropertyAttribute
-    {
-        
-    }
+    [AttributeUsage(AttributeTargets.Field)]
+    public class AutoFillSceneAttribute: Attribute {}
 }

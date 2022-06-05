@@ -47,7 +47,7 @@ namespace GamePack.Editor.Boilerplate
         #endregion
         
         [field: SerializeField ] public bool AutoTestLevelScenes { get; set; }
-        [field: SerializeField ] public bool ShowSceneButtons { get; set; }
+        [field: SerializeField ] public bool ShowScreenButtons { get; set; }
 
         [field: SerializeField, FoldoutGroup("Cursor")] public bool ShowCursor { get; set; }
         [field: SerializeField, FoldoutGroup("Cursor")] public Image CursorPrefab { get; set; }
