@@ -22,7 +22,8 @@ namespace GamePack.CustomAttributes
             var isEnumerable = IsTypeEnumerable(fieldInfo.FieldType);
             if (isEnumerable)
             {
-                ProcessEnumerableFieldInfoForComponent(fieldInfo, ownerComponent, ownerComponent.GetComponentsInChildren);
+                ProcessEnumerableFieldInfoForComponent(fieldInfo, ownerComponent,
+                    type => ownerComponent.GetComponentsInChildren(type).Where(component => component.gameObject != ownerComponent.gameObject).ToArray());
                 return;
             }
 
@@ -91,9 +92,10 @@ namespace GamePack.CustomAttributes
                 screenInfo = new ScreenInfo(() =>
                 {
                     var val = fieldInfo.GetValue(ownerComponent);
+                    var prefix = (ownerComponent != null ? ownerComponent.name : fieldInfo.DeclaringType?.Name);
                     return val != null
-                        ? $"{ownerComponent.name}.{fieldInfoName}: {val}"
-                        : $"{ownerComponent.name}.{fieldInfoName}: null";
+                        ? $"{prefix}.{fieldInfoName}: {val}"
+                        : $"{prefix}.{fieldInfoName}: null";
                 });
             }
             return screenInfo;

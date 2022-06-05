@@ -4,7 +4,6 @@ namespace Editor.EditorDrawer
 {
     public class ScreenInfo
     {
-
         public delegate object MessageDelegate();
 
         private readonly MessageDelegate _messageEvent;
@@ -19,9 +18,6 @@ namespace Editor.EditorDrawer
             EditorDrawerSystem.RegisterInfo(this);
         }
 
-        public void Delete()
-        {
-            EditorDrawerSystem.UnregisterInfo(this);
-        }
+        public void Delete() => EditorDrawerSystem.UnregisterInfo(this);
     }
 }

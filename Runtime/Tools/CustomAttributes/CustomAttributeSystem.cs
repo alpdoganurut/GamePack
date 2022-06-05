@@ -62,7 +62,6 @@ namespace GamePack.CustomAttributes
         private static readonly Dictionary<MethodInfo, List<Type>> MethodAttributeTypes = new();
 
         private static readonly List<DynamicButton> MethodScreenInfos = new();
-        private static readonly List<MethodInfo> ButtonCreatedStaticMethods = new();
 
         #endregion
 
@@ -215,40 +214,23 @@ namespace GamePack.CustomAttributes
 
         #endregion
         
-        #region Processing
-
         private static void ProcessScene()
         {
             ProcessFields();
             ProcessMethods();
         }
 
-        private static void ClearMethodButtons()
-        {
-            foreach (var screenInfo in MethodScreenInfos)
-                EditorDrawerSystem.UnregisterDynamicButton(screenInfo);
-            MethodScreenInfos.Clear();
-            ButtonCreatedStaticMethods.Clear();
-        }
-
-        private static void ClearScreenInfos()
-        {
-            foreach (var screenInfo in ScreenInfos)
-            {
-                screenInfo?.Delete();
-            }
-
-            ScreenInfos.Clear();
-        }
-
-        #endregion
-
         #region Field Processing
 
         private static void ProcessFields()
         {
             ClearScreenInfos();
+            ProcessStaticFields();
+            ProcessInstanceFields();
+        }
 
+        private static void ProcessInstanceFields()
+        {
             foreach (var ownerType in OwnerTypes)
             {
                 var sceneComponents = Object.FindObjectsOfType(ownerType).Cast<Component>().ToArray();
@@ -262,6 +244,8 @@ namespace GamePack.CustomAttributes
             {
                 foreach (var fieldInfo in TypeFieldInfos[ownerType])
                 {
+                    if(fieldInfo.IsStatic) continue;
+                    
                     var fieldType = fieldInfo.FieldType;
                     var isUnityObject = fieldType.IsSubclassOf(typeof(Object)) || fieldType == typeof(Object);
                     var isString = fieldType.IsSubclassOf(typeof(string)) || fieldType == typeof(string);
@@ -288,7 +272,7 @@ namespace GamePack.CustomAttributes
         {
             var fieldInfoName = fieldInfo.Name;
             
-            if (attributeType == typeof(RenameInHierarchyAttribute))
+            if (ownerComponent && attributeType == typeof(RenameInHierarchyAttribute))
             {
                 var val = fieldInfo.GetValue(ownerComponent);
                 var comp = val as Component;
@@ -299,6 +283,19 @@ namespace GamePack.CustomAttributes
             }
             else if (attributeType == typeof(MonitorAttribute))
                 ScreenInfos.Add(AttributeProcessors.ProcessMonitorAttribute(fieldInfo, ownerComponent, fieldInfoName));
+        }
+
+        private static void ProcessStaticFields()
+        {
+            foreach (var (methodInfo, attributes) in FieldAttributeTypes)
+            {
+                if (!methodInfo.IsStatic) continue;
+
+                foreach (var attribute in attributes)
+                {
+                    ProcessField(attribute, methodInfo, null);
+                }
+            }
         }
 
         private static void ProcessInvalidField(Type attributeType, FieldInfo fieldInfo, Component ownerComponent)
@@ -323,6 +320,16 @@ namespace GamePack.CustomAttributes
             }
         }
 
+        private static void ClearScreenInfos()
+        {
+            foreach (var screenInfo in ScreenInfos)
+            {
+                screenInfo?.Delete();
+            }
+
+            ScreenInfos.Clear();
+        }
+
         #endregion
 
         #region Method Processing
@@ -330,14 +337,42 @@ namespace GamePack.CustomAttributes
         private static void ProcessMethods()
         {
             ClearMethodButtons();
+            ProcessStaticMethods();
+            ProcessInstanceMethods();
+        }
+
+        private static void ProcessInstanceMethods()
+        {
             foreach (var ownerType in MethodOwnerTypes)
             {
                 var sceneComponents = Object.FindObjectsOfType(ownerType).Cast<Component>().ToArray();
-                ProcessComponentsMethods(sceneComponents, ownerType);
+                ProcessComponentsInstanceMethods(sceneComponents, ownerType);
             }
         }
 
-        private static void ProcessComponentsMethods(IEnumerable<Component> components, Type ownerType)
+        private static void ProcessStaticMethods()
+        {
+            foreach (var (methodInfo, attributes) in MethodAttributeTypes)
+            {
+                if (!methodInfo.IsStatic) continue;
+
+                foreach (var attribute in attributes)
+                {
+                    if (attribute == typeof(ScreenButtonAttribute))
+                    {
+                        var buttonLabel = $"{methodInfo.DeclaringType?.Name}.{methodInfo.Name} ( )";
+
+                        var button = new DynamicButton(buttonLabel,
+                            () => { methodInfo.Invoke(null, Array.Empty<object>()); });
+
+                        MethodScreenInfos.Add(button);
+                        EditorDrawerSystem.RegisterDynamicButton(button);
+                    }
+                }
+            }
+        }
+
+        private static void ProcessComponentsInstanceMethods(IEnumerable<Component> components, Type ownerType)
         {
             foreach (var ownerComponent in components)
             {
@@ -355,20 +390,29 @@ namespace GamePack.CustomAttributes
         {
             if (attributeType == typeof(ScreenButtonAttribute))
             {
-                if (methodInfo.IsStatic)
-                {
+                if (methodInfo.IsStatic) return;
+                /*{
                     if(ButtonCreatedStaticMethods.Contains(methodInfo)) return;
                     
                     ButtonCreatedStaticMethods.Add(methodInfo);
-                }
+                }*/
 
-                var button = new DynamicButton(methodInfo.Name,
+                var buttonLabel = methodInfo.IsStatic ? $"{methodInfo.Name} ( )" : $"{ownerComponent.name}.{methodInfo.Name} ( )";
+                
+                var button = new DynamicButton(buttonLabel,
                     () => { methodInfo.Invoke(ownerComponent, Array.Empty<object>()); });
 
                 MethodScreenInfos.Add(button);
                 EditorDrawerSystem.RegisterDynamicButton(button);
 
             }
+        }
+
+        private static void ClearMethodButtons()
+        {
+            foreach (var screenInfo in MethodScreenInfos)
+                EditorDrawerSystem.UnregisterDynamicButton(screenInfo);
+            MethodScreenInfos.Clear();
         }
 
         #endregion

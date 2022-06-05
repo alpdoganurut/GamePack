@@ -1,4 +1,5 @@
 using System;
+using Sirenix.OdinInspector;
 using UnityEngine;
 
 namespace Editor.EditorDrawer.Buttons
@@ -7,7 +8,7 @@ namespace Editor.EditorDrawer.Buttons
     public abstract class ScreenButtonBase
     {
         // ReSharper disable once UnassignedGetOnlyAutoProperty
-        public virtual string Label { get; }
+        public abstract string Label { get; }
         
         private Vector2 _calculatedSize = Vector2.zero;
         
@@ -24,7 +25,7 @@ namespace Editor.EditorDrawer.Buttons
 
         public abstract void Action();
         
-        
+        [Button]
         private void UpdateSize() => _calculatedSize = Vector2.zero;
     }
 }
