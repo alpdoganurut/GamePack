@@ -14,9 +14,9 @@ namespace Editor.EditorDrawer
 
         public string Label => _Label;
 
-        private void OnEnable() => SceneScreenButtonsDrawer.RegisterButtonComponent(this);
+        private void OnEnable() => EditorDrawerSystem.RegisterButtonComponent(this);
 
-        private void OnDisable() => SceneScreenButtonsDrawer.UnRegisterButtonComponent(this);
+        private void OnDisable() => EditorDrawerSystem.UnRegisterButtonComponent(this);
 
         private void OnValidate() => name = $"Screen Button: {_Label}";
     }

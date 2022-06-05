@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Editor.EditorDrawer
 {
-    public static class SceneScreenButtonsDrawer
+    public static class EditorDrawerSystem
     {
         private const float Spacing = 6;
         private const float Padding = 6;
@@ -26,11 +26,16 @@ namespace Editor.EditorDrawer
                 }
 
                 foreach (var button in SceneButtons)
+                    
+                    yield return button;
+                foreach (var button in DynamicButtons)
                     yield return button;
             }
         }
 
         private static readonly List<ScreenButtonBase> SceneButtons = new();
+        
+        private static readonly List<ScreenButtonBase> DynamicButtons = new();
         
         private static readonly List<ScreenInfo> SceneInfos = new();
 
@@ -85,6 +90,11 @@ namespace Editor.EditorDrawer
         }
 
         public static void RegisterInfo(ScreenInfo info) => SceneInfos.Add(info);
+
+        public static void RegisterButton(ScreenButtonBase button)
+        {
+            DynamicButtons.Add(button);
+        }
 
         public static void UnRegisterButtonComponent(EventButtonComponent eventButtonComponent) => 
             SceneButtons.RemoveAll(button => (button as EventButton)?.Component == eventButtonComponent);

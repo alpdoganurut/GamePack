@@ -16,7 +16,7 @@ namespace Editor.EditorDrawer
         public ScreenInfo(MessageDelegate messageEvent)
         {
             _messageEvent = messageEvent;
-            SceneScreenButtonsDrawer.RegisterInfo(this);
+            EditorDrawerSystem.RegisterInfo(this);
         }
 
     }

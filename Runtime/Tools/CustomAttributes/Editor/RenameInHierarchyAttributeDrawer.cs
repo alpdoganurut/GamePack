@@ -11,7 +11,7 @@ namespace GamePack.CustomAttribute.Editor
         {
             label.text = $"{property.displayName} (Renamed)";
             PropertyDrawerTools.DrawProperty(position, property, label);
-            PropertyDrawerTools.RenamePropertyReference(property);
+            // PropertyDrawerTools.RenamePropertyReference(property);
         }
     }
 }

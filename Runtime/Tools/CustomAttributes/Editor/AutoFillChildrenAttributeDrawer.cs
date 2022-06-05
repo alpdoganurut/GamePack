@@ -11,12 +11,12 @@ namespace GamePack.CustomAttribute.Editor
         {
             label.text = $"{property.displayName} (AutoFillChildren)";
             PropertyDrawerTools.DrawProperty(position, property, label);
-            PropertyDrawerTools.RenamePropertyReference(property);
+            // PropertyDrawerTools.RenamePropertyReference(property);
 
-            if (property.objectReferenceValue) return;
+            /*if (property.objectReferenceValue) return;
             
             property.objectReferenceValue =
-                PropertyDrawerTools.FindComponentOfSerializedField(property, PropertyDrawerTools.GetComponentPlace.Children);
+                PropertyDrawerTools.FindComponentOfSerializedField(property, PropertyDrawerTools.GetComponentPlace.Children);*/
             
         }
     }
