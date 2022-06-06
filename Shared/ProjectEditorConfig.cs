@@ -23,9 +23,6 @@ namespace GamePack.Editor.Boilerplate
             private set => _instance = value;
         }
 
-        [InitializeOnLoadMethod]
-        private static void InitializeOnLoadMethod() => FindInProject();
-
         private static void FindInProject()
         {
             var guids = AssetDatabase.FindAssets($"t:{nameof(ProjectEditorConfig)}");

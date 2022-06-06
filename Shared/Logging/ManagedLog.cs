@@ -39,7 +39,7 @@ namespace GamePack.Logging
         private static void FindConfig()
         {
 #if UNITY_EDITOR
-            _config = FindInProject.ByType<ManagedLogConfig>();
+            _config = FindInProject.AssetByType<ManagedLogConfig>();
             // var managedLogConfigs = FindAllObjects.InEditor<ManagedLogConfig>();
 
             // if (managedLogConfigs.Count > 0)

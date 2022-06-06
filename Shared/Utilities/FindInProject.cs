@@ -6,7 +6,7 @@ namespace GamePack.Utilities
 {
     public static class FindInProject
     {
-        public static T ByType<T>() where T: Object
+        public static T AssetByType<T>() where T: Object
         {
             var typeName = typeof(T).Name;
             var guids = AssetDatabase.FindAssets($"t:{typeName}");

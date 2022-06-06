@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Editor.EditorDrawer
+namespace Shared.EditorDrawer
 {
     public class ScreenInfo
     {
@@ -8,13 +8,14 @@ namespace Editor.EditorDrawer
 
         private readonly MessageDelegate _messageEvent;
 
-        public Vector2 Size => GUI.skin.box.CalcSize(new GUIContent(Message));
-
         public string Message => _messageEvent?.Invoke().ToString();
 
-        public ScreenInfo(MessageDelegate messageEvent)
+        public GameObject BoundGameObject { get; }
+
+        public ScreenInfo(MessageDelegate messageEvent, GameObject boundGameObject)
         {
             _messageEvent = messageEvent;
+            BoundGameObject = boundGameObject;
             EditorDrawerSystem.RegisterInfo(this);
         }
 

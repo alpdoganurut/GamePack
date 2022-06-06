@@ -3,13 +3,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Editor.EditorDrawer;
-using Editor.EditorDrawer.Buttons;
 using GamePack.CustomAttributes.Attributes;
 using GamePack.Utilities;
+using Shared.EditorDrawer;
+using Shared.EditorDrawer.Buttons;
 using Sirenix.OdinInspector;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
 
 namespace GamePack.CustomAttributes
@@ -85,8 +87,11 @@ namespace GamePack.CustomAttributes
         {
             EditorApplication.playModeStateChanged -= EditorApplicationOnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += EditorApplicationOnPlayModeStateChanged;
-            EditorDrawerSystem.RegisterDynamicButton(new DynamicButton("Validate Scene", ProcessScene));
+            EditorSceneManager.sceneOpened += EditorSceneManagerOnsceneOpened;
+            // EditorDrawerSystem.RegisterDynamicButton(new DynamicButton("Validate Scene", ProcessScene));
         }
+
+        private static void EditorSceneManagerOnsceneOpened(Scene scene, OpenSceneMode mode) => ProcessScene();
 
         private static void EditorApplicationOnPlayModeStateChanged(PlayModeStateChange obj)
         {
@@ -214,7 +219,7 @@ namespace GamePack.CustomAttributes
 
         #endregion
         
-        private static void ProcessScene()
+        public static void ProcessScene()
         {
             ProcessFields();
             ProcessMethods();
@@ -391,11 +396,6 @@ namespace GamePack.CustomAttributes
             if (attributeType == typeof(ScreenButtonAttribute))
             {
                 if (methodInfo.IsStatic) return;
-                /*{
-                    if(ButtonCreatedStaticMethods.Contains(methodInfo)) return;
-                    
-                    ButtonCreatedStaticMethods.Add(methodInfo);
-                }*/
 
                 var buttonLabel = methodInfo.IsStatic ? $"{methodInfo.Name} ( )" : $"{ownerComponent.name}.{methodInfo.Name} ( )";
                 

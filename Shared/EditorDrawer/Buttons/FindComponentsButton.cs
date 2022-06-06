@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Editor.EditorDrawer.Buttons
+namespace Shared.EditorDrawer.Buttons
 {
     [Serializable]
     public class FindComponentsButton: ScreenButtonBase

@@ -1,54 +1,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Editor.EditorDrawer.Buttons;
-using Editor.EditorDrawer.Buttons.EventButton;
 using GamePack.Editor.Boilerplate;
 using GamePack.Logging;
 using GamePack.Utilities;
+using Shared.EditorDrawer.Buttons;
+using Shared.EditorDrawer.Buttons.EventButton;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.UIElements;
 
-namespace Editor.EditorDrawer
+namespace Shared.EditorDrawer
 {
     public static class EditorDrawerSystem
     {
         private const float Spacing = 4;
-        private const float Padding = 2;
+        private const float SpaceHeight = 6;
 
-        private static ScreenButtonsConfig _config;
-
-        private static IEnumerable<ScreenButtonBase> Buttons
-        {
-            get
-            {
-                if(_config)
-                {
-                    foreach (var button in _config.Buttons)
-                        yield return button;
-                }
-
-                foreach (var button in SceneButtons)
-                    
-                    yield return button;
-                foreach (var button in DynamicButtons)
-                    yield return button;
-            }
-        }
+        private static EditorDrawerConfig _config;
 
         private static readonly List<ScreenButtonBase> SceneButtons = new();
         
-        private static readonly List<ScreenButtonBase> DynamicButtons = new();
+        private static readonly List<DynamicButton> DynamicButtons = new();
         
         private static readonly List<ScreenInfo> SceneInfos = new();
+
+        #region Initilisation
 
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
             ManagedLog.LogMethod(type: ManagedLog.Type.Structure);
             
-            _config = FindInProject.ByType<ScreenButtonsConfig>();
+            _config = FindInProject.AssetByType<EditorDrawerConfig>();
             
             SceneView.duringSceneGui += DrawGuiOnScene;
             EditorApplication.playModeStateChanged += EditorApplicationOnPlayModeStateChanged;
@@ -60,36 +43,34 @@ namespace Editor.EditorDrawer
                 SceneInfos.Clear();
         }
 
-        public static void RegisterScreenButtonsConfig(ScreenButtonsConfig config)
+        internal static void RegisterScreenButtonsConfig(EditorDrawerConfig config)
         {
             if(!_config)
                 _config = config;
         }
+
+        internal static void UnRegisterButtonComponent(ScreenButtonComponent screenButtonComponent) => 
+            SceneButtons.RemoveAll(button => (button as EventButton)?.Component == screenButtonComponent);
         
+        #endregion
+
+        #region Drawing
+
         private static void DrawGuiOnScene(SceneView view)
         {
             if (!ProjectEditorConfig.Instance.ShowScreenButtons) return;
             
             Handles.BeginGUI();
+            var areaWidth = _config ? _config.ButtonGroupWidth + 50 : Screen.width;
+            GUILayout.BeginArea (new Rect (Spacing,Spacing,areaWidth, Screen.height));
+            GUILayout.BeginVertical();
 
             try
             {
-                var totalHeight = Spacing;
-                foreach (var screenButtonBase in Buttons)
-                {
-                    if (screenButtonBase == null) continue;
-
-                    DrawButton(screenButtonBase, totalHeight);
-                    totalHeight += screenButtonBase.Size.y + Spacing + (Padding * 2);
-                }
-
-                foreach (var screenInfo in SceneInfos)
-                {
-                    var rect = new Rect(Spacing, totalHeight, screenInfo.Size.x + Padding, screenInfo.Size.y + Padding);
-                    GUI.skin.box.alignment = TextAnchor.MiddleCenter;
-                    GUI.Box(rect, screenInfo.Message, GUI.skin.box);
-                    totalHeight += screenInfo.Size.y + Spacing + Padding;
-                }
+                DrawConfigButtons();
+                DrawSceneButtons();
+                DrawDynamicButtons();
+                DrawScreenInfos();
             }
             catch (Exception e)
             {
@@ -98,12 +79,90 @@ namespace Editor.EditorDrawer
                 return;
             }
             
+            GUILayout.EndArea();
+            GUILayout.EndVertical();
             Handles.EndGUI();
         }
 
-        public static void RegisterButtonComponent(EventButtonComponent buttonComponent)
+        private static void DrawScreenInfos()
         {
-            if(Buttons.Any(button => (button as EventButton)?.Component == buttonComponent)) return;
+            GUILayout.Space(SpaceHeight);
+            foreach (var screenInfo in SceneInfos)
+            {
+                GUI.skin.box.alignment = TextAnchor.MiddleCenter;
+                DrawScreenInfo(screenInfo);
+            }
+        }
+
+        private static void DrawDynamicButtons()
+        {
+            if (DynamicButtons.Count > 0)
+            {
+                GUILayout.Space(SpaceHeight);
+                foreach (var screenButtonBase in DynamicButtons) DrawMethod(screenButtonBase);
+            }
+        }
+
+        private static void DrawSceneButtons()
+        {
+            if (SceneButtons.Count > 0)
+            {
+                GUILayout.Space(SpaceHeight);
+                foreach (var screenButtonBase in SceneButtons) DrawMethod(screenButtonBase);
+            }
+        }
+
+        private static void DrawConfigButtons()
+        {
+            if (!_config) return;
+            
+            var lineWidth = 0f;
+            var inGroup = false;
+            foreach (var screenButtonBase in _config.Buttons)
+            {
+                if (screenButtonBase == null) continue;
+
+                var width = screenButtonBase.Size.x;
+                if (lineWidth + width > _config.ButtonGroupWidth
+                    || lineWidth == 0)
+                {
+                    if (inGroup) GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal();
+                    inGroup = true;
+                    lineWidth = 0;
+                }
+
+                lineWidth += (width 
+                              + _config.ButtonStyle.GUIStyle.margin.left 
+                              + _config.ButtonStyle.GUIStyle.margin.right);
+
+                DrawMethod(screenButtonBase);
+            }
+
+            if (inGroup) GUILayout.EndHorizontal();
+        }
+
+        private static void DrawScreenInfo(ScreenInfo screenInfo)
+        {
+            if (GUILayout.Button(screenInfo.Message, _config != null ? _config.ScreenInfoStyle.GUIStyle : null))
+            {
+                if(screenInfo.BoundGameObject) Selection.activeGameObject = screenInfo.BoundGameObject;
+            }
+        }
+
+        private static void DrawMethod(ScreenButtonBase screenButtonBase)
+        {
+            if (GUILayout.Button(screenButtonBase.Label, _config != null ? _config.ButtonStyle.GUIStyle : null))
+                screenButtonBase.Action();
+        }
+
+        #endregion
+
+        #region Registration API
+
+        public static void RegisterButtonComponent(ScreenButtonComponent buttonComponent)
+        {
+            if(SceneButtons.Any(button => (button as EventButton)?.Component == buttonComponent)) return;
             
             SceneButtons.Add(new EventButton(buttonComponent, buttonComponent.Label));
         }
@@ -116,13 +175,7 @@ namespace Editor.EditorDrawer
 
         public static void UnregisterDynamicButton(DynamicButton button) => DynamicButtons.Remove(button);
 
-        public static void UnRegisterButtonComponent(EventButtonComponent eventButtonComponent) => 
-            SceneButtons.RemoveAll(button => (button as EventButton)?.Component == eventButtonComponent);
+        #endregion
 
-        private static void DrawButton(ScreenButtonBase button, float yPos)
-        {
-            if (GUI.Button(new Rect(Spacing, yPos, button.Size.x + (Padding * 2), button.Size.y + (Padding * 2)), button.Label))
-                button.Action();
-        }
     }
 }

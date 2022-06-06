@@ -1,6 +1,6 @@
 using System;
 
-namespace Editor.EditorDrawer.Buttons
+namespace Shared.EditorDrawer.Buttons
 {
     [Serializable]
     public class ToggleUIButton: ScreenButtonBase

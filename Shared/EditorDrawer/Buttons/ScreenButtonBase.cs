@@ -1,31 +1,23 @@
 using System;
-using Sirenix.OdinInspector;
 using UnityEngine;
 
-namespace Editor.EditorDrawer.Buttons
+namespace Shared.EditorDrawer.Buttons
 {
     [Serializable]
-    public abstract class ScreenButtonBase
+    public class ScreenButtonBase
     {
         // ReSharper disable once UnassignedGetOnlyAutoProperty
-        public abstract string Label { get; }
+        public virtual string Label { get; }
         
-        private Vector2 _calculatedSize = Vector2.zero;
+        // private Vector2 _calculatedSize = Vector2.zero;
         
-        public Vector2 Size
+        public Vector2 Size => GUI.skin.button.CalcSize(new GUIContent(Label));
+
+        public virtual void Action(){}
+        
+        private void UpdateSize()
         {
-            get
-            {
-                if (_calculatedSize == Vector2.zero) 
-                    _calculatedSize = GUI.skin.button.CalcSize(new GUIContent(Label));
-
-                return _calculatedSize;
-            }
+            /*_calculatedSize = Vector2.zero;*/
         }
-
-        public abstract void Action();
-        
-        [Button]
-        private void UpdateSize() => _calculatedSize = Vector2.zero;
     }
 }

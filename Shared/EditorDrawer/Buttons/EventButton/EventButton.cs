@@ -1,6 +1,6 @@
 using UnityEngine.Events;
 
-namespace Editor.EditorDrawer.Buttons.EventButton
+namespace Shared.EditorDrawer.Buttons.EventButton
 {
     public class EventButton: ScreenButtonBase
     {
@@ -8,9 +8,9 @@ namespace Editor.EditorDrawer.Buttons.EventButton
 
         public override string Label { get; }
         
-        public EventButtonComponent Component { get; }
+        public ScreenButtonComponent Component { get; }
 
-        public EventButton(EventButtonComponent component, string text)
+        public EventButton(ScreenButtonComponent component, string text)
         {
             Component = component;
             _event = component.Event;

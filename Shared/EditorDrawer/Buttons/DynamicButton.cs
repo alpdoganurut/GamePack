@@ -1,6 +1,6 @@
 using System;
 
-namespace Editor.EditorDrawer.Buttons
+namespace Shared.EditorDrawer.Buttons
 {
     public class DynamicButton: ScreenButtonBase
     {

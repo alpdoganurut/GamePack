@@ -4,8 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using Editor.EditorDrawer;
+using Shared.EditorDrawer;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace GamePack.CustomAttributes
 {
@@ -60,58 +61,59 @@ namespace GamePack.CustomAttributes
 
             var isList = fieldInfo.GetValue(ownerComponent) is IList;
             ScreenInfo screenInfo;
-            // Display all
+            var ownerComponentGameObject = ownerComponent != null ? ownerComponent.gameObject : null;
+            // Display all if field is IList
             if (isList)
-            {
-                screenInfo = new ScreenInfo(() =>
-                {
-                    var listValue = fieldInfo.GetValue(ownerComponent) as IList;
-
-                    var builder = new StringBuilder();
-                    if (listValue == null) return builder.ToString();
-
-                    builder.Append($"({listValue.Count}) {ownerComponent.name}.{fieldInfoName}:");
-                    for (var index = 0; index < listValue.Count; index++)
-                    {
-                        builder.Append("\n");
-                        if (index >= 5)
-                        {
-                            builder.Append("...");
-                            break;
-                        }
-
-                        var o = listValue[index];
-                        builder.Append(o);
-                    }
-
-                    return builder.ToString();
-                });
-            }
+                screenInfo = new ScreenInfo(() => GetListFieldValuesMessage(fieldInfo, ownerComponent),
+                    ownerComponentGameObject);
             else
             {
                 screenInfo = new ScreenInfo(() =>
                 {
                     var val = fieldInfo.GetValue(ownerComponent);
                     var prefix = (ownerComponent != null ? ownerComponent.name : fieldInfo.DeclaringType?.Name);
-                    return val != null
-                        ? $"{prefix}.{fieldInfoName}: {val}"
-                        : $"{prefix}.{fieldInfoName}: null";
-                });
+                    var valStr = val?.ToString() ?? "null";
+                    return $"<b>{prefix}.{fieldInfo.Name}:</b> {valStr}";
+                }, ownerComponentGameObject);
             }
             return screenInfo;
+        }
+
+        private static string GetListFieldValuesMessage(FieldInfo fieldInfo, Component ownerComponent)
+        {
+            var listValue = fieldInfo.GetValue(ownerComponent) as IList;
+
+            var builder = new StringBuilder();
+            if (listValue == null) return builder.ToString();
+
+            builder.Append($"<b>({listValue.Count}) {ownerComponent.name}.{fieldInfo.Name}:</b>");
+            for (var index = 0; index < listValue.Count; index++)
+            {
+                builder.Append("\n");
+                if (index >= 5)
+                {
+                    builder.Append("...");
+                    break;
+                }
+
+                var o = listValue[index];
+                builder.Append(o);
+            }
+
+            return builder.ToString();
         }
 
         private static void ProcessEnumerableFieldInfoForComponent(
             FieldInfo fieldInfo,
             Component ownerComponent,
-            Func<Type, IReadOnlyList<Component>> mapper)
+            Func<Type, IReadOnlyList<Component>> componentsMapper)
         {
-            var isArray = fieldInfo.FieldType.IsArray;  // Else it is a List, rest is filtered 
+            var isArray = fieldInfo.FieldType.IsArray;  // Else it is a List, rest is filtered on caching
 
             var subType = isArray
                 ? fieldInfo.FieldType.GetElementType()
                 : fieldInfo.FieldType.GetGenericArguments()[0];
-            var components = mapper?.Invoke(subType);
+            var components = componentsMapper?.Invoke(subType);
             if (isArray)
             {
                 var converted = ConvertToArrayOfType(subType, components);
@@ -124,24 +126,24 @@ namespace GamePack.CustomAttributes
             }
         }
 
-        private static Array ConvertToArrayOfType(Type type, IReadOnlyList<Component> sourceArray)
+        private static Array ConvertToArrayOfType(Type type, IReadOnlyList<Component> source)
         {
-            var arr = Array.CreateInstance(type, sourceArray.Count);
-            for (var index = 0; index < sourceArray.Count; index++)
+            var arr = Array.CreateInstance(type, source.Count);
+            for (var index = 0; index < source.Count; index++)
             {
-                var component = sourceArray[index];
+                var component = source[index];
                 arr.SetValue(Convert.ChangeType(component, type), index);
             }
 
             return arr;
         }
 
-        private static IList ConvertToListOfType(Type type, IEnumerable<Component> components)
+        private static IList ConvertToListOfType(Type type, IEnumerable<Component> source)
         {
             var listType = typeof(List<>);
             var constructedListType = listType.MakeGenericType(type);
             var instance = Activator.CreateInstance(constructedListType) as IList;
-            foreach (var component in components)
+            foreach (var component in source)
             {
                 instance!.Add(Convert.ChangeType(component, type));
             }

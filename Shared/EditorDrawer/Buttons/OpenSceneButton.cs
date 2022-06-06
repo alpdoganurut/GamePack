@@ -5,7 +5,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Editor.EditorDrawer.Buttons
+namespace Shared.EditorDrawer.Buttons
 {
     [Serializable]
     public class OpenSceneButton: ScreenButtonBase

@@ -2,10 +2,10 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Editor.EditorDrawer.Buttons.EventButton
+namespace Shared.EditorDrawer.Buttons.EventButton
 {
     [ExecuteAlways]
-    public class EventButtonComponent: MonoBehaviour
+    public class ScreenButtonComponent: MonoBehaviour
     {
         [SerializeField, Required] private string _Label;
         [SerializeField, Required] private UnityEvent _Event;
@@ -17,7 +17,5 @@ namespace Editor.EditorDrawer.Buttons.EventButton
         private void OnEnable() => EditorDrawerSystem.RegisterButtonComponent(this);
 
         private void OnDisable() => EditorDrawerSystem.UnRegisterButtonComponent(this);
-
-        private void OnValidate() => name = $"Screen Button: {_Label}";
     }
 }

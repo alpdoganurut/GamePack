@@ -86,8 +86,8 @@ namespace GamePack.Editor.Boilerplate
             // Find Config and SceneLevelManager in project if not a valid game scene
             if (!IsValidGameScene)
             {
-                _staticConfig = FindInProject.ByType<ConfigBase>();
-                _staticLevelManager = FindInProject.ByType<SceneLevelManager>();
+                _staticConfig = FindInProject.AssetByType<ConfigBase>();
+                _staticLevelManager = FindInProject.AssetByType<SceneLevelManager>();
             }
         }
     }
