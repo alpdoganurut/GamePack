@@ -2,6 +2,7 @@
 using Shapes;
 #endif
 
+using System.Runtime.CompilerServices;
 using GamePack.Logging;
 using UnityEngine;
 
@@ -96,12 +97,45 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
             Color? color = null,
             float duration = -1,
             Object owner = null,
-            Transform localTransform = null)
+            Transform localTransform = null,
+            [CallerMemberName]string memberName = "")
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new PointDrawing(pos, size, thickness, color, localTransform), duration, owner);
 #else
-            LogNotImplemented();
+            var right = pos + new Vector3(size, 0, 0);
+            var top = pos + new Vector3(0, size, 0); 
+            var front = pos + new Vector3(0, 0, size);
+            
+            var left = pos + new Vector3(-size, 0, 0);
+            var bottom = pos + new Vector3(0, -size, 0); 
+            var back = pos + new Vector3(0, 0, -size);
+
+            if (localTransform)
+            {
+                right = localTransform.TransformPoint(right);
+                top = localTransform.TransformPoint(top);
+                front = localTransform.TransformPoint(front);
+                
+                left = localTransform.TransformPoint(left);
+                bottom = localTransform.TransformPoint(bottom);
+                back = localTransform.TransformPoint(back);
+            }
+            
+            color ??= DrawInstructionDefaults.DefaultColor;
+            if(memberName is "OnDrawGizmos" or "OnDrawGizmosSelected" )
+            {
+                Gizmos.color = color.Value;
+                Gizmos.DrawLine(top, bottom);
+                Gizmos.DrawLine(left, right);
+                Gizmos.DrawLine(front, back);
+            }
+            else
+            {
+                Debug.DrawLine(top, bottom, color.Value, duration);
+                Debug.DrawLine(left, right, color.Value, duration);
+                Debug.DrawLine(front, back, color.Value, duration);
+            }
 #endif
         }
 
@@ -172,7 +206,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
 #endif
         }
         
-        private static void LogNotImplemented() => ManagedLog.Log($"{nameof(PolyLine)} is not implemented when not using Shapes.", ManagedLog.Type.Verbose);
+        private static void LogNotImplemented() => ManagedLog.Log($"Not implemented when not using Shapes.", ManagedLog.Type.Verbose);
 
 #if !USING_SHAPES // Replacement Methods
         

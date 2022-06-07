@@ -2,7 +2,8 @@
     "name": "com.alpdoganurut.gamepack.editordrawer.buildreplacement",
     "rootNamespace": "",
     "references": [
-        "GUID:93f06646fb51546c39af5b2ec917b8d6"
+        "GUID:93f06646fb51546c39af5b2ec917b8d6",
+        "GUID:62577b02a59bc4a1c9cac10303ef6311"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

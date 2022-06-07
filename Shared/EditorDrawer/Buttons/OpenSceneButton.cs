@@ -7,18 +7,13 @@ using UnityEngine.SceneManagement;
 
 namespace Shared.EditorDrawer.Buttons
 {
-    [Serializable]
-    public class OpenSceneButton: ScreenButtonBase
+    [CreateAssetMenu(menuName = "GamePack/ScreenButton/OpenSceneButton")]
+    public class OpenSceneButton: ScriptableSceneButtonBase
     {
-        [SerializeField, Required, OnValueChanged("UpdateSize")] 
+        [SerializeField, Required] 
         private SceneAsset _SceneAsset;
 
         public override string Label => $"Scene: {(_SceneAsset != null ? _SceneAsset.name : "")}";
-
-        // Required for adding in editor
-        public OpenSceneButton()
-        {
-        }
 
         public OpenSceneButton(SceneAsset sceneAsset)
         {

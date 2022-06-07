@@ -77,7 +77,7 @@ namespace GamePack.DebugDrawSystem
         {
             if(owner) OwnedDrawings.Add(new OwnedDrawing(drawing, owner));
             else if(duration <= 0) FrameDrawingsBuffer.Add(drawing);
-            else TimedDrawings.Add(new TimedDrawing(drawing, duration));
+            else TimedDrawings.Add(new TimedDrawing(drawing, Time.time + duration));
         }
         
         #region Initialization

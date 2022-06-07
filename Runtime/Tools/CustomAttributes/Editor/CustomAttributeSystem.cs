@@ -8,6 +8,7 @@ using GamePack.Utilities;
 using Shared.EditorDrawer;
 using Shared.EditorDrawer.Buttons;
 using Sirenix.OdinInspector;
+using Sirenix.Utilities;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -29,6 +30,7 @@ namespace GamePack.CustomAttributes
             typeof(RenameInHierarchyAttribute),
             typeof(RequiredAttribute),
             typeof(MonitorAttribute),
+            typeof(HandleAttribute),
         };
 
         private static readonly Dictionary<Type, Type[]> AttributeValidComponents = new Dictionary<Type, Type[]>
@@ -39,7 +41,10 @@ namespace GamePack.CustomAttributes
             {typeof(RenameInHierarchyAttribute), new []{typeof(GameObject), typeof(Component)}},
             {typeof(RequiredAttribute), new []{typeof(object)}},
             {typeof(MonitorAttribute), new []{typeof(object)}},
+            {typeof(HandleAttribute), new []{typeof(Vector3)}},
         };
+
+        private static readonly Assembly[] Assemblies = new []{Assembly.Load("Assembly-CSharp"), Assembly.Load("com.alpdoganurut.gamepack.main")};
 
         #endregion
 
@@ -87,11 +92,14 @@ namespace GamePack.CustomAttributes
         {
             EditorApplication.playModeStateChanged -= EditorApplicationOnPlayModeStateChanged;
             EditorApplication.playModeStateChanged += EditorApplicationOnPlayModeStateChanged;
-            EditorSceneManager.sceneOpened += EditorSceneManagerOnsceneOpened;
+            EditorSceneManager.sceneOpened += EditorSceneManagerOnSceneOpened;
+            SceneManager.sceneLoaded += EditorSceneManagerOnSceneLoaded;
             // EditorDrawerSystem.RegisterDynamicButton(new DynamicButton("Validate Scene", ProcessScene));
         }
 
-        private static void EditorSceneManagerOnsceneOpened(Scene scene, OpenSceneMode mode) => ProcessScene();
+        private static void EditorSceneManagerOnSceneLoaded(Scene arg0, LoadSceneMode arg1) => ProcessScene();
+
+        private static void EditorSceneManagerOnSceneOpened(Scene scene, OpenSceneMode mode) => ProcessScene();
 
         private static void EditorApplicationOnPlayModeStateChanged(PlayModeStateChange obj)
         {
@@ -117,11 +125,11 @@ namespace GamePack.CustomAttributes
         {
             ClearCache();
             
-            var asm = Assembly.Load("Assembly-CSharp");
-            foreach (var type in asm.GetTypes())
+            foreach (var a in Assemblies)
+            foreach (var type in a.GetTypes())
             {
-                if(!type.IsSubclassOf(typeof(Component))) continue;
-                
+                if (!type.IsSubclassOf(typeof(Component))) continue;
+
                 var fieldInfos = type.GetFields(BindingFlags);
                 foreach (var fieldInfo in fieldInfos)
                 {
@@ -132,6 +140,7 @@ namespace GamePack.CustomAttributes
                 }
             }
 
+            // Sort attributes by order
             foreach (var attributeList in FieldAttributeTypes.Values)
             {
                 attributeList.Sort((type, type1) => Array.IndexOf(AttributeTypesOrdered, type) - Array.IndexOf(AttributeTypesOrdered, type1) );
@@ -191,6 +200,14 @@ namespace GamePack.CustomAttributes
                         {
                             if (methodAttribute.GetType() != attributeTypeToMatch) continue;
                             
+                            // Hacky validation
+                            if (attributeTypeToMatch == typeof(ScreenButtonAttribute) &&
+                                methodInfo.GetParameters().Length > 0)
+                            {
+                                Debug.LogError($"Can't use ScreenButton attribute for methods with parameters.");
+                                continue;
+                            } 
+                            
                             AddNewMethodToCache(type, attributeTypeToMatch, methodInfo);
                         }
                     }
@@ -223,27 +240,43 @@ namespace GamePack.CustomAttributes
         {
             ProcessFields();
             ProcessMethods();
+            HandleDrawing.UpdateSelection();
         }
 
         #region Field Processing
 
         private static void ProcessFields()
         {
+            HandleDrawing.Clear();
             ClearScreenInfos();
             ProcessStaticFields();
             ProcessInstanceFields();
+        }
+
+        private static void ProcessStaticFields()
+        {
+            foreach (var (methodInfo, attributes) in FieldAttributeTypes)
+            {
+                if (!methodInfo.IsStatic) continue;
+
+                foreach (var attribute in attributes)
+                {
+                    ProcessField(attribute, methodInfo, null);
+                }
+            }
         }
 
         private static void ProcessInstanceFields()
         {
             foreach (var ownerType in OwnerTypes)
             {
-                var sceneComponents = Object.FindObjectsOfType(ownerType).Cast<Component>().ToArray();
-                ProcessComponentsFields(sceneComponents, ownerType);
+                if(ownerType.IsGenericType) continue;
+                var sceneComponents = Object.FindObjectsOfType(ownerType, true).Cast<Component>().ToArray();
+                ProcessComponentsFieldsForType(sceneComponents, ownerType);
             }
         }
 
-        private static void ProcessComponentsFields(IEnumerable<Component> sceneComponents, Type ownerType)
+        private static void ProcessComponentsFieldsForType(IEnumerable<Component> sceneComponents, Type ownerType)
         {
             foreach (var ownerComponent in sceneComponents)
             {
@@ -287,19 +320,28 @@ namespace GamePack.CustomAttributes
                 if (go) go.name = fieldInfoName;
             }
             else if (attributeType == typeof(MonitorAttribute))
-                ScreenInfos.Add(AttributeProcessors.ProcessMonitorAttribute(fieldInfo, ownerComponent, fieldInfoName));
-        }
-
-        private static void ProcessStaticFields()
-        {
-            foreach (var (methodInfo, attributes) in FieldAttributeTypes)
             {
-                if (!methodInfo.IsStatic) continue;
-
-                foreach (var attribute in attributes)
+                var monitorAttribute = (MonitorAttribute) fieldInfo.GetCustomAttribute(attributeType);
+                switch (monitorAttribute.DrawType)
                 {
-                    ProcessField(attribute, methodInfo, null);
+                    case DrawType.GUI:
+                        ScreenInfos.Add(AttributeProcessors.ProcessMonitorAttribute(fieldInfo, ownerComponent, fieldInfoName));
+                        break;
+                    case DrawType.WorldSelected:
+                        HandleDrawing.AddInfo(fieldInfo, ownerComponent, SpaceType.Local);
+                        break;
+                    case DrawType.WorldAnyTime:
+                        HandleDrawing.AddInfo(fieldInfo, ownerComponent, SpaceType.Local, true);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
                 }
+            }
+            else if (attributeType == typeof(HandleAttribute))
+            {
+                var handleAttribute = (HandleAttribute) fieldInfo.GetCustomAttribute(attributeType);
+                HandleDrawing.AddInfo(fieldInfo, ownerComponent,
+                    handleAttribute.Space);
             }
         }
 
@@ -350,7 +392,7 @@ namespace GamePack.CustomAttributes
         {
             foreach (var ownerType in MethodOwnerTypes)
             {
-                var sceneComponents = Object.FindObjectsOfType(ownerType).Cast<Component>().ToArray();
+                var sceneComponents = Object.FindObjectsOfType(ownerType, true).Cast<Component>().ToArray();
                 ProcessComponentsInstanceMethods(sceneComponents, ownerType);
             }
         }
@@ -365,7 +407,7 @@ namespace GamePack.CustomAttributes
                 {
                     if (attribute == typeof(ScreenButtonAttribute))
                     {
-                        var buttonLabel = $"{methodInfo.DeclaringType?.Name}.{methodInfo.Name} ( )";
+                        var buttonLabel = $"{methodInfo.DeclaringType?.Name}.{methodInfo.Name}()";
 
                         var button = new DynamicButton(buttonLabel,
                             () => { methodInfo.Invoke(null, Array.Empty<object>()); });
@@ -397,7 +439,7 @@ namespace GamePack.CustomAttributes
             {
                 if (methodInfo.IsStatic) return;
 
-                var buttonLabel = methodInfo.IsStatic ? $"{methodInfo.Name} ( )" : $"{ownerComponent.name}.{methodInfo.Name} ( )";
+                var buttonLabel = $"{ownerComponent.name}.{methodInfo.Name}()";
                 
                 var button = new DynamicButton(buttonLabel,
                     () => { methodInfo.Invoke(ownerComponent, Array.Empty<object>()); });

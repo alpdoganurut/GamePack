@@ -2,11 +2,11 @@ using UnityEngine.Events;
 
 namespace Shared.EditorDrawer.Buttons.EventButton
 {
-    public class EventButton: ScreenButtonBase
+    public class EventButton: IScreenButton
     {
         private readonly UnityEvent _event;
 
-        public override string Label { get; }
+        public string Label { get; }
         
         public ScreenButtonComponent Component { get; }
 
@@ -17,6 +17,6 @@ namespace Shared.EditorDrawer.Buttons.EventButton
             Label = text;
         }
 
-        public override void Action() => _event.Invoke();
+        public void Action() => _event.Invoke();
     }
 }

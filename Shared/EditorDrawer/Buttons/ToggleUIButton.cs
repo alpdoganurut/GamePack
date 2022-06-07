@@ -1,9 +1,10 @@
 using System;
+using UnityEngine;
 
 namespace Shared.EditorDrawer.Buttons
 {
-    [Serializable]
-    public class ToggleUIButton: ScreenButtonBase
+    [CreateAssetMenu(menuName = "GamePack/ScreenButton/ToggleUIButton")]
+    public class ToggleUIButton: ScriptableSceneButtonBase
     {
         private const int UILayer = 1 << 5;
         

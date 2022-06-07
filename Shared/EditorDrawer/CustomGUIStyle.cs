@@ -4,7 +4,6 @@ using System.Reflection;
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace Shared.EditorDrawer
 {

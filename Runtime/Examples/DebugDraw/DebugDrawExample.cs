@@ -37,5 +37,12 @@ namespace GamePack.Examples.DebugDraw
             Draw.Sphere(Vector3.zero + Vector3.up, localTransform: transform1);
             Draw.PolyLine(_PolyLinePositions);
         }
+
+        [Button]
+        private void DrawTimed()
+        {
+            Draw.Text(Vector3.left, "Timed", Color.magenta, duration: 3f);
+            Draw.Point(new Vector3(1,1,1), color: Color.magenta, duration: 3f);
+        }
     }
 }

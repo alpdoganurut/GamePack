@@ -6,8 +6,8 @@ using Object = UnityEngine.Object;
 
 namespace Shared.EditorDrawer.Buttons
 {
-    [Serializable]
-    public class FindComponentsButton: ScreenButtonBase
+    [CreateAssetMenu(menuName = "GamePack/ScreenButton/FindComponentsButton")]
+    public class FindComponentsButton: ScriptableSceneButtonBase
     {
         [SerializeReference, Required] private string _ComponentName;
 

@@ -2,11 +2,11 @@ using System;
 
 namespace Shared.EditorDrawer.Buttons
 {
-    public class DynamicButton: ScreenButtonBase
+    public class DynamicButton: IScreenButton
     {
         private readonly Action _action;
 
-        public override string Label { get; }
+        public string Label { get; }
 
         public DynamicButton(string label, Action action)
         {
@@ -14,7 +14,7 @@ namespace Shared.EditorDrawer.Buttons
             _action = action;
         }
 
-        public override void Action()
+        public void Action()
         {
             _action?.Invoke();
         }

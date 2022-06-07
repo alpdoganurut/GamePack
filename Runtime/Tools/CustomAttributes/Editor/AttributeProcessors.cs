@@ -86,7 +86,7 @@ namespace GamePack.CustomAttributes
             var builder = new StringBuilder();
             if (listValue == null) return builder.ToString();
 
-            builder.Append($"<b>({listValue.Count}) {ownerComponent.name}.{fieldInfo.Name}:</b>");
+            builder.Append($"<b>{ownerComponent.name}.{fieldInfo.Name}({listValue.Count}):</b>");
             for (var index = 0; index < listValue.Count; index++)
             {
                 builder.Append("\n");

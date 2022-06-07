@@ -9,16 +9,16 @@ namespace Shared.EditorDrawer
     [CreateAssetMenu(fileName = "ScreenButtonsConfig", menuName = "GamePack/ScreenButtonsConfig", order = 0)]
     public class EditorDrawerConfig : ScriptableObject
     {
-        private static List<ScreenButtonBase> DefaultButtons => new()
+        /*private static List<ScreenButtonBase> DefaultButtons => new()
         {
             new OpenSceneButton(AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/01_Scenes/main.unity")),
             new OpenSceneButton(AssetDatabase.LoadAssetAtPath<SceneAsset>("Assets/01_Scenes/Art/art.unity")),
             new ToggleUIButton()
-        };
+        };*/
 
-        [field: SerializeField] public float ButtonGroupWidth { get; private set; } = 100;
+        [field: SerializeField] public float ButtonGroupWidth { get; private set; } = 500;
 
-        [field: SerializeReference] public List<ScreenButtonBase> Buttons { get; private set; }
+        [field: SerializeField] public List<ScriptableSceneButtonBase> Buttons { get; private set; }
 
         [field: SerializeField, Required] public CustomGUIStyle ButtonStyle { get; private set; }
         
@@ -33,7 +33,7 @@ namespace Shared.EditorDrawer
 
         private void Reset()
         {
-            Buttons = DefaultButtons;
+            // Buttons = DefaultButtons;
             // ButtonGUIStyle = EditorStyles.miniButton;
             ButtonStyle = new CustomGUIStyle("miniButton", Color.white, Color.black, false);;
             // ScreenInfoGUIStyle = EditorStyles.helpBox;

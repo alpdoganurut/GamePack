@@ -18,7 +18,7 @@ namespace Shared.EditorDrawer
 
         private static EditorDrawerConfig _config;
 
-        private static readonly List<ScreenButtonBase> SceneButtons = new();
+        private static readonly List<IScreenButton> SceneButtons = new();
         
         private static readonly List<DynamicButton> DynamicButtons = new();
         
@@ -122,7 +122,8 @@ namespace Shared.EditorDrawer
             {
                 if (screenButtonBase == null) continue;
 
-                var width = screenButtonBase.Size.x;
+                // var width = screenButtonBase.Size.x;
+                var width = GUI.skin.button.CalcSize(new GUIContent(screenButtonBase.Label)).x;;
                 if (lineWidth + width > _config.ButtonGroupWidth
                     || lineWidth == 0)
                 {
@@ -150,7 +151,7 @@ namespace Shared.EditorDrawer
             }
         }
 
-        private static void DrawMethod(ScreenButtonBase screenButtonBase)
+        private static void DrawMethod(IScreenButton screenButtonBase)
         {
             if (GUILayout.Button(screenButtonBase.Label, _config != null ? _config.ButtonStyle.GUIStyle : null))
                 screenButtonBase.Action();

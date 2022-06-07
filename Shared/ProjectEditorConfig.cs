@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using Sirenix.OdinInspector;
 using UnityEditor;
 using UnityEngine;
@@ -50,3 +51,4 @@ namespace GamePack.Editor.Boilerplate
         [field: SerializeField, FoldoutGroup("Cursor")] public Image CursorPrefab { get; set; }
     }
 }
+#endif

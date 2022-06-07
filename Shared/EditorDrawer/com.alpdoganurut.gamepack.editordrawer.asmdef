@@ -5,9 +5,7 @@
         "GUID:93f06646fb51546c39af5b2ec917b8d6"
     ],
     "includePlatforms": [],
-    "excludePlatforms": [
-        "iOS"
-    ],
+    "excludePlatforms": ["iOS"],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
