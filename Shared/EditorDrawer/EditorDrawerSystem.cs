@@ -124,7 +124,9 @@ namespace Shared.EditorDrawer
 
                 // var width = screenButtonBase.Size.x;
                 var width = GUI.skin.button.CalcSize(new GUIContent(screenButtonBase.Label)).x;;
-                if (lineWidth + width > _config.ButtonGroupWidth
+                if (lineWidth + width > Mathf.Min( 
+                        _config.ButtonGroupWidth,
+                        SceneView.currentDrawingSceneView.camera.pixelWidth / EditorGUIUtility.pixelsPerPoint)
                     || lineWidth == 0)
                 {
                     if (inGroup) GUILayout.EndHorizontal();
