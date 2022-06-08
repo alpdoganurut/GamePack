@@ -130,14 +130,10 @@ namespace GamePack.CustomAttributes
             {
                 if (!type.IsSubclassOf(typeof(Component))) continue;
 
-                var fieldInfos = type.GetFields(BindingFlags);
-                foreach (var fieldInfo in fieldInfos)
-                {
-                    var attributes = fieldInfo.GetCustomAttributes();
-                    foreach (var fieldAttribute in attributes)
-                    foreach (var attributeType in AttributeTypesOrdered)
-                        MatchFieldAttributeAndAdd(attributeType, fieldAttribute, type, fieldInfo);
-                }
+                foreach (var fieldInfo in type.GetFields(BindingFlags))
+                foreach (var fieldAttribute in fieldInfo.GetCustomAttributes())
+                foreach (var attributeType in AttributeTypesOrdered)
+                    MatchFieldAttributeAndAdd(attributeType, fieldAttribute, type, fieldInfo);
             }
 
             // Sort attributes by order
@@ -188,33 +184,45 @@ namespace GamePack.CustomAttributes
             var asm = Assembly.Load("Assembly-CSharp");
             foreach (var type in asm.GetTypes())
             {
-                if(!type.IsSubclassOf(typeof(Component))) continue;
-
-                var methodInfos = type.GetMethods(BindingFlags);
-                foreach (var methodInfo in methodInfos)
+                var isDeclaringTypeIsComponent = typeof(Component).IsAssignableFrom(type);
+                foreach (var methodInfo in type.GetMethods(BindingFlags))
+                foreach (var methodAttribute in methodInfo.GetCustomAttributes())
+                foreach (var attributeTypeToMatch in MethodAttributeTypesOrdered)
                 {
-                    var customAttributes = methodInfo.GetCustomAttributes();
-                    foreach (var methodAttribute in customAttributes)
-                    {
-                        foreach (var attributeTypeToMatch in MethodAttributeTypesOrdered)
-                        {
-                            if (methodAttribute.GetType() != attributeTypeToMatch) continue;
-                            
-                            // Hacky validation
-                            if (attributeTypeToMatch == typeof(ScreenButtonAttribute) &&
-                                methodInfo.GetParameters().Length > 0)
-                            {
-                                Debug.LogError($"Can't use ScreenButton attribute for methods with parameters.");
-                                continue;
-                            } 
-                            
-                            AddNewMethodToCache(type, attributeTypeToMatch, methodInfo);
-                        }
-                    }
+                    if (methodAttribute.GetType() != attributeTypeToMatch) continue;
+
+                    // Hacky ScreenButton validation
+                    if (!IsMethodValidForScreenButton(attributeTypeToMatch, methodInfo, isDeclaringTypeIsComponent)) continue;
+
+                    AddNewMethodToCache(type, attributeTypeToMatch, methodInfo);
                 }
             }
         }
-        
+
+        private static bool IsMethodValidForScreenButton(
+            Type attributeTypeToMatch, 
+            MethodInfo methodInfo,
+            bool isDeclaringTypeIsComponent)
+        {
+            if (attributeTypeToMatch == typeof(ScreenButtonAttribute)
+                && methodInfo.GetParameters().Length > 0)
+            {
+                Debug.LogError($"Can't use ScreenButton attribute for methods with parameters.");
+                return false;
+            }
+
+            if (attributeTypeToMatch == typeof(ScreenButtonAttribute)
+                && !isDeclaringTypeIsComponent
+                && !methodInfo.IsStatic)
+            {
+                Debug.LogError(
+                    $"{methodInfo.DeclaringType?.Name}.{methodInfo.Name} is not static. Declaring type must be derived from Component when using {nameof(ScreenButtonAttribute)} with non static methods.");
+                return false;
+            }
+
+            return true;
+        }
+
         private static void AddNewMethodToCache(Type ownerType, Type attributeType, MethodInfo methodInfo)
         {
             if(!MethodAttributeTypes.ContainsKey(methodInfo))
@@ -392,6 +400,8 @@ namespace GamePack.CustomAttributes
         {
             foreach (var ownerType in MethodOwnerTypes)
             {
+                if(!typeof(Component).IsAssignableFrom(ownerType)) continue;    // Don't handle if not Component
+                
                 var sceneComponents = Object.FindObjectsOfType(ownerType, true).Cast<Component>().ToArray();
                 ProcessComponentsInstanceMethods(sceneComponents, ownerType);
             }

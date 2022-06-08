@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using GamePack.CustomAttributes.Attributes;
-using GamePack.DebugDrawSystem.DrawingMethods;
+using Shared.EditorDrawer;
 using UnityEditor;
 using UnityEngine;
 
@@ -30,7 +30,7 @@ namespace GamePack.CustomAttributes
             {
                 if (FieldInfo.GetValue(Component) is T)
                     return (T) FieldInfo.GetValue(Component);
-                else return default;
+                return default;
             }
 
             public string ValueString => FieldInfo.GetValue(Component).ToString();
@@ -49,38 +49,55 @@ namespace GamePack.CustomAttributes
         }
 
         private static readonly List<ComponentHandleInfo> ComponentHandleInfos = new();
-        // private static readonly List<ComponentHandleInfos> DrawingFieldInfos = new();
-        // private static readonly List<ComponentHandleInfos> AlwaysDrawingFieldInfos = new();
 
         private static GUIStyle _infoStyle;
 
-        private static GUIStyle InfoStyle =>
-            _infoStyle ??= new GUIStyle(EditorStyles.helpBox)
+        private static GUIStyle InfoStyle
+        {
+            get
             {
-                padding = new RectOffset(2, 2, 2, 2),
-                richText = true
-            };
+                if (_infoStyle == null)
+                {
+                    _infoStyle = new GUIStyle(EditorDrawerSystem.Config.ScreenInfoStyle.GUIStyle);
+                    _infoStyle.hover = _infoStyle.normal;
+                }
+                
+                return _infoStyle;
+            }
+        }
+        
+        private static GUIStyle _buttonStyle;
+
+        private static GUIStyle ButtonStyle
+        {
+            get
+            {
+                if (_buttonStyle == null)
+                {
+                    _buttonStyle = new GUIStyle(EditorDrawerSystem.Config.ScreenInfoStyle.GUIStyle);
+                }
+
+                return _buttonStyle;
+            }
+        }
 
         [InitializeOnLoadMethod]
         private static void InitializeOnLoadMethod()
         {
-            // PlayerLoopUtilities.AppendToPlayerLoop<Update>(typeof(HandleDrawing), Update);
             Selection.selectionChanged += UpdateSelection;
             SceneView.duringSceneGui += DrawGuiOnScene;
-            
-            // _infoStyle = new GUIStyle(GUI.skin.box);
-            // _infoStyle.alignment = TextAnchor.MiddleCenter;
+            // EditorWindow.GetWindow<SceneView>().size
         }
 
         private static void DrawGuiOnScene(SceneView obj)
         {
-            foreach (var componentFields in ComponentHandleInfos)
+            foreach (var componentHandleInfo in ComponentHandleInfos)
             {
-                if(!componentFields.Component) continue;
-                if(!componentFields.Component.gameObject.activeInHierarchy) continue;   // Don't draw if gameobject is inactive
+                if(!componentHandleInfo.Component) continue;
+                if(!componentHandleInfo.Component.gameObject.activeInHierarchy) continue;   // Don't draw if gameobject is inactive
                 
                 var componentLocalLabelStringBuilder = new StringBuilder();
-                foreach (var drawingFieldInfo in componentFields.HandleInfos)
+                foreach (var drawingFieldInfo in componentHandleInfo.HandleInfos)
                 {
                     if(!drawingFieldInfo.IsDrawing) continue;
                     
@@ -103,33 +120,47 @@ namespace GamePack.CustomAttributes
                     
                         using (drawingScope)
                         {
-                            // Gizmos.DrawSphere(valuePos, .2f);
                             var newPos = Handles.PositionHandle(valuePos, Quaternion.identity);
                             drawingFieldInfo.SetValue(newPos);
                             Handles.DrawWireCube(newPos, new Vector3(.2f, .2f, .2f));
-                            DrawLabel(newPos, labelStr);
+                            
+                            var worldPos = drawingFieldInfo.IsLocal
+                                ? drawingFieldInfo.Component.transform.TransformPoint(newPos)
+                                : newPos;
+                            
+                            DrawLabel(worldPos, labelStr, componentHandleInfo.Component, isButton: drawingFieldInfo.DrawAlways);
                         }
                     }
                     
                 }
                 // Draw non position Labels
                 if (componentLocalLabelStringBuilder.Length > 0)
-                    DrawLabel(componentFields.Component.transform.position,
-                        componentLocalLabelStringBuilder.ToString());
+                    DrawLabel(componentHandleInfo.Component.transform.position,
+                        componentLocalLabelStringBuilder.ToString(), componentHandleInfo.Component, true);
             }
             
         }
 
-        private static void DrawLabel(Vector3 position, string labelStr)
+        private static void DrawLabel(Vector3 position, string labelStr, Component component, bool isButton)
         {
-            Handles.Label(
-                position + (Vector3.down * .2f), labelStr, InfoStyle);
+            Handles.BeginGUI();
+            var buttonPos = SceneViewWorldToScreenPoint(SceneView.currentDrawingSceneView, position);
+            var size = InfoStyle.CalcSize(new GUIContent(labelStr));
+
+            if (isButton 
+                && GUI.Button(
+                    new Rect(buttonPos.x, buttonPos.y, size.x, size.y),
+                    new GUIContent(labelStr), ButtonStyle))
+                Selection.activeGameObject = component.gameObject;
+            else GUI.Label(
+                    new Rect(buttonPos.x, buttonPos.y, size.x, size.y),
+                    new GUIContent(labelStr), InfoStyle);
+
+            Handles.EndGUI();
         }
 
         public static void UpdateSelection()
         {
-            // DrawingFieldInfos.Clear();
-            
             var sel = Selection.gameObjects;
 
             foreach (var info in ComponentHandleInfos)
@@ -145,11 +176,6 @@ namespace GamePack.CustomAttributes
             }
         }
 
-        public static void Clear()
-        {
-            ComponentHandleInfos.Clear();
-        }
-
         public static void AddInfo(FieldInfo fieldInfo, Component component, SpaceType spaceType, bool drawAlways = false)
         {
             var handleInfo = new FieldHandleInfo {Component = component, FieldInfo = fieldInfo, SpaceType = spaceType, DrawAlways = drawAlways};
@@ -159,10 +185,30 @@ namespace GamePack.CustomAttributes
             else
                 ComponentHandleInfos.Add(new ComponentHandleInfo
                     {Component = component, HandleInfos = new List<FieldHandleInfo> {handleInfo}});
-            // if (drawAlways)
-                // AlwaysDrawingFieldInfos.Add(handleInfo);
-            // else
-                // HandleInfos.Add(handleInfo);
+        }
+
+        public static void Clear()
+        {
+            ComponentHandleInfos.Clear();
+        }
+
+        /// https://forum.unity.com/threads/pixel-perfect-conversion-from-world-space-to-sceneview-ui-coordinates.714065/
+        private static Vector3 SceneViewWorldToScreenPoint(SceneView sv, Vector3 worldPos)
+        {
+            var style = (GUIStyle)"GV Gizmo DropDown";
+            var ribbon = style.CalcSize(sv.titleContent);
+ 
+            var svCorrectSize = sv.position.size;
+            svCorrectSize.y -= ribbon.y; //exclude this nasty ribbon
+ 
+            // gives coordinate inside SceneView context.
+            // WorldToViewportPoint() returns 0-to-1 value, where 0 means 0% and 1.0 means 100% of the dimension
+            Vector3 pointInView = sv.camera.WorldToViewportPoint(worldPos);
+            Vector3 pointInSceneView = pointInView * svCorrectSize;
+            var p1 = pointInSceneView;
+            p1.y = sv.position.height - p1.y;
+ 
+            return p1;
         }
     }
 }
