@@ -13,7 +13,7 @@ namespace GamePack.Helper.Bezier
         {
             new Operation(duration: 5, updateAction: val =>
             {
-                transform.position = _curve.GetPointByDistance(val * _curve.CreateLut().MaxDistance);
+                transform.position = _curve.GetPointByRatio(val);
             }).Start();
         }
     }
