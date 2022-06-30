@@ -20,13 +20,14 @@ namespace GamePack.Tools.Helper
 
         [ShowInInspector, ReadOnly] private float[] _distances;
         [ShowInInspector, ReadOnly] private float _totalLength;
-        
+
+        private bool _isInitialized;
         public float TotalLength => _totalLength;
         
-        private void Awake()
+        /*private void Awake()
         {
             InitializeDistances();
-        }
+        }*/
 
         private void InitializeDistances()
         {
@@ -51,10 +52,14 @@ namespace GamePack.Tools.Helper
             }
             
             _totalLength = _distances.Sum(f => f);
+
+            _isInitialized = true;
         }
 
         public Vector3 GetWorldPosAtPathPos(float distance, out Vector3 lookDirection)
         {
+            if(!_isInitialized) InitializeDistances();
+            
             if (_IsLoop && distance > _totalLength) 
                 distance = distance % _totalLength;
 
