@@ -3,14 +3,14 @@ using Sirenix.OdinInspector;
 
 namespace GamePack.BasicStateMachineSystem
 {
-    public delegate void StateMachineChange<T>(T currentState, T oldState, BasicStateMachine<T> stateMachine) where T : Enum;
+    public delegate void StateMachineChange<T>(T currentState, T oldState) where T : Enum;
 
-    public delegate void StateMachineUpdate<T>(T currentState, BasicStateMachine<T> stateMachine)
+    public delegate void StateMachineUpdate<T>(T currentState)
         where T : Enum;
 
     public abstract class BasicStateMachineBase
     {
-        public abstract void Update();
+        internal abstract void Update();
     }
 
     [Serializable]
@@ -21,6 +21,8 @@ namespace GamePack.BasicStateMachineSystem
 
         [ShowInInspector, ReadOnly] private T _currentState;
         [ShowInInspector, ReadOnly] private T _lastState;
+
+        private bool _isInitial = true;
 
         public BasicStateMachine(StateMachineChange<T> stateChange,
             StateMachineUpdate<T> stateUpdate,
@@ -33,22 +35,32 @@ namespace GamePack.BasicStateMachineSystem
             BasicStateMachineEngine.AddStateMachine(this);
         }
 
-        public override void Update()
+        internal override void Update()
         {
-            if (!Equals(_currentState, _lastState))
+            /*if (_isInitial || !Equals(_currentState, _lastState))
             {
-                _stateChange?.Invoke(_currentState, _lastState, this);
-            }
-
-            _stateUpdate?.Invoke(_currentState, this);
+                _isInitial = false;
+                _stateChange?.Invoke(_currentState, _lastState);
+            }*/
+            
+            _stateUpdate?.Invoke(_currentState);
 
             _lastState = _currentState;
         }
 
         [Button]
-        protected void SetState(T state)
+        public void SetState(T state)
         {
+            if(!_isInitial && Equals(_currentState, state)) return;
+            
             _currentState = state;
+            
+            _stateChange?.Invoke(_currentState, _lastState);
+            
+            /*if (_isInitial || !Equals(_currentState, _lastState))
+            {
+                _isInitial = false;
+            }*/
         }
     }
 }

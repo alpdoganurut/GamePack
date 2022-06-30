@@ -48,7 +48,10 @@ namespace GamePack.TimerSystem
 
         private protected override void OnRun() => _initialScale = _transform.localScale;
 
-        private void UpdateAction(float tVal) => 
-            _transform.localScale = Vector3.Lerp(_initialScale, new Vector3(_targetScale, _targetScale, _targetScale), tVal);
+        private void UpdateAction(float tVal)
+        {
+            _transform.localScale =
+                Vector3.LerpUnclamped(_initialScale, new Vector3(_targetScale, _targetScale, _targetScale), tVal);
+        }
     }
 }

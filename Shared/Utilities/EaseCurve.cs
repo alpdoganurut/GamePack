@@ -28,14 +28,19 @@ namespace GamePack.Utilities
         public float Evaluate(float t) => 
             IsCurve ? _Curve.Evaluate(t) : EasingFunction.GetEasingFunction(_Ease)(0, 1, t);
 
-        public static EaseCurve Linear => new EaseCurve(EasingFunction.Ease.Linear);
+        public static readonly EaseCurve Linear = new EaseCurve(EasingFunction.Ease.Linear);
         
 #if UNITY_EDITOR
-        [SerializeField, Required, PropertyOrder(-1)] private bool _HasCustomCurve;
-        
-        private bool HideCurveCondition() => !_HasCustomCurve;
+        [ShowInInspector, Required, PropertyOrder(-1)]
+        private bool CustomCurve
+        {
+            get => IsCurve;
+            set => _Ease = value ? EasingFunction.Ease.None : EasingFunction.Ease.Linear;
+        }
 
-        private bool HideEaseCondition() => _HasCustomCurve;
+        private bool HideCurveCondition() => !IsCurve;
+
+        private bool HideEaseCondition() => IsCurve;
 #endif
     }
 }

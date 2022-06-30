@@ -8,13 +8,15 @@ namespace GamePack.BasicStateMachineSystem
     {
         [ShowInInspector] private BasicStateMachine<T> _stateMachine;
 
+        protected BasicStateMachine<T> StateMachine => _stateMachine;
+
         private void Awake()
         {
             _stateMachine = new BasicStateMachine<T>(StateChange, StateUpdate);
         }
 
-        protected abstract void StateUpdate(T state, BasicStateMachine<T> stateMachine);
+        protected abstract void StateUpdate(T state);
 
-        protected abstract void StateChange(T currentState, T lastState, BasicStateMachine<T> stateMachine);
+        protected abstract void StateChange(T currentState, T lastState);
     }
 }

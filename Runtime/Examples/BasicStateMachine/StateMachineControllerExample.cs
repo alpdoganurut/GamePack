@@ -11,12 +11,12 @@ namespace GamePack.Examples.BasicStateMachine
     
     class StateMachineControllerExample : StateMachineControllerBase<State>
     {
-        protected override void StateUpdate(State state, BasicStateMachine<State> stateMachine)
+        protected override void StateUpdate(State state)
         {
             
         }
 
-        protected override void StateChange(State currentState, State lastState, BasicStateMachine<State> stateMachine)
+        protected override void StateChange(State currentState, State lastState)
         {
             Debug.Log($"StateChanged to {currentState}");
 
