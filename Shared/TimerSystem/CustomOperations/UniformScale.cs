@@ -7,6 +7,8 @@ namespace GamePack.TimerSystem
 {
     public class UniformScale: Operation
     {
+        private const float Epsilon = 0.001f;
+        
         private readonly Transform _transform;
         private readonly float _targetScale;
         private Vector3 _initialScale;
@@ -35,13 +37,14 @@ namespace GamePack.TimerSystem
             BindTo(transform);
 
 #if UNITY_EDITOR    // Check if initial scale is uniform.
-            if (Math.Abs(_transform.localScale.x - _transform.localScale.y) > Mathf.Epsilon ||
-                Math.Abs(_transform.localScale.x - _transform.localScale.z) > Mathf.Epsilon)
+            if (Math.Abs(_transform.localScale.x - _transform.localScale.y) > Epsilon ||
+                Math.Abs(_transform.localScale.x - _transform.localScale.z) > Epsilon)
             {
                 ManagedLog.LogError($"{transform.name} is scale is not uniform.");
             }
 #endif
         }
+
 
         private protected override void OnRun() => _initialScale = _transform.localScale;
 

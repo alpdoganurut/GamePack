@@ -55,7 +55,7 @@ namespace GamePack.CustomAttributes
             fieldInfo.SetValue(ownerComponent, value);
         }
 
-        public static ScreenInfo ProcessMonitorAttribute(FieldInfo fieldInfo, Component ownerComponent, string fieldInfoName)
+        public static ScreenInfo ProcessMonitorAttribute(FieldInfo fieldInfo, Component ownerComponent)
         {
             if (!Application.isPlaying) return null;
 

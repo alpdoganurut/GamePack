@@ -88,7 +88,7 @@ namespace GamePack.Boilerplate.Main
         [ShowInInspector, ReadOnly, PropertyOrder(-1)] private bool _isPlaying;
 
         [PropertyOrder(1)]
-        [SerializeField, Required] private TMainSceneRefBase _MainSceneRef;
+        [SerializeField, Required] protected TMainSceneRefBase _MainSceneRef;
 
         #endregion
         

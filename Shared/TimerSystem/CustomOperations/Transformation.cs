@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using GamePack.Utilities;
 using JetBrains.Annotations;
 using UnityEngine;
@@ -27,20 +28,24 @@ namespace GamePack.TimerSystem
         private Vector3 _initialScale;
         private readonly Vector3? _targetScale;
         private readonly Transform _targetScaleRef;
-        
+
         private readonly bool _isMove;
         private readonly bool _isRotate;
         private readonly bool _isScale;
+        
+        private readonly VerticalCurveMovement? _curveMovement;
 
         public Transformation(
             Transform transform = null,
             float? duration = null,
+            float delay = 0,
             float? moveSpeed = null,
             Vector3? targetPos = null, [CanBeNull] Transform targetPosRef = null, Func<Vector3> targetPosAction = null,
             Quaternion? targetRot = null, [CanBeNull] Transform targetRotRef = null,
             Vector3? targetScale = null, [CanBeNull] Transform targetScaleRef = null,
             EaseCurve? ease = null,
-            string name = null)
+            string name = null,
+            VerticalCurveMovement? curveMovement = null)
         {
             _isMove = targetPos != null || targetPosRef || targetPosAction != null;
             _isRotate = targetRot != null || targetRotRef;
@@ -61,6 +66,7 @@ namespace GamePack.TimerSystem
             _transform = transform;
             
             _suppliedDuration = duration;
+            Delay = delay;
             _moveSpeed = moveSpeed;
             
             _targetPos = targetPos;
@@ -72,9 +78,9 @@ namespace GamePack.TimerSystem
             
             _targetScale = targetScale;
             _targetScaleRef = targetScaleRef;
+            _curveMovement = curveMovement;
 
             _ease = ease;
-            // _easeCurve = easeCurve;
             
             Name = name ?? $"{(_transform ? _transform.name + " "  : "")} {nameof(Transformation)}";
             
@@ -89,7 +95,7 @@ namespace GamePack.TimerSystem
             _initialRot = _transform.rotation;
             _initialScale = _transform.lossyScale;
             
-            var duration = _suppliedDuration ?? (Vector3.Distance(_targetPos ?? _targetPosRef.position, _initialPos) / _moveSpeed);
+            var duration = _suppliedDuration ?? (Vector3.Distance(GetUpdatedPos(1), _initialPos) / _moveSpeed);
             Assert.IsTrue(duration != null, nameof(duration) + " != null");
             _duration = duration.Value;
         }
@@ -104,7 +110,7 @@ namespace GamePack.TimerSystem
                 return;
             }
             
-            if(_isMove && _targetPos == null && !_targetPosRef)
+            if(_isMove && _targetPos == null && !_targetPosRef && _targetPosAction == null)
             {
                 Debug.LogError($"_targetPosRef no longer exists.");
                 return;
@@ -147,9 +153,15 @@ namespace GamePack.TimerSystem
 
         private Vector3 GetUpdatedPos(float tVal)
         {
-            var tPos = _targetPos ?? (_targetPosRef ? _targetPosRef.position : _targetPosAction?.Invoke());
-            System.Diagnostics.Debug.Assert(tPos != null, nameof(tPos) + " != null");
-            return Vector3.Lerp(_initialPos, tPos.Value, tVal);
+            var targetPos = _targetPos ?? (_targetPosRef ? _targetPosRef.position : _targetPosAction?.Invoke());
+            System.Diagnostics.Debug.Assert(targetPos != null, nameof(targetPos) + " != null");
+
+
+            var updatedPos = Vector3.Lerp(_initialPos, targetPos.Value, tVal);
+
+            if (_curveMovement.HasValue) updatedPos.y += GetCurveMovementHeightOffset(tVal);
+            
+            return updatedPos;
         }
 
         private Quaternion GetUpdatedRotation(float tVal)
@@ -164,12 +176,33 @@ namespace GamePack.TimerSystem
             return Vector3.Lerp(_initialScale, tPScale, tVal);
         }
 
+        private float GetCurveMovementHeightOffset(float tVal)
+        {
+            Assert.IsTrue(_curveMovement.HasValue);
+
+            return _curveMovement.Value.GetHeight(tVal);
+        }
+        
         public static Transformation Match(Transform transform, Transform targetTransform, float duration)
         {
             return new Transformation(transform, duration: duration,
                 targetPosRef: targetTransform,
                 targetRotRef: targetTransform, 
                 targetScaleRef: targetTransform);
+        }
+        
+    }
+
+    [Serializable]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public struct VerticalCurveMovement
+    {
+        public float MaxHeight;
+        public AnimationCurve Curve;
+
+        public float GetHeight(float tVal)
+        {
+            return Curve.Evaluate(tVal) * MaxHeight;
         }
     }
 }

@@ -146,6 +146,9 @@ namespace GamePack.DebugDrawSystem
                     throw new ArgumentOutOfRangeException();
             }
             
+            if(!Application.isPlaying)
+                FrameUpdate();
+            
             DrawShapes(cam);
         }
 
@@ -155,25 +158,13 @@ namespace GamePack.DebugDrawSystem
             
             using (Draw.Command(cam, _drawOrder))
             {
-                foreach (var drawing in DefaultDrawings)
-                {
-                    drawing.Draw(cam);
-                }
+                foreach (var drawing in DefaultDrawings) drawing.Draw(cam);
 
-                foreach (var drawing in FrameDrawings)
-                {
-                    drawing.Draw(cam);
-                }
+                foreach (var drawing in FrameDrawings) drawing.Draw(cam);
 
-                foreach (var timedDrawing in TimedDrawings)
-                {
-                    timedDrawing.Drawing.Draw(cam);
-                }
+                foreach (var timedDrawing in TimedDrawings) timedDrawing.Drawing.Draw(cam);
 
-                foreach (var ownedDrawing in OwnedDrawings)
-                {
-                    ownedDrawing.Drawing.Draw(cam);
-                }
+                foreach (var ownedDrawing in OwnedDrawings) ownedDrawing.Drawing.Draw(cam);
             }
         }
 
@@ -183,6 +174,7 @@ namespace GamePack.DebugDrawSystem
 
         private static void CustomLateUpdate()
         {
+            if(!Application.isPlaying) return;
             LogUpdate($"{nameof(DebugDraw)}.CustomLateUpdate time:{Time.time}");
             
             FrameUpdate();

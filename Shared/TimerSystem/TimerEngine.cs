@@ -36,12 +36,16 @@ namespace GamePack.TimerSystem
             Log($"Adding operation {operation.Name}, delay: {operation.Delay}, ignoreTimeScale: {operation.IsIgnoreTimeScale}");
 
 #if UNITY_EDITOR
-            Assert.IsTrue(!RootOperations.Contains(operation) && !RunningOperations.Contains(operation), $"Tried to add an Operation: {operation} that already exists.");
+            Assert.IsTrue(!RootOperations.Contains(operation) && !RunningOperations.Contains(operation), $"Tried to add an Operation: {operation.Name} that already exists.");
 #endif
             
+            // Should run immediately
             if (operation.Delay == 0)
             {
-                RunOperation(operation);
+                if(!operation.ShouldSkip())
+                    RunOperation(operation);
+                else
+                    Resolve(operation);
                 return;
             }
             
@@ -220,6 +224,7 @@ namespace GamePack.TimerSystem
             Log($"Resolving {operation.Name}");
             
             SyncRemove(op => op == operation, RunningOperations, RunningOperationEndTimes, RunningOperationStartTimes);
+            SyncRemove(op => op == operation, RootOperations, RootOperationTimes);
             
             operation.Finish();
             

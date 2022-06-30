@@ -7,15 +7,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Sirenix.OdinInspector;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace GamePack.Tools.Helper
 {
     [ExecuteAlways]
     public class PolyLinePath: MonoBehaviour
     {
-        [FormerlySerializedAs("_PointsNew")] [SerializeField, Required] private List<PolyLinePathPoint> _Points;
-        [FormerlySerializedAs("_DirectionRotation")] [SerializeField, Required] private Vector3 _LookDirectionRotation;
+        [SerializeField, Required] private bool  _IsLoop;
+        
+        [SerializeField, Required] private List<PolyLinePathPoint> _Points;
+        [SerializeField, Required] private Vector3 _LookDirectionRotation;
 
         [ShowInInspector, ReadOnly] private float[] _distances;
         [ShowInInspector, ReadOnly] private float _totalLength;
@@ -29,7 +30,10 @@ namespace GamePack.Tools.Helper
 
         private void InitializeDistances()
         {
-            _distances = new float[_Points.Count - 1];
+            var distancesCount = _IsLoop 
+                ? _Points.Count
+                : _Points.Count - 1;
+            _distances = new float[distancesCount];
 
             for (var index = 0; index < _Points.Count - 1; index++)
             {
@@ -40,11 +44,23 @@ namespace GamePack.Tools.Helper
                 _distances[index] = distance;
             }
 
+            if (_IsLoop)
+            {
+                _Points.Add(_Points[0]);
+                _distances[_Points.Count - 2] = (_Points[^1].Position - _Points[0].Position).magnitude;
+            }
+            
             _totalLength = _distances.Sum(f => f);
         }
 
         public Vector3 GetWorldPosAtPathPos(float distance, out Vector3 lookDirection)
         {
+            if (_IsLoop && distance > _totalLength) 
+                distance = distance % _totalLength;
+
+            if (_IsLoop && distance < 0) 
+                distance = _totalLength + (distance % _totalLength);
+
             if (_Points.Count <= 0)
             {
                 lookDirection = Vector3.zero;
@@ -161,24 +177,22 @@ namespace GamePack.Tools.Helper
                 if(index < _Points.Count - 1 && hasMoreThanOnePoint)
                 {
                     var nextPoint = _Points[index + 1].Position;
-#if USING_SHAPES
+// #if USING_SHAPES
                     Draw.Line(pointPos, nextPoint, lineColor);
-#endif
+// #endif
                 }
                 // Draw Sphere
                 var pointColor = isSelectedPoint ? pickedPointColor : normalColor;
                 var firstPointColor = Colors.Aqua;
-#if USING_SHAPES
+// #if USING_SHAPES
                 Draw.Sphere(pointPos, .1f, index == 0 ? firstPointColor : pointColor);
-#endif
+// #endif
             }
             
             // Draw test pos
             var pos = GetWorldPosAtPathPos(_testPos, out var lookDirection);
-#if USING_SHAPES
             Draw.Point(pos, color: Colors.LightYellow);
             Draw.ArrowRay(pos, lookDirection, Colors.CadetBlue);
-#endif
         }
 
 #endif

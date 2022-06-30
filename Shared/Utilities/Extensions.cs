@@ -77,6 +77,28 @@ namespace GamePack.Utilities
         {
             return array[Random.Range(0, array.Length)];
         }
+        
+        public static int FindFirstIndex<T>(this T[] array, Func<T, bool> condition, bool reverseSearch = false)
+        {
+            if(reverseSearch)
+            {
+                for (var index = array.Length - 1; index >= 0; index--)
+                {
+                    var item = array[index];
+                    if (condition(item)) return index;
+                }
+
+                return -1;
+            }
+            
+            for (var index = 0; index < array.Length; index++)
+            {
+                var item = array[index];
+                if (condition(item)) return index;
+            }
+
+            return -1;
+        }
 
         // Unity Object Info
         public static string GetScenePath(this UnityEngine.Object component)

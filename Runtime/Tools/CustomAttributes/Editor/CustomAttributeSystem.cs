@@ -82,8 +82,11 @@ namespace GamePack.CustomAttributes
 
         private static void AssemblyReloadEventsOnAfterAssemblyReload()
         {
+            ClearCache();
+            
             CacheFields();
             CacheMethods();
+            
             ProcessScene();
         }
 
@@ -123,7 +126,6 @@ namespace GamePack.CustomAttributes
 
         private static void CacheFields()
         {
-            ClearCache();
             
             foreach (var a in Assemblies)
             foreach (var type in a.GetTypes())
@@ -333,7 +335,7 @@ namespace GamePack.CustomAttributes
                 switch (monitorAttribute.DrawType)
                 {
                     case DrawType.GUI:
-                        ScreenInfos.Add(AttributeProcessors.ProcessMonitorAttribute(fieldInfo, ownerComponent, fieldInfoName));
+                        ScreenInfos.Add(AttributeProcessors.ProcessMonitorAttribute(fieldInfo, ownerComponent));
                         break;
                     case DrawType.WorldSelected:
                         HandleDrawing.AddInfo(fieldInfo, ownerComponent, SpaceType.Local);

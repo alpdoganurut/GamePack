@@ -11,7 +11,7 @@ namespace GamePack.Tools.Helper
         private PolyLinePath _path;
         private bool _pathExists;
 
-        public float PathPos { get; set; }
+        [ShowInInspector, HideInEditorMode] public float PathPos { get; set; }
         public bool Path => _path;
 
         private void LateUpdate()

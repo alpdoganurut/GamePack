@@ -4,6 +4,7 @@ using Shapes;
 
 using System.Runtime.CompilerServices;
 using GamePack.Logging;
+using UnityEditor;
 using UnityEngine;
 
 namespace GamePack.DebugDrawSystem.DrawingMethods
@@ -18,7 +19,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new LineDrawing(start, end, color, localTransform), duration, owner);
-#else
+#elif UNITY_EDITOR
             Debug.DrawLine(start, end, color ?? Color.white, duration);
 #endif
         }
@@ -31,7 +32,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new PolyLineDrawing(positions, color, localTransform), duration, owner);
-#else
+#elif UNITY_EDITOR
             LogNotImplemented();
 #endif
         }
@@ -44,7 +45,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new LineDrawing(start, start + ray, color, localTransform), duration, owner);
-#else
+#elif UNITY_EDITOR
             Debug.DrawLine(start, start + ray, color ?? Color.white, duration);
 #endif
         }
@@ -57,7 +58,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new LineDrawing(start, end, color, true, localTransform), duration, owner);
-#else
+#elif UNITY_EDITOR
             Debug.DrawLine(start, end, color ?? Color.white, duration);
 #endif
         }
@@ -71,7 +72,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new LineDrawing(start, start + ray, color, true, localTransform), duration, owner);
-#else
+#elif UNITY_EDITOR
             Debug.DrawLine(start, start + ray, color ?? Color.white, duration);
 #endif
         }
@@ -102,7 +103,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new PointDrawing(pos, size, thickness, color, localTransform), duration, owner);
-#else
+#elif UNITY_EDITOR
             var right = pos + new Vector3(size, 0, 0);
             var top = pos + new Vector3(0, size, 0); 
             var front = pos + new Vector3(0, 0, size);
@@ -123,7 +124,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
             }
             
             color ??= DrawInstructionDefaults.DefaultColor;
-            if(memberName is "OnDrawGizmos" or "OnDrawGizmosSelected" )
+            if(CheckMemberNameIsGizmos(memberName))
             {
                 Gizmos.color = color.Value;
                 Gizmos.DrawLine(top, bottom);
@@ -149,7 +150,7 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new CircleDrawing(pos, radius, normal, thickness , color, localTransform), duration, owner);
-#else
+#elif UNITY_EDITOR
             LogNotImplemented();
 #endif
             
@@ -186,22 +187,37 @@ namespace GamePack.DebugDrawSystem.DrawingMethods
             Color? color = null,
             float duration = -1,
             Object owner = null,
-            Transform localTransform = null)
+            Transform localTransform = null,
+            [CallerMemberName]string memberName = "")
         {
 #if USING_SHAPES
             DebugDraw.NewDrawing(new SphereDrawing(pos, radius, color, localTransform), duration, owner);
-#else
-            LogNotImplemented();
+#elif UNITY_EDITOR
+            if(CheckMemberNameIsGizmos(memberName) )
+            {
+                Gizmos.color = color.Value;
+                Gizmos.DrawSphere(pos, radius);
+            }
+            else
+            {
+                Handles.color = color.Value;
+                Handles.SphereHandleCap(-1, pos, Quaternion.identity, radius, EventType.Ignore);
+            }
 #endif
+        }
+
+        private static bool CheckMemberNameIsGizmos(string memberName)
+        {
+            return memberName is "OnDrawGizmos" or "OnDrawGizmosSelected";
         }
 
         public static void Axis(Vector3 pos,
             Transform localTransform,
             float size = DrawInstructionDefaults.DefaultAxisSize)
         {
-        #if USING_SHAPES
+#if USING_SHAPES
             DebugDraw.NewDrawing(new AxisDrawing(pos, localTransform, size));
-#else
+#elif UNITY_EDITOR
             LogNotImplemented();
 #endif
         }

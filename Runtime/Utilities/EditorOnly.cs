@@ -23,14 +23,14 @@ namespace GamePack.Utilities
                 Destroy(gameObject);
         }
 
-        private void OnDestroy()
-        {
-            if(Application.isPlaying) return;
-            if (!EditorUtility.DisplayDialog(_title, Question, "Revert", "Keep")) return;
+        // private void OnDestroy()
+        // {
+            // if(EditorApplication.isPlayingOrWillChangePlaymode) return;
+            // if(!EditorUtility.DisplayDialog(_title, Question, "Revert", "Keep")) return;
             
-            gameObject.tag = "Untagged";
-            name = Regex.Replace(name, @$"{RegexPrefix}\s+", "");
-        }
+            // gameObject.tag = "Untagged";
+            // name = Regex.Replace(name, @$"{RegexPrefix}\s+", "");
+        // }
     }
 }
 #endif

@@ -114,8 +114,15 @@ namespace Shared.EditorDrawer
             GUILayout.Space(SpaceHeight);
             foreach (var screenInfo in SceneInfos)
             {
-                GUI.skin.box.alignment = TextAnchor.MiddleCenter;
                 DrawScreenInfo(screenInfo);
+            }
+        }
+
+        private static void DrawScreenInfo(ScreenInfo screenInfo)
+        {
+            if (GUILayout.Button(screenInfo.Message, _config != null ? _config.ScreenInfoStyle.GUIStyle : null))
+            {
+                if(screenInfo.BoundGameObject) Selection.activeGameObject = screenInfo.BoundGameObject;
             }
         }
 
@@ -161,14 +168,6 @@ namespace Shared.EditorDrawer
             if (DynamicButtons.Count <= 0) return;
             GUILayout.Space(SpaceHeight);
             foreach (var screenButtonBase in DynamicButtons) DrawMethod(screenButtonBase);
-        }
-
-        private static void DrawScreenInfo(ScreenInfo screenInfo)
-        {
-            if (GUILayout.Button(screenInfo.Message, _config != null ? _config.ScreenInfoStyle.GUIStyle : null))
-            {
-                if(screenInfo.BoundGameObject) Selection.activeGameObject = screenInfo.BoundGameObject;
-            }
         }
 
         private static void DrawMethod(IScreenButton screenButtonBase)
