@@ -7,9 +7,8 @@ namespace GamePack.Utilities
     [Serializable]
     public struct EaseCurve
     {
-        
-        [HideIf("HideEaseCondition")]public EasingFunction.Ease _Ease;
-        [HideIf("HideCurveCondition")]public AnimationCurve _Curve;
+        [HideIf("HideEaseCondition")] public EasingFunction.Ease _Ease;
+        [HideIf("HideCurveCondition")] public AnimationCurve _Curve;
 
         public bool IsCurve => _Ease == EasingFunction.Ease.None;
         

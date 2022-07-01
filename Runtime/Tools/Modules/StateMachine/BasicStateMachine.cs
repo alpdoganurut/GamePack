@@ -23,6 +23,8 @@ namespace GamePack.BasicStateMachineSystem
         [ShowInInspector, ReadOnly] private T _lastState;
 
         private bool _isInitial = true;
+        
+        public T State => _currentState;
 
         public BasicStateMachine(StateMachineChange<T> stateChange,
             StateMachineUpdate<T> stateUpdate,
@@ -37,12 +39,6 @@ namespace GamePack.BasicStateMachineSystem
 
         internal override void Update()
         {
-            /*if (_isInitial || !Equals(_currentState, _lastState))
-            {
-                _isInitial = false;
-                _stateChange?.Invoke(_currentState, _lastState);
-            }*/
-            
             _stateUpdate?.Invoke(_currentState);
 
             _lastState = _currentState;
@@ -55,7 +51,7 @@ namespace GamePack.BasicStateMachineSystem
             
             _currentState = state;
             
-            _stateChange?.Invoke(_currentState, _lastState);
+            _stateChange?.Invoke(_currentState,  _lastState);
             
             /*if (_isInitial || !Equals(_currentState, _lastState))
             {

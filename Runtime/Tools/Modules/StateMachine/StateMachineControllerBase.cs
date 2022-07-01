@@ -1,5 +1,6 @@
 using System;
 using GamePack.Boilerplate.Structure;
+using JetBrains.Annotations;
 using Sirenix.OdinInspector;
 
 namespace GamePack.BasicStateMachineSystem
@@ -10,13 +11,13 @@ namespace GamePack.BasicStateMachineSystem
 
         protected BasicStateMachine<T> StateMachine => _stateMachine;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _stateMachine = new BasicStateMachine<T>(StateChange, StateUpdate);
         }
 
         protected abstract void StateUpdate(T state);
 
-        protected abstract void StateChange(T currentState, T lastState);
+        protected abstract void StateChange(T currentState, [CanBeNull] T lastState);
     }
 }
