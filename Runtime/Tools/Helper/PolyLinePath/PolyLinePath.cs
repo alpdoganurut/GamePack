@@ -22,8 +22,15 @@ namespace GamePack.Tools.Helper
         [ShowInInspector, ReadOnly] private float _totalLength;
 
         private bool _isInitialized;
-        public float TotalLength => _totalLength;
-        
+        public float TotalLength
+        {
+            get
+            {
+                if(!_isInitialized) InitializeDistances();
+                return _totalLength;
+            }
+        }
+
         /*private void Awake()
         {
             InitializeDistances();
