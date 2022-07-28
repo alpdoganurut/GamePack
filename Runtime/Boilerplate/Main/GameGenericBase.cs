@@ -31,12 +31,12 @@ namespace GamePack.Boilerplate.Main
         {
             get
             {
-                // Try to find Game in editor mode
-                if (!_staticConfig && !Application.isPlaying)
+                // Try to find Game in scene and fetch Config
+                if (!_staticConfig)
                 {
                     var sceneGame = FindObjectOfType<GameGenericBase<TConfig, TLevelSceneRefBase, TMainSceneRefBase>>();
                     
-                    if(_staticConfig) return _staticConfig = sceneGame._Config;
+                    if(sceneGame) return _staticConfig = sceneGame._Config;
                 }
                 #region Development - Find config in editor
     #if UNITY_EDITOR
@@ -50,6 +50,10 @@ namespace GamePack.Boilerplate.Main
                 } 
     #endif
                 #endregion
+
+                if (!_staticConfig)
+                    Debug.LogError("Can't find Config!");
+                
                 return _staticConfig;
             }
         }

@@ -28,12 +28,13 @@ namespace GamePack.TimerSystem
         private Vector3 _initialScale;
         private readonly Vector3? _targetScale;
         private readonly Transform _targetScaleRef;
+        private readonly float? _targetScaleMaxMultiplier;
 
         private readonly bool _isMove;
         private readonly bool _isRotate;
         private readonly bool _isScale;
         
-        private readonly VerticalCurveMovement? _curveMovement;
+        private readonly VerticalCurveMovement _curveMovement;
 
         public Transformation(
             Transform transform = null,
@@ -43,6 +44,7 @@ namespace GamePack.TimerSystem
             Vector3? targetPos = null, [CanBeNull] Transform targetPosRef = null, Func<Vector3> targetPosAction = null,
             Quaternion? targetRot = null, [CanBeNull] Transform targetRotRef = null,
             Vector3? targetScale = null, [CanBeNull] Transform targetScaleRef = null,
+            float? targetScaleMaxMultiplier = null,
             EaseCurve? ease = null,
             string name = null,
             VerticalCurveMovement? curveMovement = null)
@@ -78,6 +80,7 @@ namespace GamePack.TimerSystem
             
             _targetScale = targetScale;
             _targetScaleRef = targetScaleRef;
+            _targetScaleMaxMultiplier = targetScaleMaxMultiplier;
             _curveMovement = curveMovement;
 
             _ease = ease;
@@ -159,7 +162,7 @@ namespace GamePack.TimerSystem
 
             var updatedPos = Vector3.Lerp(_initialPos, targetPos.Value, tVal);
 
-            if (_curveMovement.HasValue) updatedPos.y += GetCurveMovementHeightOffset(tVal);
+            if (_curveMovement != null) updatedPos.y += GetCurveMovementHeightOffset(tVal);
             
             return updatedPos;
         }
@@ -173,14 +176,24 @@ namespace GamePack.TimerSystem
         private Vector3 GetUpdatedScale(float tVal)
         {
             var tPScale = _targetScale ?? _targetScaleRef.lossyScale;
+
+            if (_targetScaleMaxMultiplier.HasValue)
+            {
+                var peakScale = _targetScaleMaxMultiplier.Value;
+                if (tVal < .5f)
+                    return Vector3.Lerp(_initialScale, peakScale * tPScale, tVal * 2);
+                else
+                    return Vector3.Lerp(peakScale * tPScale, tPScale, ((tVal - .5f) / .5f));
+            }
+            
             return Vector3.Lerp(_initialScale, tPScale, tVal);
         }
 
         private float GetCurveMovementHeightOffset(float tVal)
         {
-            Assert.IsTrue(_curveMovement.HasValue);
+            Assert.IsTrue(_curveMovement != null);
 
-            return _curveMovement.Value.GetHeight(tVal);
+            return _curveMovement.GetHeight(tVal);
         }
         
         public static Transformation Match(Transform transform, Transform targetTransform, float duration)
@@ -195,14 +208,11 @@ namespace GamePack.TimerSystem
 
     [Serializable]
     [SuppressMessage("ReSharper", "InconsistentNaming")]
-    public struct VerticalCurveMovement
+    public class VerticalCurveMovement
     {
         public float MaxHeight;
         public AnimationCurve Curve;
 
-        public float GetHeight(float tVal)
-        {
-            return Curve.Evaluate(tVal) * MaxHeight;
-        }
+        public float GetHeight(float tVal) => Curve.Evaluate(tVal) * MaxHeight;
     }
 }

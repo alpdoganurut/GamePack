@@ -13,6 +13,13 @@ namespace GamePack.Utilities
         {
             transform.localScale = Vector3.one;
             var lossyScale = transform.lossyScale;
+            
+            if(transform.lossyScale == Vector3.zero)
+            {
+                transform.localScale = Vector3.zero;
+                return;
+            }
+                
             transform.localScale = new Vector3 (globalScale.x/lossyScale.x, globalScale.y/lossyScale.y, globalScale.z/lossyScale.z);
         }
         
